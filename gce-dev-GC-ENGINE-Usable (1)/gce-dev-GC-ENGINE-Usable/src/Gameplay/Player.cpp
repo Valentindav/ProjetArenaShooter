@@ -36,16 +36,19 @@ void Update()
 	}
 	if (GetButtonDown(Mouse::LEFT)) {
 		GameObject* obj = m_pOwner;
-	    Scene* scene = const_cast<Scene*>(obj->GetScene());
-	    GameObject& BulletObject = GameObject::Create(*scene);
+		Scene* scene = const_cast<Scene*>(obj->GetScene());
+		GameObject& BulletObject = GameObject::Create(*scene);
 		BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
 		BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-	    MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-	    pWeaponRenderer->SetGeometry(bulletGeo);
-	    Texture* pWeaponTexture = bulletTex;
-	    pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
+		MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
+		pWeaponRenderer->SetGeometry(bulletGeo);
+		Texture* pWeaponTexture = bulletTex;
+		pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
 		BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
 		BulletObject.AddComponent<BoxCollider>()->SetActive(true);
+		// Ajout du PhysicComponent pour que PhysicSystem considère les collisions avec cet objet
+		BulletObject.AddComponent<PhysicComponent>();
+		BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 		Bullet* bullet = new Bullet(&BulletObject);
 		bullet->AddShoot();
 	}
