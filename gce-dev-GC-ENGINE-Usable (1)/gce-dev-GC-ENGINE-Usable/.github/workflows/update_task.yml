@@ -1,0 +1,45 @@
+name: Update Task on In Progress
+
+on:
+  project_card:
+    types: [moved]
+
+jobs:
+  update-card:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if moved to In Progress
+        id: check-column
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const columnName = context.payload.project_card.column_name;
+            core.setOutput('is-in-progress', columnName === 'In Progress');
+            if (columnName === 'In Progress') {
+              return context.payload.project_card.content_url;
+            }
+            return null;
+
+      - name: Update Issue
+        if: steps.check-column.outputs.is-in-progress == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueUrl = '${{ steps.check-column.outputs.result }}';
+            const [owner, repo, issueNumber] = issueUrl.split('/').slice(-5, -2);
+            const assignee = context.payload.sender.login;
+            const today = new Date().toISOString().split('T')[0];
+
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              assignees: [assignee],
+            });
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: `Task started on: ${today}`,
+            });
