@@ -78,7 +78,6 @@ namespace gce {
             HandleFPS();
 
             InputSystem::HandleInputs();
-
             m_timeSinceFixedUpdate += m_deltaTime;
             while ( m_timeSinceFixedUpdate >= m_fixedDeltaTime )
             {
