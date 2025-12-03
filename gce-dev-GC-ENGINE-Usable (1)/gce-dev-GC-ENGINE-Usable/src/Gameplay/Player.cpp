@@ -1,9 +1,13 @@
 #include "Player.h"
-
+#include "Bullet.h"
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update)
+private:
+	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
+	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
 
+public:
 void Update()
 {
 	gce::LockMouseCursor();
@@ -29,6 +33,21 @@ void Update()
 	}
 	if (GetKey(Keyboard::LCTRL)) {
 		obj->transform.WorldTranslate(obj->transform.GetLocalUp() * (-2) * GameManager::DeltaTime());
+	}
+	if (GetButtonDown(Mouse::LEFT)) {
+		GameObject* obj = m_pOwner;
+	    Scene* scene = const_cast<Scene*>(obj->GetScene());
+	    GameObject& BulletObject = GameObject::Create(*scene);
+		BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+		BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+	    MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
+	    pWeaponRenderer->SetGeometry(bulletGeo);
+	    Texture* pWeaponTexture = bulletTex;
+	    pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
+		BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
+		BulletObject.AddComponent<BoxCollider>()->SetActive(true);
+		Bullet* bullet = new Bullet(&BulletObject);
+		bullet->AddShoot();
 	}
 	obj->transform.LocalRotate({ delta.y * .005f,delta.x * 0.005f,.0f });		
 }

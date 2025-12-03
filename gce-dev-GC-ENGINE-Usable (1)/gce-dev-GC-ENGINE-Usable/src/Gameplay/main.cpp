@@ -35,12 +35,13 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
     pMeshRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pMeshRenderer->SetAlbedoTexture(pNewTexture);
+    testObject.AddComponent<BoxCollider>()->SetActive(true);
+
 
     GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
