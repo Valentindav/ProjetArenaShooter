@@ -35,6 +35,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pMeshRenderer->SetAlbedoTexture(pNewTexture);
 
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
+	testObject.transform.SetWorldScale({ 5.0f,5.0f,2.0f });
 
     gce::WindowParam params;
     params.title = L"GCE Engine Window";

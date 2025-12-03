@@ -7,10 +7,6 @@ DECLARE_SCRIPT(Move, ScriptFlag::Update)
 void Update()
 {
 	gce::LockMouseCursor();
-	static gce::Vector2i32 lastPosition = GetMousePosition();
-	gce::Vector2i32 const currentPosition = GetMousePosition();
-	gce::Vector2f32 const delta = gce::Vector2f32(static_cast<float32>(currentPosition.x - lastPosition.x), static_cast<float32>(currentPosition.y - lastPosition.y));
-	lastPosition = currentPosition;
 	GameObject* obj = m_pOwner;
 	if (GetKey(Keyboard::Z)) {
 		obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
@@ -30,7 +26,37 @@ void Update()
 	if (GetKey(Keyboard::LCTRL)) {
 		obj->transform.WorldTranslate(obj->transform.GetLocalUp() * (-2) * GameManager::DeltaTime());
 	}
-	obj->transform.LocalRotate({ delta.y * .005f,delta.x * 0.005f,.0f });		
+	gce::WindowParam windowParam = GameManager::GetWindowParam();
+	gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
+	gce::Vector2i32 const currentPos = GetMousePosition();
+	gce::Vector2f32 const deltaPixels = currentPos - center;
+
+	static float yaw = 0.0f;
+	static float pitch = 0.0f;
+	static float prevYaw = 0.0f;
+	static float prevPitch = 0.0f;
+
+	const float sensitivity = 0.0005f;
+	const float pitchMin = -1.4f;
+	const float pitchMax = 1.4f;
+
+	float yawDelta = deltaPixels.x * sensitivity;
+	float pitchDelta = deltaPixels.y * sensitivity;
+
+	yaw += yawDelta;
+	pitch += pitchDelta;
+	
+	pitch = gce::Clamp(pitch, pitchMin, pitchMax);
+
+	float applyPitch = pitch - prevPitch;
+	float applyYaw = yaw - prevYaw;
+
+	obj->transform.LocalRotate({ applyPitch, applyYaw, 0.0f });	
+
+	prevPitch = pitch;
+	prevYaw = yaw;
+
+	SetMousePosition(center);
 }
 
 END_SCRIPT
