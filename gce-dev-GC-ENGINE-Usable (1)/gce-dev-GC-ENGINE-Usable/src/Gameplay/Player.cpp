@@ -102,7 +102,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.8f);
     AddMove();
 }
 

@@ -35,13 +35,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     //----------------------------------Creating GameObject----------------------------------
     GameObject& PlayerObject = GameObject::Create(scene);
-    MeshRenderer* pPlayerRenderer = PlayerObject.AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
-    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-    PlayerObject.AddComponent<BoxCollider>()->SetActive(true);
-    PlayerObject.AddComponent<PhysicComponent>();
-    PlayerObject.GetComponent<PhysicComponent>()->SetGravityScale(9.8f); // -> pour rajouter la physic et le collider a un object
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
@@ -69,7 +62,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pFloorRenderer->SetAlbedoTexture(pFloorTexture);
     Floor.transform.LocalScale({ 20.f,1.f,20.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
-    Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
+    Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);	
 	Floor.SetName("Floor");
 
     //----------------------------------Run----------------------------------
