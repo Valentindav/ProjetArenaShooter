@@ -35,6 +35,10 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    PlayerObject.AddComponent<BoxCollider>()->SetActive(true);
+    PlayerObject.AddComponent<PhysicComponent>();
+    PlayerObject.GetComponent<PhysicComponent>()->SetGravityScale(9.8f); // -> pour rajouter la physic et le collider a un object
+
 
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
@@ -47,12 +51,23 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
 
     GameObject& Weapon = GameObject::Create(scene);
-    Weapon.transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
+    Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj"));
     Texture* pWeaponTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
     Weapon.transform.LocalScale({ 0.25,0.25,0.25 });
+
+    GameObject& Floor = GameObject::Create(scene);
+    Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
+    MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
+    pFloorRenderer->SetGeometry(SHAPES.CUBE);
+    Texture* pFloorTexture = new Texture("res/Exemple/TexturesTest.jpg");
+    pFloorRenderer->SetAlbedoTexture(pFloorTexture);
+    Floor.transform.LocalScale({ 20.f,1.f,20.f });
+    Floor.AddComponent<BoxCollider>()->SetActive(true);
+    Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
+	Floor.SetName("Floor");
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
