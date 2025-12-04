@@ -1,5 +1,5 @@
 #include "Bullet.h"
-
+#include "RessourcesManager.h"
 using namespace gce;
 
 DECLARE_SCRIPT(Shoot_Update, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
@@ -41,9 +41,16 @@ void Update()
 	}
 	m_lifeTime -= GameManager::DeltaTime();
 }
-
+//&& m_pOwner =! dynamic_cast<Bullet*>(m_pOwner))
 void CollisionEnter(GameObject* other) {
-	if (m_pOwner && m_pOwner->IsActive())
+	gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+	Entity* ownerEntity = nullptr;
+	for (Entity* p : entity) {
+		if (m_pOwner == p->GetGameObject()) {
+			ownerEntity = p;
+		}
+	}
+	if (m_pOwner && m_pOwner->IsActive() && m_pOwner && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 	{
 		m_pOwner->SetActive(false);
 		bool already = false;
@@ -54,7 +61,7 @@ void CollisionEnter(GameObject* other) {
 		}
 		if (!already) s_pendingDestroy.PushBack(m_pOwner);
 	}
-	if (other && other->IsActive())
+	if (other && other->IsActive()&& dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 	{
 		other->SetActive(false);
 		bool alreadyOther = false;

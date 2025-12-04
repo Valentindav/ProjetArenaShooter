@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Bullet.h"
-
+#include "RessourcesManager.h"
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update)
@@ -27,10 +27,13 @@ void Update()
         obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
     }
     if (GetKey(Keyboard::SPACE)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+        obj->GetComponent<PhysicComponent>()->SetGravityScale(-2.0);
     }
     if (GetKey(Keyboard::LCTRL)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalUp() * (-2) * GameManager::DeltaTime());
+        obj->GetComponent<PhysicComponent>()->SetGravityScale(2.0);
+    }
+    if (GetKey(Keyboard::W)) {
+        obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0);
     }
 if (GetButtonDown(Mouse::LEFT)) {
 		GameObject* obj = m_pOwner;
@@ -48,6 +51,8 @@ if (GetButtonDown(Mouse::LEFT)) {
 		BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 		Bullet* bullet = new Bullet(&BulletObject);
 		bullet->AddShoot();
+        bullet->SetOwner(obj);
+        RessourcesManager::AddEntities(bullet);
 		lastBullet = bullet;
 	}
 	if (GetButtonDown(Mouse::RIGHT)) {
@@ -80,8 +85,15 @@ if (GetButtonDown(Mouse::LEFT)) {
 
 END_SCRIPT
 
-void Player::MovePlayer() {
-
+Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
+    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
+    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
+    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    obj->AddComponent<BoxCollider>()->SetActive(true);
+    obj->AddComponent<PhysicComponent>();
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    AddMove();
 }
 
 void Player::AddMove()
