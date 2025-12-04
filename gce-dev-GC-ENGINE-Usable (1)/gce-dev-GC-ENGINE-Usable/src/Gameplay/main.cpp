@@ -11,9 +11,9 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
-    params.width = 1280;
-    params.height = 720;
-    params.isFullScreen = false;
+    params.width = 1920;
+    params.height = 1080;
+    params.isFullScreen = true;
     params.isSplitScreen = false;
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 

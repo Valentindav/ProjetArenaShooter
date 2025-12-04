@@ -9,15 +9,15 @@
 namespace gce
 {
 
-	RenderWindow::RenderWindow(WStringView const title, int32 const width, int32 const height)
+	RenderWindow::RenderWindow(WStringView const title, int32 const width, int32 const height, FullScreenMode mode)
 	{
-		RenderWindow::Create(title, width, height);
+		RenderWindow::Create(title, width, height, mode);
 	}
 
-	void RenderWindow::Create(WStringView const title, int32 const width, int32 const height)
+	void RenderWindow::Create(WStringView const title, int32 const width, int32 const height, FullScreenMode mode)
 	{
 		m_pTarget = new RenderTarget(width, height, *this);
-		Window::Create(title, width, height);
+		Window::Create(title, width, height, mode);
 	}
 
 	RenderWindow::~RenderWindow()

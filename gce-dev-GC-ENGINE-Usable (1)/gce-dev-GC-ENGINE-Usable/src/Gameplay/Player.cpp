@@ -9,6 +9,8 @@ private:
 	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
 	 Bullet* lastBullet = nullptr;
 	 bool onGround = false;
+     float sensitivity = 0.0005f;
+	 float jumpForce = 20.0f;
 
 public:    
 
@@ -33,7 +35,7 @@ public:
         if (GetKey(Keyboard::SPACE)) {
             if (onGround)
             {                
-                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,-20.0f,0.0f });
+                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,-jumpForce,0.0f });
                 onGround = false;
             }
         }
@@ -68,8 +70,7 @@ public:
 
         static float yaw = 0.0f;
         static float pitch = 0.0f;
-
-        const float sensitivity = 0.0005f;
+        
         const float pitchMin = -1.4f;
         const float pitchMax = 1.4f;
 

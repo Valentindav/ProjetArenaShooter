@@ -35,7 +35,7 @@ namespace gce
 	{
 	public:
 		Window() = default;
-		Window(WStringView title, int32 width, int32 height);
+		Window(WStringView title, int32 width, int32 height, FullScreenMode mode = WINDOWED);
 		Window(Window const& other) = delete;
 		Window(Window&& other) noexcept = delete;
 
@@ -44,7 +44,7 @@ namespace gce
 
 		virtual ~Window();
 
-		virtual void Create(WStringView title, int32 width, int32 height);
+		virtual void Create(WStringView title, int32 width, int32 height, FullScreenMode mode = WINDOWED);
 		void Update() const;
 		void Display();
 
@@ -117,6 +117,9 @@ namespace gce
 
 		//TODO Move those frame resources
 		ID2D1Brush* m_pActiveBrush = nullptr;
+
+		// Remember initial fullscreen mode requested at creation
+		FullScreenMode m_initialFullScreenMode = WINDOWED;
 
 		//============
 

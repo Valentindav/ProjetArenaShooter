@@ -27,8 +27,11 @@ namespace gce
         for (int32 i = 0; i < m_pPassCB.Capacity(); i++)
             if(m_pPassCB.IsEmpty(i) == false) delete m_pPassCB[i];
 
-        for (auto* oCB : m_pObjDatasCB)
-            if (oCB) delete oCB;
+        for (uint32 i = 0; i < m_pObjDatasCB.Capacity(); ++i) {
+            if (!m_pObjDatasCB.IsEmpty(i)) {
+                delete m_pObjDatasCB[i];
+            }
+        }
 
        delete m_pLightsCB; 
     }

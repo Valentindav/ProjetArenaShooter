@@ -1,4 +1,3 @@
-
 #ifndef CORE_FREELIST_HPP_INCLUDED
 #define CORE_FREELIST_HPP_INCLUDED
 
@@ -52,7 +51,7 @@ namespace gce {
 			using pointer = T*;
 			using reference = T&;
 
-			Iterator(pointer ptr, FreeList* listPtr) : m_ptr(ptr), m_pList(listPtr) {}
+			Iterator(pointer ptr, FreeList* listPtr, uint32 startIndex) : m_ptr(ptr), m_pList(listPtr), m_currentIndex(startIndex) {}
 
 			reference operator*() const { return *m_ptr; }
 			pointer operator->() { return m_ptr; }
@@ -93,13 +92,16 @@ namespace gce {
 
 		constexpr Iterator begin()
 		{
-			T* ptr = &m_data[0];
-			while (IsEmpty(0) && m_capacity == 1)
-				++ptr;
-
-			return Iterator(ptr, this);
+			if (m_capacity == 0) return end();
+			uint32 idx = 0;
+			// find first non-empty slot
+			while (idx < m_capacity && IsEmpty(idx))
+				++idx;
+			if (idx >= m_capacity)
+				return end();
+			return Iterator(&m_data[idx], this, idx);
 		}
-		constexpr Iterator end() { return Iterator(&m_data[m_capacity], this); } //end() always return an out of bound iterator
+		constexpr Iterator end() { return Iterator(&m_data[m_capacity], this, m_capacity); } //end() always return an out of bound iterator
 
 	private:
 		static constexpr int32 m_invalidIndex{ -1 };

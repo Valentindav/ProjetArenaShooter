@@ -12,9 +12,9 @@
 
 namespace gce
 {
-	SplitScreenWindow::SplitScreenWindow(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm)
+	SplitScreenWindow::SplitScreenWindow(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm, FullScreenMode mode)
 	{
-		Create(title, width, height, splitScreenForm);
+		Create(title, width, height, splitScreenForm, mode);
 	}
 
 
@@ -33,7 +33,7 @@ namespace gce
 	/// @param splitScreenForm Choosen SplitScreen disposition preset
 	/////////////////////////////////////////////////////////////////////
 
-	void SplitScreenWindow::Create(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm)
+	void SplitScreenWindow::Create(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm, FullScreenMode mode)
 	{
 		m_form = splitScreenForm;
 
@@ -65,7 +65,7 @@ namespace gce
 		}
 
 		ResizeViewports();
-		Window::Create(title, width, height);
+		Window::Create(title, width, height, mode);
 	}
 
 
