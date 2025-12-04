@@ -21,12 +21,16 @@ public:
             GameObject* obj = m_pOwner;
             Scene* scene = const_cast<Scene*>(obj->GetScene());
             GameObject& BulletObject = GameObject::Create(*scene);
-            BulletObject.transform.SetWorldPosition({ (obj->transform.GetWorldPosition().x * obj->transform.GetLocalRotation().GetX()) +1.f
-                ,(obj->transform.GetWorldPosition().y + obj->transform.GetLocalRotation().GetY()) + 1.f
-                ,(obj->transform.GetWorldPosition().z + obj->transform.GetLocalRotation().GetZ()) + 1.f
-            });
-            std::cout << obj->transform.GetLocalRotation().GetX() << " "<< obj->transform.GetLocalRotation().GetY() << " "<<obj->transform.GetLocalRotation().GetZ()<< std::endl;
+            Vector3f32 position = obj->transform.GetWorldPosition();
+            Vector3f32 forward = obj->transform.GetWorldForward();
+
+            float spawnOffset = 1.0f;
+
+            Vector3f32 spawnPosition = position + forward * spawnOffset;
+
+            BulletObject.transform.SetWorldPosition(spawnPosition);
             BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+
             MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(bulletGeo);
             Texture* pWeaponTexture = bulletTex;

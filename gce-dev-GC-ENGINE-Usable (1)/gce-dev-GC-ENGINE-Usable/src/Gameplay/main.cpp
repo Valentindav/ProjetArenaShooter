@@ -4,7 +4,6 @@
 #include "SnowMan.h"
 #include "RessourcesManager.h"
 
-
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
@@ -60,9 +59,9 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 
-    SnowManObject.transform.SetWorldPosition({ 1.0f,5.0f,-8.0f });
+    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
 
-    SnowManObject.transform.SetWorldRotation({ 0.0f,0.0f,0.0f });
+    SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
 
 	SnowMan* Snowman = new SnowMan(&SnowManObject);
 	Player* player = new Player(&PlayerObject);
