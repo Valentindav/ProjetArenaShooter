@@ -6,6 +6,7 @@ DECLARE_SCRIPT(Move, ScriptFlag::Update)
 private:
 	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
 	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
+	Bullet* lastBullet = nullptr;
 
 public:
 void Update()
@@ -16,6 +17,7 @@ void Update()
 	gce::Vector2f32 const delta = gce::Vector2f32(static_cast<float32>(currentPosition.x - lastPosition.x), static_cast<float32>(currentPosition.y - lastPosition.y));
 	lastPosition = currentPosition;
 	GameObject* obj = m_pOwner;
+
 	if (GetKey(Keyboard::Z)) {
 		obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
 	}
@@ -46,11 +48,17 @@ void Update()
 		pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
 		BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
 		BulletObject.AddComponent<BoxCollider>()->SetActive(true);
-		// Ajout du PhysicComponent pour que PhysicSystem considère les collisions avec cet objet
 		BulletObject.AddComponent<PhysicComponent>();
 		BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 		Bullet* bullet = new Bullet(&BulletObject);
 		bullet->AddShoot();
+		lastBullet = bullet;
+	}
+	if (GetButtonDown(Mouse::RIGHT)) {
+		if (lastBullet == nullptr) return;
+		MeshRenderer* pWeaponRenderer = lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
+		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
+		lastBullet->DeleteShoot();
 	}
 	obj->transform.LocalRotate({ delta.y * .005f,delta.x * 0.005f,.0f });		
 }

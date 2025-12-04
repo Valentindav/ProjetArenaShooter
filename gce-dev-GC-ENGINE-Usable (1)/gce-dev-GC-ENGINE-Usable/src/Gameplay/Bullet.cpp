@@ -74,3 +74,9 @@ void Bullet::AddShoot()
 	GameObject* obj = GetGameObject();
 	obj->AddScript<Shoot_Update>();
 }
+
+void Bullet::DeleteShoot()
+{
+	GameObject* obj = GetGameObject();
+	obj->RemoveScript<Shoot_Update>();
+}
