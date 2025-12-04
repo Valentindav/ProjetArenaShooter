@@ -7,23 +7,25 @@ DECLARE_SCRIPT(AttackScript, ScriptFlag::Start | ScriptFlag::Update)
 private:
     Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
     Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
-	float ShootCooldown = 1.0f;
+    float ShootCooldown = 0.75f;
 
 public:
     void Start()
     {
-        ShootCooldown = 1.0f;
+        ShootCooldown = 0.75f;
     }
     void Update()
     {
-        if (ShootCooldown <= 0.0f) {
+        if (ShootCooldown <= 0.0f)
+        {
             GameObject* obj = m_pOwner;
             Scene* scene = const_cast<Scene*>(obj->GetScene());
             GameObject& BulletObject = GameObject::Create(*scene);
-            BulletObject.transform.SetWorldPosition({ obj->transform.GetWorldPosition().x * obj->transform.GetWorldRotation().GetX() + 1.0f
-                ,obj->transform.GetWorldPosition().y * obj->transform.GetWorldRotation().GetY() + 1.0f
-                ,obj->transform.GetWorldPosition().z * obj->transform.GetWorldRotation().GetZ() + 1.0f 
-                });
+            BulletObject.transform.SetWorldPosition({ (obj->transform.GetWorldPosition().x * obj->transform.GetLocalRotation().GetX()) +1.f
+                ,(obj->transform.GetWorldPosition().y + obj->transform.GetLocalRotation().GetY()) + 1.f
+                ,(obj->transform.GetWorldPosition().z + obj->transform.GetLocalRotation().GetZ()) + 1.f
+            });
+            std::cout << obj->transform.GetLocalRotation().GetX() << " "<< obj->transform.GetLocalRotation().GetY() << " "<<obj->transform.GetLocalRotation().GetZ()<< std::endl;
             BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
             MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(bulletGeo);
