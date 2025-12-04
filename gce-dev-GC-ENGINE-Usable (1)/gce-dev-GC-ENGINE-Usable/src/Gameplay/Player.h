@@ -1,8 +1,9 @@
 #pragma once
 #include "Entity.h"
+
 class Player :public Entity
 {
 public:
-	Player(GameObject* obj, float spd = 150) : Entity(obj, spd) {}
+	Player(GameObject* obj, float spd = 150);
 	void AddMove();
 };

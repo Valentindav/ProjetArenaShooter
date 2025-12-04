@@ -1,11 +1,15 @@
 #include <windows.h>
 #include <Engine.h>
 #include "Player.h"
+#include "SnowMan.h"
+#include "RessourcesManager.h"
+
 
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
     gce::GameManager::Create();    
+    RessourcesManager::Create();
 
     gce::Scene& scene = gce::Scene::Create();
 
@@ -39,6 +43,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     PlayerObject.AddComponent<PhysicComponent>();
     PlayerObject.GetComponent<PhysicComponent>()->SetGravityScale(9.8f); // -> pour rajouter la physic et le collider a un object
 
+    GameObject& SnowManObject = GameObject::Create(scene);
 
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
@@ -49,13 +54,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     testObject.AddComponent<PhysicComponent>();
 	testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 
-
     GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj"));
-    Texture* pWeaponTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
+    pWeaponRenderer->SetAlbedoTexture(pNewTexture);
     Weapon.transform.LocalScale({ 0.25,0.25,0.25 });
 
     GameObject& Floor = GameObject::Create(scene);
@@ -73,15 +76,15 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 
+	SnowMan* Snowman = new SnowMan(&SnowManObject);
 	Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
-	player->AddMove();
-
-    
+	
+    RessourcesManager::AddEntities(player);
     gce::GameManager::Run(params);	
-
 
     gce::GameManager::Destroy();
     gce::Console::UnInit();

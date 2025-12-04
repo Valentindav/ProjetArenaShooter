@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Bullet.h"
-
+#include "RessourcesManager.h"
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
@@ -12,8 +12,7 @@ private:
      float sensitivity = 0.0005f;
 	 float jumpForce = 20.0f;
 
-public:    
-
+public:
     void Update()
     {
         gce::LockMouseCursor();
@@ -95,6 +94,17 @@ public:
     }
 
 END_SCRIPT
+
+Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
+    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
+    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
+    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    obj->AddComponent<BoxCollider>()->SetActive(true);
+    obj->AddComponent<PhysicComponent>();
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    AddMove();
+}
 
 void Player::AddMove()
 {
