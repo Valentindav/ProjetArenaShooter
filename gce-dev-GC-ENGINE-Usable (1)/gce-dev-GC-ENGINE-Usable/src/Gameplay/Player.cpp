@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Bullet.h"
+
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update)
@@ -11,32 +12,27 @@ private:
 public:
 void Update()
 {
-	gce::LockMouseCursor();
-	static gce::Vector2i32 lastPosition = GetMousePosition();
-	gce::Vector2i32 const currentPosition = GetMousePosition();
-	gce::Vector2f32 const delta = gce::Vector2f32(static_cast<float32>(currentPosition.x - lastPosition.x), static_cast<float32>(currentPosition.y - lastPosition.y));
-	lastPosition = currentPosition;
-	GameObject* obj = m_pOwner;
-
-	if (GetKey(Keyboard::Z)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
-	}
-	if (GetKey(Keyboard::S)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
-	}
-	if (GetKey(Keyboard::Q)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
-	}
-	if (GetKey(Keyboard::D)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
-	}
-	if (GetKey(Keyboard::SPACE)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
-	}
-	if (GetKey(Keyboard::LCTRL)) {
-		obj->transform.WorldTranslate(obj->transform.GetLocalUp() * (-2) * GameManager::DeltaTime());
-	}
-	if (GetButtonDown(Mouse::LEFT)) {
+    gce::LockMouseCursor();
+    GameObject* obj = m_pOwner;
+    if (GetKey(Keyboard::Z)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+    }
+    if (GetKey(Keyboard::S)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
+    }
+    if (GetKey(Keyboard::Q)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
+    }
+    if (GetKey(Keyboard::D)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+    }
+    if (GetKey(Keyboard::SPACE)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+    }
+    if (GetKey(Keyboard::LCTRL)) {
+        obj->transform.WorldTranslate(obj->transform.GetLocalUp() * (-2) * GameManager::DeltaTime());
+    }
+if (GetButtonDown(Mouse::LEFT)) {
 		GameObject* obj = m_pOwner;
 		Scene* scene = const_cast<Scene*>(obj->GetScene());
 		GameObject& BulletObject = GameObject::Create(*scene);
@@ -60,17 +56,36 @@ void Update()
 		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
 		lastBullet->DeleteShoot();
 	}
-	obj->transform.LocalRotate({ delta.y * .005f,delta.x * 0.005f,.0f });		
+    gce::WindowParam windowParam = GameManager::GetWindowParam();
+    gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
+    gce::Vector2i32 const currentPos = GetMousePosition();
+    gce::Vector2f32 const deltaPixels = currentPos - center;
+
+    static float yaw = 0.0f;
+    static float pitch = 0.0f;
+
+    const float sensitivity = 0.0005f;
+    const float pitchMin = -1.4f;
+    const float pitchMax = 1.4f;
+
+    yaw += deltaPixels.x * sensitivity;
+    pitch += deltaPixels.y * sensitivity;
+    pitch = gce::Clamp(pitch, pitchMin, pitchMax);
+
+    Quaternion quaternion = Quaternion::RotationEuler(pitch, yaw, 0.0f);
+    obj->transform.SetLocalRotation(quaternion);
+
+    SetMousePosition(center);
 }
 
 END_SCRIPT
 
-void Player::MovePlayer() {		
-	
+void Player::MovePlayer() {
+
 }
 
 void Player::AddMove()
 {
-	GameObject* obj = GetGameObject();
-	obj->AddScript<Move>();
+    GameObject* obj = GetGameObject();
+    obj->AddScript<Move>();
 }
