@@ -4,14 +4,12 @@
 #include "SnowMan.h"
 #include "RessourcesManager.h"
 
-int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
-    gce::GameManager::Create();    
+    gce::GameManager::Create();
     RessourcesManager::Create();
-
     gce::Scene& scene = gce::Scene::Create();
-
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
     params.width = 1920;
@@ -21,7 +19,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
     //----------------------------------INIT Camera----------------------------------
-	gce::GameObject& CameraObject = gce::GameObject::Create(scene);
+    gce::GameObject& CameraObject = gce::GameObject::Create(scene);
     CameraObject.transform.LocalTranslate({ 0,0, -10 });
     gce::Camera* pCamera = CameraObject.AddComponent<gce::Camera>();
     pCamera->SetMainCamera();
@@ -40,7 +38,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
-
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
     pMeshRenderer->SetGeometry(SHAPES.CUBE);
@@ -48,7 +45,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pMeshRenderer->SetAlbedoTexture(pNewTexture);
     testObject.AddComponent<BoxCollider>()->SetActive(true);
     testObject.AddComponent<PhysicComponent>();
-	testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    testObject.SetName("TestObject");
 
     GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
@@ -63,26 +61,39 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.transform.LocalScale({ 20.f,1.f,20.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
     Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
-    Floor.AddComponent<PhysicComponent>()->SetMass(10000000.f);   
-	Floor.SetName("Floor");
+    Floor.AddComponent<PhysicComponent>()->SetMass(10000000.f);
+    Floor.SetName("Floor");
 
-    //----------------------------------Run----------------------------------
+    //----------------------------------Creating Entities----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,-5.0f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-
     SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+    SnowMan* Snowman = new SnowMan(&SnowManObject);
+    RessourcesManager::AddEntities(Snowman);
 
-	SnowMan* Snowman = new SnowMan(&SnowManObject);
-	Player* player = new Player(&PlayerObject);
+    GameObject& SnowManObject2 = GameObject::Create(scene);
+    SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
+    SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+    SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
+    RessourcesManager::AddEntities(Snowman2);
+
+    GameObject& SnowManObject3 = GameObject::Create(scene);
+    SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
+    SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+    SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
+    RessourcesManager::AddEntities(Snowman3);
+
+    Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
-	RessourcesManager::SetPlayer(player);
+    RessourcesManager::SetPlayer(player);
     RessourcesManager::AddEntities(player);
-    gce::GameManager::Run(params);	
 
+    //----------------------------------Run----------------------------------
+    gce::GameManager::Run(params);
     gce::GameManager::Destroy();
     gce::Console::UnInit();
     return 0;
