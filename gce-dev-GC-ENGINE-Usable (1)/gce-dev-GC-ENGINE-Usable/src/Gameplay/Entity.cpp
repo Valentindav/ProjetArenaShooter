@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
+DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionEnter)
 private:
     float life = 5.0f;
 public:
@@ -10,15 +10,19 @@ public:
     }
 
 
-void Life(GameObject* other)
+void CollisionEnter(GameObject* other)
     {
         if (m_pOwner && m_pOwner->IsActive())
         {
-            life = life - 1;
-            if (life <= 0)
+            if (other->GetName() == "Bullet")
             {
-                Destroy();
+                life = life - 1;
+                if (life <= 0)
+                {
+                    Destroy();
+                }
             }
+
         }
     }
 
