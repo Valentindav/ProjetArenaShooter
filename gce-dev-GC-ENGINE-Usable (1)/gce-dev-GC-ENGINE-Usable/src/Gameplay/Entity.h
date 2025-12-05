@@ -6,6 +6,7 @@ class Entity
 {
 private:
 	float m_speed;
+	float m_life;
 	GameObject* m_gameObject;
 public:
 	 Entity(GameObject* obj, float spd = 100);
