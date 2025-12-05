@@ -6,8 +6,8 @@ using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 private:
-	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
-	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
+	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
+	 /*Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");*/
 	 Bullet* lastBullet = nullptr;
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
 	 bool onGround = false;
@@ -49,9 +49,9 @@ public:
             BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
             MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(bulletGeo);
-            Texture* pWeaponTexture = bulletTex;
-            pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-            BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
+            /*Texture* pWeaponTexture = bulletTex;
+            pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
+            BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
             BulletObject.AddComponent<BoxCollider>()->SetActive(false);
             BulletObject.AddComponent<PhysicComponent>();
             BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
@@ -93,7 +93,7 @@ public:
         {
             if (other->GetName() == "Floor")
             {
-                onGround = true;
+                onGround = true;                
             }
         }
     }
