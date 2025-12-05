@@ -1,13 +1,15 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
+#define SHOOT_TIMER_WAIT 2.0f
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update)
 private:
 	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
 	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
-	Bullet* lastBullet = nullptr;
+	 Bullet* lastBullet = nullptr;
+	 float m_shootTimer = SHOOT_TIMER_WAIT;
 
 public:
 void Update()
@@ -36,6 +38,7 @@ void Update()
         obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0);
     }
 if (GetButtonDown(Mouse::LEFT)) {
+    if (m_shootTimer > 0.0f)  return; 
 		GameObject* obj = m_pOwner;
 		Scene* scene = const_cast<Scene*>(obj->GetScene());
 		GameObject& BulletObject = GameObject::Create(*scene);
@@ -54,6 +57,7 @@ if (GetButtonDown(Mouse::LEFT)) {
         bullet->SetOwner(obj);
         RessourcesManager::AddEntities(bullet);
 		lastBullet = bullet;
+        m_shootTimer = SHOOT_TIMER_WAIT;
 	}
 	if (GetButtonDown(Mouse::RIGHT)) {
 		if (lastBullet == nullptr) return;
@@ -81,6 +85,7 @@ if (GetButtonDown(Mouse::LEFT)) {
     obj->transform.SetLocalRotation(quaternion);
 
     SetMousePosition(center);
+    m_shootTimer -= GameManager::DeltaTime();
 }
 
 END_SCRIPT
