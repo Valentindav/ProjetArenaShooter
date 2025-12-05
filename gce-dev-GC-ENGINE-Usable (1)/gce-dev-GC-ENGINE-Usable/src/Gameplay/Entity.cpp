@@ -33,7 +33,8 @@ public:
 
     void Entity::AddLifeScript()
     {
-        if (m_gameObject) {
+        if (m_gameObject)
+        {
             m_gameObject->AddScript<LifeScript>();
         }
     }

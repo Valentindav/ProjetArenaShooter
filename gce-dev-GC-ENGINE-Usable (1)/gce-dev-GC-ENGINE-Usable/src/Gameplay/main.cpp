@@ -3,9 +3,9 @@
 #include "Player.h"
 #include "SnowMan.h"
 #include "RessourcesManager.h"
+#include "MenuManager.h"
 
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
-    //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
     gce::GameManager::Create();
     RessourcesManager::Create();
@@ -18,7 +18,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     params.isSplitScreen = false;
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-    //----------------------------------INIT Camera----------------------------------
     gce::GameObject& CameraObject = gce::GameObject::Create(scene);
     CameraObject.transform.LocalTranslate({ 0,0, -10 });
     gce::Camera* pCamera = CameraObject.AddComponent<gce::Camera>();
@@ -30,7 +29,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
     pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
-    //----------------------------------Creating GameObject----------------------------------
     GameObject& PlayerObject = GameObject::Create(scene);
     Light* light = PlayerObject.AddComponent<Light>();
     light->DefaultDirectionLight();
@@ -64,7 +62,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.AddComponent<PhysicComponent>()->SetMass(10000000.f);
     Floor.SetName("Floor");
 
-    //----------------------------------Creating Entities----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,-5.0f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
@@ -92,7 +89,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     RessourcesManager::SetPlayer(player);
     RessourcesManager::AddEntities(player);
 
-    //----------------------------------Run----------------------------------
+    MenuManager::Create(&scene);
+
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();
     gce::Console::UnInit();
