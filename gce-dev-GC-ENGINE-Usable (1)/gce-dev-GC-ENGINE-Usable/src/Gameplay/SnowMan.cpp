@@ -1,6 +1,7 @@
 #include "SnowMan.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
+#include "Player.h"
 using namespace gce;
 
 DECLARE_SCRIPT(AttackScript, ScriptFlag::Start | ScriptFlag::Update)
@@ -16,6 +17,8 @@ public:
     }
     void Update()
     {
+        Player* player = RessourcesManager::GetPlayer();
+        m_pOwner->transform.SetWorldRotation({player->GetGameObject()->transform.GetWorldPosition()});
         if (ShootCooldown <= 0.0f)
         {
             GameObject* obj = m_pOwner;

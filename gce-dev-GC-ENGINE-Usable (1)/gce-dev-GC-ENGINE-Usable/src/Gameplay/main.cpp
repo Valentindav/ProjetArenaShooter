@@ -63,7 +63,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.transform.LocalScale({ 20.f,1.f,20.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
     Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
-    Floor.AddComponent<PhysicComponent>()->SetMass(10000.f);   
+    Floor.AddComponent<PhysicComponent>()->SetMass(10000000.f);   
 	Floor.SetName("Floor");
 
     //----------------------------------Run----------------------------------
@@ -79,7 +79,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
-	
+	RessourcesManager::SetPlayer(player);
     RessourcesManager::AddEntities(player);
     gce::GameManager::Run(params);	
 

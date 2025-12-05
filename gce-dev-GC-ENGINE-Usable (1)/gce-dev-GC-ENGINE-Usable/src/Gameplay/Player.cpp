@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
-#define SHOOT_TIMER_WAIT 2.0f
+#define SHOOT_TIMER_WAIT 0.0f
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
@@ -107,7 +107,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.8f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
     AddMove();
 }
 
