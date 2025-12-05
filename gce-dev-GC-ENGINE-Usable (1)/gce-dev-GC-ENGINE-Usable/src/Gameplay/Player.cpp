@@ -69,6 +69,7 @@ public:
         gce::WindowParam windowParam = GameManager::GetWindowParam();
         gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
         gce::Vector2i32 const currentPos = GetMousePosition();
+		gce::Vector2f32 const deltaPixels = currentPos - center;
 
         static float yaw = 0.0f;
         static float pitch = 0.0f;

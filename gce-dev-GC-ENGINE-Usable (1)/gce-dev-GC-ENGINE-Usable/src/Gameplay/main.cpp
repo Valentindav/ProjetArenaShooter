@@ -62,11 +62,12 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.transform.LocalScale({ 20.f,1.f,20.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
     Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);	
+    Floor.GetComponent<PhysicComponent>()->SetMass(1000.0f);
 	Floor.SetName("Floor");
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
-    PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
+    PlayerObject.transform.SetWorldPosition({ 0.0f,-5.0f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
