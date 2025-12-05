@@ -63,9 +63,10 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pFloorRenderer->SetGeometry(SHAPES.CUBE);
     Floor.transform.LocalScale({ 20.f,1.f,20.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
-    Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
-    Floor.AddComponent<PhysicComponent>()->SetMass(10000.f);    
 	Floor.SetName("Floor");
+    Light* light2 = Floor.AddComponent<Light>();
+    light2->DefaultDirectionLight();
+    light2->intensity = 1.0f;
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });

@@ -10,7 +10,7 @@ private:
 	 Bullet* lastBullet = nullptr;
 	 bool onGround = false;
      float sensitivity = 0.0005f;
-	 float jumpForce = 20.0f;
+	 float jumpForce = 50.0f;
 
 public:
     void Update()
@@ -34,7 +34,7 @@ public:
         if (GetKey(Keyboard::SPACE)) {
             if (onGround)
             {                
-                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,-jumpForce,0.0f });
+                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,jumpForce,0.0f });
                 onGround = false;
             }
         }
@@ -88,7 +88,7 @@ public:
         {
             if (other->GetName() == "Floor")
             {
-                onGround = true;                
+                onGround = true;
             }
         }
     }
@@ -101,8 +101,9 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);
+	obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.8f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     AddMove();
 }
 
