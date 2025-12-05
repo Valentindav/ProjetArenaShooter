@@ -4,89 +4,98 @@
 #define SHOOT_TIMER_WAIT 2.0f
 using namespace gce;
 
-DECLARE_SCRIPT(Move, ScriptFlag::Update)
+DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 private:
 	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
 	 Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
 	 Bullet* lastBullet = nullptr;
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
+	 bool onGround = false;
+     float sensitivity = 0.0005f;
+	 float jumpForce = 20.0f;
 
 public:
-void Update()
-{
-    gce::LockMouseCursor();
-    GameObject* obj = m_pOwner;
-    if (GetKey(Keyboard::Z)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
-    }
-    if (GetKey(Keyboard::S)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
-    }
-    if (GetKey(Keyboard::Q)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
-    }
-    if (GetKey(Keyboard::D)) {
-        obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
-    }
-    if (GetKey(Keyboard::SPACE)) {
-        obj->GetComponent<PhysicComponent>()->SetGravityScale(-2.0);
-    }
-    if (GetKey(Keyboard::LCTRL)) {
-        obj->GetComponent<PhysicComponent>()->SetGravityScale(2.0);
-    }
-    if (GetKey(Keyboard::W)) {
-        obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0);
-    }
-if (GetButtonDown(Mouse::LEFT)) {
-    if (m_shootTimer > 0.0f)  return; 
-		GameObject* obj = m_pOwner;
-		Scene* scene = const_cast<Scene*>(obj->GetScene());
-		GameObject& BulletObject = GameObject::Create(*scene);
-		BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
-		BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-		MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-		pWeaponRenderer->SetGeometry(bulletGeo);
-		Texture* pWeaponTexture = bulletTex;
-		pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-		BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
-		BulletObject.AddComponent<BoxCollider>()->SetActive(true);
-		BulletObject.AddComponent<PhysicComponent>();
-		BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-		Bullet* bullet = new Bullet(&BulletObject);
-		bullet->AddShoot();
-        bullet->SetOwner(obj);
-        RessourcesManager::AddEntities(bullet);
-		lastBullet = bullet;
-        m_shootTimer = SHOOT_TIMER_WAIT;
-	}
-	if (GetButtonDown(Mouse::RIGHT)) {
-		if (lastBullet == nullptr) return;
-		MeshRenderer* pWeaponRenderer = lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
-		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-		lastBullet->DeleteShoot();
-	}
-    gce::WindowParam windowParam = GameManager::GetWindowParam();
-    gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
-    gce::Vector2i32 const currentPos = GetMousePosition();
-    gce::Vector2f32 const deltaPixels = currentPos - center;
+    void Update()
+    {
+        gce::LockMouseCursor();
+        GameObject* obj = m_pOwner;
+        float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();        
+        obj->GetComponent<PhysicComponent>()->SetBounciness(-1.0f);
+        if (GetKey(Keyboard::Z)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+        }
+        if (GetKey(Keyboard::S)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
+        }
+        if (GetKey(Keyboard::Q)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
+        }
+        if (GetKey(Keyboard::D)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+        }
+        if (GetKey(Keyboard::SPACE)) {
+            if (onGround)
+            {                
+                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,-jumpForce,0.0f });
+                onGround = false;
+            }
+        }
+        if (GetButtonDown(Mouse::LEFT)) {
+            if (m_shootTimer > 0.0f)  return; 
+            GameObject* obj = m_pOwner;
+            Scene* scene = const_cast<Scene*>(obj->GetScene());
+            GameObject& BulletObject = GameObject::Create(*scene);
+            BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+            BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+            MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
+            pWeaponRenderer->SetGeometry(bulletGeo);
+            Texture* pWeaponTexture = bulletTex;
+            pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
+            BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
+            BulletObject.AddComponent<BoxCollider>()->SetActive(false);
+            BulletObject.AddComponent<PhysicComponent>();
+            BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+            Bullet* bullet = new Bullet(&BulletObject);
+            bullet->AddShoot();
+            lastBullet = bullet;
+            m_shootTimer = SHOOT_TIMER_WAIT;
+        }
+        if (GetButtonDown(Mouse::RIGHT)) {
+            if (lastBullet == nullptr) return;
+            MeshRenderer* pWeaponRenderer = lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
+            pWeaponRenderer->SetGeometry(SHAPES.CUBE);
+            lastBullet->DeleteShoot();
+        }
+        gce::WindowParam windowParam = GameManager::GetWindowParam();
+        gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
+        gce::Vector2i32 const currentPos = GetMousePosition();
 
-    static float yaw = 0.0f;
-    static float pitch = 0.0f;
+        static float yaw = 0.0f;
+        static float pitch = 0.0f;
+        
+        const float pitchMin = -1.4f;
+        const float pitchMax = 1.4f;
 
-    const float sensitivity = 0.0005f;
-    const float pitchMin = -1.4f;
-    const float pitchMax = 1.4f;
+        yaw += deltaPixels.x * sensitivity;
+        pitch += deltaPixels.y * sensitivity;
+        pitch = gce::Clamp(pitch, pitchMin, pitchMax);
 
-    yaw += deltaPixels.x * sensitivity;
-    pitch += deltaPixels.y * sensitivity;
-    pitch = gce::Clamp(pitch, pitchMin, pitchMax);
+        Quaternion quaternion = Quaternion::RotationEuler(pitch, yaw, 0.0f);
+        obj->transform.SetLocalRotation(quaternion);
 
-    Quaternion quaternion = Quaternion::RotationEuler(pitch, yaw, 0.0f);
-    obj->transform.SetLocalRotation(quaternion);
+        SetMousePosition(center);
+        m_shootTimer -= GameManager::DeltaTime();
+    }
 
-    SetMousePosition(center);
-    m_shootTimer -= GameManager::DeltaTime();
-}
+    void CollisionStay(GameObject* other) {
+        if (m_pOwner && m_pOwner->IsActive())
+        {
+            if (other->GetName() == "Floor")
+            {
+                onGround = true;
+            }
+        }
+    }
 
 END_SCRIPT
 
@@ -97,7 +106,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.8f);
     AddMove();
 }
 

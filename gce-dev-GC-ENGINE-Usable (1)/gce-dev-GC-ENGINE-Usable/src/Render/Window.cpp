@@ -12,13 +12,14 @@
 namespace gce
 {
 
-	Window::Window(WStringView const title, int32 const width, int32 const height) :
+	Window::Window(WStringView const title, int32 const width, int32 const height, FullScreenMode const mode) :
 		m_HInstance(GetModuleHandle(nullptr)),
 		m_windowHandle(nullptr),
 		m_width(width),
-		m_height(height)
+		m_height(height),
+		m_initialFullScreenMode(mode)
 	{
-		Window::Create(title, width, height);
+		Window::Create(title, width, height, mode);
 	}
 
 	Window::~Window()
@@ -39,10 +40,11 @@ namespace gce
 		UnregisterClassW(reinterpret_cast<LPCWSTR>(m_windowClass), m_HInstance);
 	}
 
-	void Window::Create(WStringView const title, int32 const width, int32 const height)
+	void Window::Create(WStringView const title, int32 const width, int32 const height, FullScreenMode const mode)
 	{
 		m_height = height;
 		m_width = width;
+		m_initialFullScreenMode = mode;
 		CreateWindowClass(title, width, height);
 		CreateSwapChain();
 		CreateSwapChainBuffersHeap();
@@ -55,6 +57,12 @@ namespace gce
 
 		ShowWindow(m_windowHandle, SW_SHOW);
 		UpdateWindow(m_windowHandle);
+
+		// If the user requested fullscreen at creation, apply it now.
+		if (m_initialFullScreenMode != WINDOWED)
+		{
+			SetFullScreen(m_initialFullScreenMode);
+		}
 
 		m_isOpen = true;
 	}
@@ -333,6 +341,7 @@ namespace gce
 
 	void Window::SetFullScreen(FullScreenMode const mode)
 	{
+		// Compute target window rectangle for fullscreen/borderless
 		RECT rect = {0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)};
 		AdjustWindowRect(&rect, WS_POPUP | WS_VISIBLE, false);
 
@@ -347,33 +356,47 @@ namespace gce
 		desc.RefreshRate.Denominator = 1;
 		desc.Scaling = DXGI_MODE_SCALING_STRETCHED;
 		
+		// Resize target mode first (best-effort)
 		m_pSwapChain->ResizeTarget(&desc);
 
+		// Current fullscreen state
 		BOOL state;
 		m_pSwapChain->GetFullscreenState(&state, nullptr);
+
 		switch (mode)
 		{
 		case EXCLUSIVE_FS:
-			m_pSwapChain->SetFullscreenState(true, nullptr);
+			// request exclusive fullscreen
+			if (FAILED(m_pSwapChain->SetFullscreenState(true, nullptr)))
+			{
+				PRINT_DEBUG("Failed to enter exclusive fullscreen via SetFullscreenState");
+			}
 			SetWindowLong(m_windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+			SetWindowPos(m_windowHandle, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
 			break;
 		case BORDERLESS:
+			// borderless window (windowed but without chrome and covering the screen)
+			if (state) m_pSwapChain->SetFullscreenState(false, nullptr);
 			SetWindowLong(m_windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+			SetWindowPos(m_windowHandle, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
 			break;
 		case WINDOWED_MAXIMISE:
-			SetWindowLong(m_windowHandle, GWL_STYLE, WS_MAXIMIZE | WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+			if (state) m_pSwapChain->SetFullscreenState(false, nullptr);
+			SetWindowLong(m_windowHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+			ShowWindow(m_windowHandle, SW_MAXIMIZE);
 			break;
 		case WINDOWED:
+			if (state) m_pSwapChain->SetFullscreenState(false, nullptr);
 			SetWindowLong(m_windowHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+			ShowWindow(m_windowHandle, SW_RESTORE);
 			break;
 		}
-		if (state) m_pSwapChain->SetFullscreenState(false, nullptr);
 
-		SetWindowPos(m_windowHandle, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
-
+		// restore swapchain target refresh fallback
 		desc.RefreshRate.Numerator = 0;
 		m_pSwapChain->ResizeTarget(&desc);
 
+		// Ensure swapchain buffers and viewport are consistent with new size
 		ResizeWindow(width, height);
 	}
 

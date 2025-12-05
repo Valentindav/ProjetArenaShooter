@@ -18,7 +18,7 @@ namespace gce
 	{
 	public:
 		RenderWindow() = default;
-		RenderWindow(WStringView title, int32 width, int32 height);
+		RenderWindow(WStringView title, int32 width, int32 height, FullScreenMode mode = WINDOWED);
 		RenderWindow(RenderWindow const& other) = delete;
 		RenderWindow(RenderWindow&& other) noexcept = delete;
 
@@ -27,7 +27,7 @@ namespace gce
 
 		~RenderWindow() override;
 
-		void Create(WStringView title, int32 width, int32 height) override;
+		void Create(WStringView title, int32 width, int32 height, FullScreenMode mode = WINDOWED) override;
 		void SetCamera(RenderCamera& camera) const override { m_pTarget->SetCamera(camera); }
 
 

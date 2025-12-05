@@ -29,7 +29,7 @@ namespace gce
 	{
 	public:
 		SplitScreenWindow() = default;
-		SplitScreenWindow(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm);
+		SplitScreenWindow(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm, FullScreenMode mode = WINDOWED);
 		SplitScreenWindow(SplitScreenWindow const& other) = delete;
 		SplitScreenWindow(SplitScreenWindow&& other) noexcept = delete;
 
@@ -40,7 +40,7 @@ namespace gce
 
 		void SetCamera(RenderCamera& camera) const override  { m_pRenderTarget->SetCamera(camera); }
 
-		void Create(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm);
+		void Create(WStringView title, uint32 width, uint32 height, SplitScreenDisposition splitScreenForm, FullScreenMode mode = WINDOWED);
 		float32 GetAspectRatio() const override;
 
 		void Begin3D() override;

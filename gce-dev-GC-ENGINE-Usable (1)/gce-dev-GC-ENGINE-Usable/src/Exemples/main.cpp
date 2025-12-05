@@ -2,6 +2,7 @@
 #include "Exemple.h"
 
 // INCLUDES NECESSAIRES DE BASE !!!
+
 #include <windows.h>
 #include <Render.h>
 #include <Engine.h>
@@ -79,8 +80,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	// Pensez � inverser l'axe Y des uv quand vous loadez des OBJ (sinon �a casse vos textures)
 	pMeshRenderer3->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj"));
 	pMeshRenderer3->SetAlbedoTexture(pNewTexture);
-	
-	GameObject& texturedObject = GameObject::Create(scene1);
+
 	// Exemple pr�cis de fonctionnalit�s
 	//Exemple::Scripts(&scene1);
 	//Exemple::Inputs(&scene1);

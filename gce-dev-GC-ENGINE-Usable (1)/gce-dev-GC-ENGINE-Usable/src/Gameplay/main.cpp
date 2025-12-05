@@ -14,9 +14,9 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
-    params.width = 1280;
-    params.height = 720;
-    params.isFullScreen = false;
+    params.width = 1920;
+    params.height = 1080;
+    params.isFullScreen = true;
     params.isSplitScreen = false;
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
@@ -47,13 +47,23 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 
     GameObject& Weapon = GameObject::Create(scene);
-    Weapon.transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
+    Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj"));
     pWeaponRenderer->SetAlbedoTexture(pNewTexture);
     Weapon.transform.LocalScale({ 0.25,0.25,0.25 });
 
-   
+    GameObject& Floor = GameObject::Create(scene);
+    Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
+    MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
+    pFloorRenderer->SetGeometry(SHAPES.CUBE);
+    Texture* pFloorTexture = new Texture("res/Exemple/TexturesTest.jpg");
+    pFloorRenderer->SetAlbedoTexture(pFloorTexture);
+    Floor.transform.LocalScale({ 20.f,1.f,20.f });
+    Floor.AddComponent<BoxCollider>()->SetActive(true);
+    Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);	
+	Floor.SetName("Floor");
+
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
