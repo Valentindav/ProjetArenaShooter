@@ -34,11 +34,15 @@ public:
             obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::SPACE)) {
-            if (onGround)
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+          /*  if (onGround)
             {                
                 obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,-jumpForce,0.0f });
                 onGround = false;
-            }
+            }*/
+        }
+        if (GetKey(Keyboard::LCTRL)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
         }
         if (GetButtonDown(Mouse::LEFT)) {
             if (m_shootTimer > 0.0f)  return; 

@@ -18,7 +18,16 @@ public:
     void Update()
     {
         Player* player = RessourcesManager::GetPlayer();
-        m_pOwner->transform.SetWorldRotation({player->GetGameObject()->transform.GetWorldPosition()});
+        Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+        Vector3f32 snowmanPos = m_pOwner->transform.GetWorldPosition();
+
+        Vector3f32 direction = playerPos - snowmanPos;
+        direction.Normalize();
+
+        float yaw = atan2f(direction.x, direction.z);
+        float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
+
+        m_pOwner->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
         if (ShootCooldown <= 0.0f)
         {
             GameObject* obj = m_pOwner;
