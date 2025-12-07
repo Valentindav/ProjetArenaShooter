@@ -5,6 +5,14 @@
 #include "RessourcesManager.h"
 #include "TileMap.h"
 
+
+/*TODO
+- Pathfinding A*
+- state Machine for ennemies
+- other enemies
+- other weapons
+
+*/
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
