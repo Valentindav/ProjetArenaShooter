@@ -111,17 +111,19 @@ void CollisionEnter(GameObject* other)
 
 		if (other->GetName() == "SnowMan")
 		{
+
 			bool alreadyOther = false;
 			for (GameObject* p : s_pendingDestroy)
 			{
 				if (p == other)
 				{
-					alreadyOther = true; break;
+					alreadyOther = true;
+					break;
 				}
 			}
 			if (!alreadyOther)
 			{
-				SnowMan* m_snowman = RessourcesManager::GetSnowMan();
+				SnowMan* m_snowman = dynamic_cast<SnowMan*>(other);
 				if (m_snowman->m_life <= 0)
 				{
 					s_pendingDestroy.PushBack(other);
