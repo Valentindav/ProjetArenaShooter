@@ -3,8 +3,6 @@
 #include <queue>
 #include <cmath>
 
-namespace gce
-{
     TileMap* g_tileMapInstance = nullptr;
 
     TileMap::TileMap(int width, int height, float cellSize, Vector3f32 const& origin): m_width(width), m_height(height), m_cellSize(cellSize), m_origin(origin)
@@ -64,5 +62,6 @@ namespace gce
 
     Vector<Vector3f32> TileMap::FindPath(Vector3f32 const& startWorld, Vector3f32 const& goalWorld) const
     {
-       
+		Vector<Vector3f32> emptyvector; 
+        return emptyvector;
     }

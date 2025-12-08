@@ -46,23 +46,27 @@ public:
         }
         if (GetButtonDown(Mouse::LEFT)) {
             if (m_shootTimer > 0.0f)  return; 
-            GameObject* obj = m_pOwner;
-            Scene* scene = const_cast<Scene*>(obj->GetScene());
-            GameObject& BulletObject = GameObject::Create(*scene);
-            BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
-            BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-            MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-            pWeaponRenderer->SetGeometry(bulletGeo);
-            /*Texture* pWeaponTexture = bulletTex;
-            pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
-            BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
-            BulletObject.AddComponent<BoxCollider>()->SetActive(false);
-            BulletObject.AddComponent<PhysicComponent>();
-            BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-            Bullet* bullet = new Bullet(&BulletObject);
-            bullet->AddShoot();
-            lastBullet = bullet;
-            m_shootTimer = SHOOT_TIMER_WAIT;
+            for (auto weapon : obj->GetChildren()) {
+                if (weapon->GetName() == "Weapon_1") {
+                    GameObject* obj = m_pOwner;
+                    Scene* scene = const_cast<Scene*>(obj->GetScene());
+                    GameObject& BulletObject = GameObject::Create(*scene);
+                    BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+                    BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+                    MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
+                    pWeaponRenderer->SetGeometry(bulletGeo);
+                    /*Texture* pWeaponTexture = bulletTex;
+                    pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
+                    BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
+                    BulletObject.AddComponent<BoxCollider>()->SetActive(false);
+                    BulletObject.AddComponent<PhysicComponent>();
+                    BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+                    Bullet* bullet = new Bullet(&BulletObject);
+                    bullet->AddShoot();
+                    lastBullet = bullet;
+                    m_shootTimer = SHOOT_TIMER_WAIT;
+                }
+            }
         }
         if (GetButtonDown(Mouse::RIGHT)) {
             if (lastBullet == nullptr) return;

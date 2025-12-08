@@ -52,20 +52,20 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
- //   GameObject& testObject = GameObject::Create(scene);
- //   MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
- //   pMeshRenderer->SetGeometry(SHAPES.CUBE);
- //   Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
- //   pMeshRenderer->SetAlbedoTexture(pNewTexture);
- //   testObject.AddComponent<BoxCollider>()->SetActive(true);
- //   testObject.AddComponent<PhysicComponent>();
-	//testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    GameObject& testObject = GameObject::Create(scene);
+    MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
+    pMeshRenderer->SetGeometry(SHAPES.CUBE);
+    Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
+    pMeshRenderer->SetAlbedoTexture(pNewTexture);
+    testObject.AddComponent<BoxCollider>()->SetActive(true);
+    testObject.AddComponent<PhysicComponent>();
+	testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 
-  /*  GameObject& Weapon = GameObject::Create(scene);
+   GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
-    Weapon.transform.LocalScale({ 0.03,0.03,0.03 });*/
+    Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
     GameObject& Floor = GameObject::Create(scene);
     Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
@@ -79,32 +79,17 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     //----------------------------------Run----------------------------------
 
-    //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
+    testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
-  //  Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+    Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+	Weapon.SetName("Weapon_1");
 
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-
-    for (int y = 0; y < 5; y++)
-    {
-        for (int x = 0; x < 5; x++)
-        {
-            if (TileMap::Instance()->IsWalkable(x, y))
-            {
-                GameObject& cell = GameObject::Create(scene);
-                cell.transform.SetWorldPosition(TileMap::Instance()->GridToWorld(x, y));
-                MeshRenderer* mr = cell.AddComponent<MeshRenderer>();
-                mr->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
-                float size = TileMap::Instance()->GetCellSize();
-                cell.transform.LocalScale({ size, size, size * 0.1f });
-            }
-        }
-    }
 
 	SnowMan* Snowman = new SnowMan(&SnowManObject);
 	Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
-   // player->GetGameObject()->AddChild(Weapon);
+    player->GetGameObject()->AddChild(Weapon);
 	RessourcesManager::SetPlayer(player);
     RessourcesManager::AddEntities(player);
     gce::GameManager::Run(params);	
