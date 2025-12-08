@@ -41,7 +41,7 @@ void Update()
 	}
 	m_lifeTime -= GameManager::DeltaTime();
 }
-//&& m_pOwner =! dynamic_cast<Bullet*>(m_pOwner))
+
 void CollisionEnter(GameObject* other) {
 	gce::Vector<Entity*> entity = RessourcesManager::getEntities();
 	Entity* ownerEntity = nullptr;
@@ -74,7 +74,7 @@ void CollisionEnter(GameObject* other) {
 	}
 }
 
-END_SCRIPT
+END_SCRIPT	
 
 void Bullet::AddShoot()
 {

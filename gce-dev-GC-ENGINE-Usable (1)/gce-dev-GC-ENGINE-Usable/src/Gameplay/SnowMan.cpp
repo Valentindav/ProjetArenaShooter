@@ -1,30 +1,48 @@
 #include "SnowMan.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
+#include "Player.h"
 using namespace gce;
 
-DECLARE_SCRIPT(AttackScript, ScriptFlag::Start | ScriptFlag::Update)
+DECLARE_SCRIPT( AttackScript, ScriptFlag::Start | ScriptFlag::Update)
 private:
     Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
     Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
-	float ShootCooldown = 1.0f;
+    float ShootCooldown = 0.75f;
 
 public:
     void Start()
     {
-        ShootCooldown = 1.0f;
+        ShootCooldown = 0.75f;
     }
     void Update()
     {
-        if (ShootCooldown <= 0.0f) {
+        Player* player = RessourcesManager::GetPlayer();
+        Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+        Vector3f32 snowmanPos = m_pOwner->transform.GetWorldPosition();
+
+        Vector3f32 direction = playerPos - snowmanPos;
+        direction.Normalize();
+
+        float yaw = atan2f(direction.x, direction.z);
+        float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
+
+        m_pOwner->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
+        if (ShootCooldown <= 0.0f)
+        {
             GameObject* obj = m_pOwner;
             Scene* scene = const_cast<Scene*>(obj->GetScene());
             GameObject& BulletObject = GameObject::Create(*scene);
-            BulletObject.transform.SetWorldPosition({ obj->transform.GetWorldPosition().x * obj->transform.GetWorldRotation().GetX() + 1.0f
-                ,obj->transform.GetWorldPosition().y * obj->transform.GetWorldRotation().GetY() + 1.0f
-                ,obj->transform.GetWorldPosition().z * obj->transform.GetWorldRotation().GetZ() + 1.0f 
-                });
+            Vector3f32 position = obj->transform.GetWorldPosition();
+            Vector3f32 forward = obj->transform.GetWorldForward();
+
+            float spawnOffset = 1.0f;
+
+            Vector3f32 spawnPosition = position + forward * spawnOffset;
+
+            BulletObject.transform.SetWorldPosition(spawnPosition);
             BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+
             MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(bulletGeo);
             Texture* pWeaponTexture = bulletTex;

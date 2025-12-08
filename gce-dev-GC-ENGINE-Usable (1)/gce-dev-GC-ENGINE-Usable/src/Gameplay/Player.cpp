@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
+#define SHOOT_TIMER_WAIT 0.0f
 using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
@@ -8,6 +9,7 @@ private:
 	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
 	 /*Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");*/
 	 Bullet* lastBullet = nullptr;
+	 float m_shootTimer = SHOOT_TIMER_WAIT;
 	 bool onGround = false;
      float sensitivity = 0.0005f;
 	 float jumpForce = 50.0f;
@@ -32,29 +34,39 @@ public:
             obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::SPACE)) {
-            if (onGround)
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+          /*  if (onGround)
             {                
                 obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,jumpForce,0.0f });
                 onGround = false;
-            }
+            }*/
+        }
+        if (GetKey(Keyboard::LCTRL)) {
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
         }
         if (GetButtonDown(Mouse::LEFT)) {
-            GameObject* obj = m_pOwner;
-            Scene* scene = const_cast<Scene*>(obj->GetScene());
-            GameObject& BulletObject = GameObject::Create(*scene);
-            BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
-            BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-            MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-            pWeaponRenderer->SetGeometry(bulletGeo);
-            /*Texture* pWeaponTexture = bulletTex;
-            pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
-            BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
-            BulletObject.AddComponent<BoxCollider>()->SetActive(false);
-            BulletObject.AddComponent<PhysicComponent>();
-            BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-            Bullet* bullet = new Bullet(&BulletObject);
-            bullet->AddShoot();
-            lastBullet = bullet;
+            if (m_shootTimer > 0.0f)  return; 
+            for (auto weapon : obj->GetChildren()) {
+                if (weapon->GetName() == "Weapon_1") {
+                    GameObject* obj = m_pOwner;
+                    Scene* scene = const_cast<Scene*>(obj->GetScene());
+                    GameObject& BulletObject = GameObject::Create(*scene);
+                    BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+                    BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+                    MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
+                    pWeaponRenderer->SetGeometry(bulletGeo);
+                    /*Texture* pWeaponTexture = bulletTex;
+                    pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
+                    BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
+                    BulletObject.AddComponent<BoxCollider>()->SetActive(false);
+                    BulletObject.AddComponent<PhysicComponent>();
+                    BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+                    Bullet* bullet = new Bullet(&BulletObject);
+                    bullet->AddShoot();
+                    lastBullet = bullet;
+                    m_shootTimer = SHOOT_TIMER_WAIT;
+                }
+            }
         }
         if (GetButtonDown(Mouse::RIGHT)) {
             if (lastBullet == nullptr) return;
@@ -81,6 +93,7 @@ public:
         obj->transform.SetLocalRotation(quaternion);
 
         SetMousePosition(center);
+        m_shootTimer -= GameManager::DeltaTime();
     }
 
     void CollisionStay(GameObject* other) {

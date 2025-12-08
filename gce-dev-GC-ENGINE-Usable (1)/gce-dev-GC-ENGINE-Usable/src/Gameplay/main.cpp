@@ -3,8 +3,16 @@
 #include "Player.h"
 #include "SnowMan.h"
 #include "RessourcesManager.h"
+#include "TileMap.h"
 
 
+/*TODO
+- Pathfinding A*
+- state Machine for ennemies
+- other enemies
+- other weapons
+
+*/
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
@@ -12,6 +20,9 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     RessourcesManager::Create();
 
     gce::Scene& scene = gce::Scene::Create();
+
+    TileMap::CreateInstance(50, 50, 0.5f, { -12.5f, -12.5f, 0.0f });
+    //TileMap* tileMap = TileMap::Instance();
 
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
@@ -41,7 +52,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
-
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
     pMeshRenderer->SetGeometry(SHAPES.CUBE);
@@ -51,7 +61,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     testObject.AddComponent<PhysicComponent>();
 	testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 
-    GameObject& Weapon = GameObject::Create(scene);
+   GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
@@ -69,16 +79,19 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     light2->intensity = 1.0f;
 
     //----------------------------------Run----------------------------------
+
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
-    PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
+    PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
-    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+	Weapon.SetName("Weapon_1");
+
+    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
 
 	SnowMan* Snowman = new SnowMan(&SnowManObject);
 	Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
-	
+	RessourcesManager::SetPlayer(player);
     RessourcesManager::AddEntities(player);
     gce::GameManager::Run(params);	
 
