@@ -6,8 +6,6 @@ using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 private:
-	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
-	 /*Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");*/
 	 Bullet* lastBullet = nullptr;
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
 	 bool onGround = false;
@@ -36,6 +34,10 @@ public:
         if (GetKey(Keyboard::D)) 
         {
             obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+        }
+        if (GetKey(Keyboard::ESC))
+        {
+            exit(0);
         }
         if (GetKey(Keyboard::SPACE))
         {
@@ -67,7 +69,7 @@ public:
                     BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
                     BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
                     MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-                    pWeaponRenderer->SetGeometry(bulletGeo);
+                    pWeaponRenderer->SetGeometry(RessourcesManager::GetBottle());
                     /*Texture* pWeaponTexture = bulletTex;
                     pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
                     BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });

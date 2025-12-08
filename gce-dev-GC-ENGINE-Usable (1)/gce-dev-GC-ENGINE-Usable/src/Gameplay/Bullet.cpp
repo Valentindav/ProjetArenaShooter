@@ -78,7 +78,7 @@ void CollisionEnter(GameObject* other)
 			s_pendingDestroy.PushBack(m_pOwner);
 		}
 	}
-	if (other && other->IsActive()&& dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+	if (other && other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 	{
 		other->SetActive(false);
 		bool alreadyOther = false;
@@ -86,7 +86,8 @@ void CollisionEnter(GameObject* other)
 		{
 			if (p == other)
 			{ 
-				alreadyOther = true; break; 
+				alreadyOther = true;
+				break; 
 			} 
 		}
 		if (!alreadyOther) s_pendingDestroy.PushBack(other);

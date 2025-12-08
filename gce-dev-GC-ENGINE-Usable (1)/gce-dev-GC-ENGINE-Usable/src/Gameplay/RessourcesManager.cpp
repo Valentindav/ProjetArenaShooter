@@ -1,4 +1,5 @@
 #include "RessourcesManager.h"
+#include "Entity.h"
 
 void RessourcesManager::Create()
 {
@@ -30,3 +31,25 @@ void RessourcesManager::SetPlayer(Player* player)
     if (m_Instance == nullptr) Create();
     m_Instance->m_player = player;
 }
+
+gce::Geometry* RessourcesManager::GetBottle()
+{
+    if (m_Instance == nullptr) return nullptr;
+    return m_Instance->bulletGeo;
+}
+
+gce::Texture* RessourcesManager::GetTexture()
+{
+    if (m_Instance == nullptr) return nullptr;
+    return m_Instance->m_bottleTexture;
+}
+
+ Entity* RessourcesManager::GetEntityFromGameObject(gce::GameObject* go)
+ {
+     if (m_Instance == nullptr || go == nullptr) return nullptr;
+     for (Entity* e : m_Instance->m_entities)
+     {
+         if (e && e->GetGameObject() == go) return e;
+     }
+     return nullptr;
+ }

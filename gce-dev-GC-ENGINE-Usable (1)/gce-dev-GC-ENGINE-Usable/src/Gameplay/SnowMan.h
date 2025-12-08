@@ -7,6 +7,7 @@ public :
 	SnowMan(GameObject* obj, float spd = 150);
 	void Die() override;
 	void Attack()override;
-	void AddScript();
+
+	float m_ShootCooldown = 0.75f;
 };
 
