@@ -1,12 +1,10 @@
 #include "Entity.h"
 
-DECLARE_SCRIPT(LifeScript, ScriptFlag::Update)
+DECLARE_SCRIPT(LifeScript, ScriptFlag::Update | ScriptFlag::CollisionEnter)
 private:
-
+    float life = 5.0f;
 
 public:
-
-
     void Update()
     {
         GameObject* obj = m_pOwner;
@@ -32,7 +30,7 @@ public:
     }
     END_SCRIPT
 
-    Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
+        Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
     {
     }
 
