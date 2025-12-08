@@ -81,19 +81,16 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	Weapon.SetName("Weapon_1");
 
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-    SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject);
     RessourcesManager::AddEntities(Snowman);
 
     GameObject& SnowManObject2 = GameObject::Create(scene);
     SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
-    SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
     RessourcesManager::AddEntities(Snowman2);
 
     GameObject& SnowManObject3 = GameObject::Create(scene);
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
-    SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
     RessourcesManager::AddEntities(Snowman3);
 

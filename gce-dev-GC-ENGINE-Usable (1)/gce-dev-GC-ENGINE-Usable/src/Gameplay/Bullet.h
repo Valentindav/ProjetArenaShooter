@@ -1,11 +1,16 @@
 #pragma once
 #include "Entity.h"
 
+class Player;
+
 class Bullet :public Entity
 {
 	GameObject* m_owner = nullptr;
+	Player* player = nullptr;
+
 public:
-	Bullet(GameObject* obj, float spd = 500) : Entity(obj, spd) { }
+
+	Bullet(GameObject* obj, float spd = 2000) : Entity(obj, spd) { }
 	void AddShoot();
 	void DeleteShoot();
 	void SetOwner(GameObject* owner) 

@@ -7,7 +7,7 @@ using namespace gce;
 DECLARE_SCRIPT( AttackScript, ScriptFlag::Start | ScriptFlag::Update)
 private:
     Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/SUZANNE.obj");
-    Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");
+    Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");       
     float ShootCooldown = 0.75f;
 
 public:
