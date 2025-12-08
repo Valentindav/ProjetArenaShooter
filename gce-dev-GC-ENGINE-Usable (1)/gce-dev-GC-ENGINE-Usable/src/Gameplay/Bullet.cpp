@@ -43,7 +43,7 @@ void Update()
 }
 
 void CollisionEnter(GameObject* other) {
-	gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+	/*gce::Vector<Entity*> entity = RessourcesManager::getEntities();
 	Entity* ownerEntity = nullptr;
 	for (Entity* p : entity) {
 		if (m_pOwner == p->GetGameObject()) {
@@ -71,7 +71,7 @@ void CollisionEnter(GameObject* other) {
 			} 
 		}
 		if (!alreadyOther) s_pendingDestroy.PushBack(other);
-	}
+	}*/
 }
 
 END_SCRIPT	

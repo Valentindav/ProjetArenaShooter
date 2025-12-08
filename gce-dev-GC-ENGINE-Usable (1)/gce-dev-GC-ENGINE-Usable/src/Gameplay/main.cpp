@@ -79,12 +79,12 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+    SnowManObject.transform.SetWorldPosition({ 0.0f,0.0f,-8.0f });
     SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject);
     RessourcesManager::AddEntities(Snowman);
 
-    GameObject& SnowManObject2 = GameObject::Create(scene);
+   /* GameObject& SnowManObject2 = GameObject::Create(scene);
     SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
     SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
@@ -94,7 +94,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
     SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
-    RessourcesManager::AddEntities(Snowman3);
+    RessourcesManager::AddEntities(Snowman3);*/
 
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
