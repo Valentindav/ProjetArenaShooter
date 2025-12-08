@@ -14,15 +14,18 @@ public:
     {
         if (m_pOwner && m_pOwner->IsActive())
         {
-            if (other->GetName() == "Bullet")
+            if (other->GetName() == "Player")
             {
-                life = life - 1.0f;
-
-                if (life <= 0.0f)
+                if (other->GetName() == "Bullet")
                 {
-                    m_pOwner->Destroy();
+                    life = life - 1.0f;
+
+                    if (life <= 0.0f)
+                    {
+                        m_pOwner->Destroy();
+                    }
                 }
-            }
+            }           
         }
     }
     END_SCRIPT
