@@ -6,7 +6,7 @@ class Player;
 class Bullet :public Entity
 {
 	GameObject* m_owner = nullptr;
-	Player* player = nullptr;
+
 
 public:
 
@@ -17,7 +17,9 @@ public:
 	{
 		m_owner = owner;
 	}
+
 	GameObject* GetOwner() 
 	{
-		if (this == nullptr) return 0; return m_owner; }
+		if (this == nullptr) return 0; return m_owner;
+	}
 };

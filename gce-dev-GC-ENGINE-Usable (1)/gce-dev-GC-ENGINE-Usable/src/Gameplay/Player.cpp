@@ -6,7 +6,7 @@ using namespace gce;
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 private:
-	 Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
+	 //Geometry* bulletGeo = GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
 	 /*Texture* bulletTex = new Texture("res/Exemple/TexturesTest.jpg");*/
 	 Bullet* lastBullet = nullptr;
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
@@ -50,9 +50,15 @@ public:
         {
             obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
         }
+
+        if (GetKey(Keyboard::ESC))
+        {
+            exit(0);
+        }
+
         if (GetButtonDown(Mouse::LEFT)) 
         {
-            if (m_shootTimer > 0.0f)
+            if (m_shootTimer > 0.5f)
             {
                 return;
             }
@@ -67,15 +73,18 @@ public:
                     BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
                     BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
                     MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-                    pWeaponRenderer->SetGeometry(bulletGeo);
+                    pWeaponRenderer->SetGeometry(SHAPES.CUBE);
                     /*Texture* pWeaponTexture = bulletTex;
                     pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
                     BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
-                    BulletObject.AddComponent<BoxCollider>()->SetActive(false);
+                    BulletObject.AddComponent<BoxCollider>()->SetActive(true);
                     BulletObject.AddComponent<PhysicComponent>();
                     BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
                     Bullet* bullet = new Bullet(&BulletObject);
                     bullet->AddShoot();
+                    bullet->SetOwner(obj);
+                    bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
+                    RessourcesManager::AddEntities(bullet);
                     lastBullet = bullet;
                     m_shootTimer = SHOOT_TIMER_WAIT;
                 }

@@ -1,5 +1,6 @@
 ﻿#include "Bullet.h"
 #include "Player.h"
+#include "SnowMan.h"
 #include "RessourcesManager.h"
 using namespace gce;
 
@@ -12,8 +13,6 @@ public:
 void Start() 
 {
 	 m_lifeTime = 5.0f;
-
-	
 }
 
 void Update()
@@ -62,6 +61,7 @@ void CollisionEnter(GameObject* other)
 		if (m_pOwner == p->GetGameObject()) 
 		{
 			ownerEntity = p;
+			break;
 		}
 	}
 	if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
@@ -94,8 +94,8 @@ void CollisionEnter(GameObject* other)
 			}
 			if (!alreadyOther)
 			{
-
-				if (player->m_life == 0)
+				Player* m_player = RessourcesManager::GetPlayer();
+				if (m_player->m_life <= 0)
 				{
 					other->SetActive(false);
 					s_pendingDestroy.PushBack(other);
@@ -103,8 +103,34 @@ void CollisionEnter(GameObject* other)
 				}
 				else
 				{
-					player->m_life = player->m_life - 1;
-					std::cout << player->m_life << std::endl;
+					m_player->m_life = m_player->m_life - 1;
+					std::cout << m_player->m_life << std::endl;
+				}
+			}
+		}
+
+		if (other->GetName() == "SnowMan")
+		{
+			bool alreadyOther = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == other)
+				{
+					alreadyOther = true; break;
+				}
+			}
+			if (!alreadyOther)
+			{
+				SnowMan* m_snowman = RessourcesManager::GetSnowMan();
+				if (m_snowman->m_life <= 0)
+				{
+					s_pendingDestroy.PushBack(other);
+					std::cout << "dead" << std::endl;
+				}
+				else
+				{
+					m_snowman->m_life = m_snowman->m_life - 1;
+					std::cout << m_snowman->m_life << std::endl;
 				}
 			}
 		}

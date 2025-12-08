@@ -98,6 +98,7 @@ namespace gce {
                 for ( Scene* const pScene : m_scenes ) // TODO REMOVE
                     pScene->UpdateMatrix(); // TODO REMOVE
 
+
                 m_physicSystem.HandlePhysicCollision2D();
                 m_physicSystem.HandlePhysicCollisionResolve2D();
 

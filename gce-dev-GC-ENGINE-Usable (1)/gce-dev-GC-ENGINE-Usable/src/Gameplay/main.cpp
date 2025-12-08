@@ -80,7 +80,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+    SnowManObject.transform.SetWorldPosition({1.0f,0.0f,1.0f});
     SnowMan* Snowman = new SnowMan(&SnowManObject);
     RessourcesManager::AddEntities(Snowman);
 
