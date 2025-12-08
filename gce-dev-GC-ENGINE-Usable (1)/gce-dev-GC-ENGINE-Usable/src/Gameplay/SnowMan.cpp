@@ -15,6 +15,7 @@ public:
     {
         ShootCooldown = 0.75f;
     }
+
     void Update()
     {
         Player* player = RessourcesManager::GetPlayer();

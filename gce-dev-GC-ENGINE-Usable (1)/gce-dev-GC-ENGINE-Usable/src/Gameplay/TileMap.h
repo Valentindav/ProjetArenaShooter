@@ -8,7 +8,8 @@
     using namespace gce;
     using namespace std;
 
-    struct Node { 
+    struct Node 
+    { 
         int x, y;
         float g, h;
         int parentIdx;
@@ -40,10 +41,25 @@
         Vector<Vector3f32> FindPath(Vector3f32 const& startWorld, Vector3f32 const& goalWorld) const;
 
         int idx(int x, int y) const;
-        int GetWidth() const { return m_width; }
-        int GetHeight() const { return m_height; }
-        float GetCellSize() const { return m_cellSize; }
-        Vector3f32 GetOrigin() const { return m_origin; }
+        int GetWidth() const 
+        { 
+            return m_width; 
+        }
+
+        int GetHeight() const 
+        {
+            return m_height; 
+        }
+
+        float GetCellSize() const 
+        {
+            return m_cellSize; 
+        }
+
+        Vector3f32 GetOrigin() const 
+        {
+            return m_origin;
+        }
 
     };
 

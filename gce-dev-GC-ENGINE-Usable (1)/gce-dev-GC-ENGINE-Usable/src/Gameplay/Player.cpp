@@ -21,33 +21,46 @@ public:
         GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();        
         obj->GetComponent<PhysicComponent>()->SetBounciness(-1.0f);
-        if (GetKey(Keyboard::Z)) {
+        if (GetKey(Keyboard::Z))
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
         }
-        if (GetKey(Keyboard::S)) {
+        if (GetKey(Keyboard::S))
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
         }
-        if (GetKey(Keyboard::Q)) {
+        if (GetKey(Keyboard::Q)) 
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
         }
-        if (GetKey(Keyboard::D)) {
+        if (GetKey(Keyboard::D)) 
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
         }
-        if (GetKey(Keyboard::SPACE)) {
+        if (GetKey(Keyboard::SPACE))
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
-          /*  if (onGround)
+            if (onGround)
             {                
                 obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,jumpForce,0.0f });
                 onGround = false;
-            }*/
+            }
         }
-        if (GetKey(Keyboard::LCTRL)) {
+        if (GetKey(Keyboard::LCTRL)) 
+        {
             obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
         }
-        if (GetButtonDown(Mouse::LEFT)) {
-            if (m_shootTimer > 0.0f)  return; 
-            for (auto weapon : obj->GetChildren()) {
-                if (weapon->GetName() == "Weapon_1") {
+        if (GetButtonDown(Mouse::LEFT)) 
+        {
+            if (m_shootTimer > 0.0f)
+            {
+                return;
+            }
+
+            for (auto weapon : obj->GetChildren()) 
+            {
+                if (weapon->GetName() == "Weapon_1") 
+                {
                     GameObject* obj = m_pOwner;
                     Scene* scene = const_cast<Scene*>(obj->GetScene());
                     GameObject& BulletObject = GameObject::Create(*scene);
@@ -68,8 +81,13 @@ public:
                 }
             }
         }
-        if (GetButtonDown(Mouse::RIGHT)) {
-            if (lastBullet == nullptr) return;
+        if (GetButtonDown(Mouse::RIGHT)) 
+        {
+            if (lastBullet == nullptr)
+            {
+                return;
+            }
+
             MeshRenderer* pWeaponRenderer = lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(SHAPES.CUBE);
             lastBullet->DeleteShoot();
@@ -96,7 +114,8 @@ public:
         m_shootTimer -= GameManager::DeltaTime();
     }
 
-    void CollisionStay(GameObject* other) {
+    void CollisionStay(GameObject* other) 
+    {
         if (m_pOwner && m_pOwner->IsActive())
         {
             if (other->GetName() == "Floor")
@@ -108,7 +127,8 @@ public:
 
 END_SCRIPT
 
-Player::Player(GameObject* obj, float spd) : Entity(obj, spd) {
+Player::Player(GameObject* obj, float spd) : Entity(obj, spd) 
+{
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
