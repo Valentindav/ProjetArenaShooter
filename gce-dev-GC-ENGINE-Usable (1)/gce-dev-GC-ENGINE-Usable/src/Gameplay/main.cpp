@@ -2,6 +2,7 @@
 #include <Engine.h>
 #include "Player.h"
 #include "SnowMan.h"
+#include "Robot.h"
 #include "RessourcesManager.h"
 #include "TileMap.h"
 #include "MenuManager.h"
@@ -47,6 +48,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
+   // GameObject& RobotObject = GameObject::Create(scene);
+
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
     pMeshRenderer->SetGeometry(SHAPES.CUBE);
@@ -80,10 +83,16 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    SnowManObject.transform.SetWorldPosition({ 0.0f,0.0f,-8.0f });
-    SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+    SnowManObject.transform.SetWorldPosition({ -10.0f,-9.0f,-5.0f });
+    SnowManObject.transform.SetWorldRotation({ 0.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject);
     RessourcesManager::AddEntities(Snowman);
+
+
+    //RobotObject.transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
+   // RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
+   // Robot* robot = new Robot(&SnowManObject);
+   // RessourcesManager::AddEntities(robot);
 
    /* GameObject& SnowManObject2 = GameObject::Create(scene);
     SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });

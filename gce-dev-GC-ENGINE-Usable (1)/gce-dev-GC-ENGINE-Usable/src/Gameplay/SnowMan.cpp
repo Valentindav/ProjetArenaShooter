@@ -22,6 +22,7 @@ using namespace gce;
 
         StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
         String idle = "Idle";
+        String Chase = "Chase";
         String attack = "Attack";
 
         { // ATTACK STATE

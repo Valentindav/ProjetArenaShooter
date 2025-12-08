@@ -1,4 +1,4 @@
-#include "SnowMan.h"
+#include "Robot.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
 #include "Engine/StateMachine.h"
@@ -7,13 +7,13 @@
 
 using namespace gce;
 
-static void OnStartShootSnowman(GameObject* me) {
+static void OnStartShootRobot(GameObject* me) {
 
 }
 
-static void OnUpdateShootSnowman(GameObject* me) {
+static void OnUpdateShootRobot(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    Robot* self = dynamic_cast<Robot*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
@@ -47,7 +47,7 @@ static void OnUpdateShootSnowman(GameObject* me) {
         pWeaponRenderer->SetGeometry(RessourcesManager::GetBottle());
         Texture* pWeaponTexture = RessourcesManager::GetTexture();
         pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-        BulletObject.transform.LocalScale({ 1,1,1 });
+        BulletObject.transform.LocalScale({ 50,0.25,0.25 });
         BulletObject.AddComponent<BoxCollider>()->SetActive(true);
         BulletObject.AddComponent<PhysicComponent>();
         BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
@@ -55,25 +55,25 @@ static void OnUpdateShootSnowman(GameObject* me) {
         bullet->AddShoot();
         bullet->SetOwner(obj);
         RessourcesManager::AddEntities(bullet);
-        self->m_ShootCooldown = 10.0f;
+        self->m_ShootCooldown = 1.0f;
     }
     self->m_ShootCooldown -= GameManager::DeltaTime();
 }
 
 
-static void OnEndShootSnowman(GameObject* me) {
+static void OnEndShootRobot(GameObject* me) {
 
 }
 
-static void OnStartIdleSnowman(GameObject* me) {
+static void OnStartIdleRobot(GameObject* me) {
 
 }
 
-static void OnUpdateIdleSnowman(GameObject* me) {
+static void OnUpdateIdleRobot(GameObject* me) {
 
 }
 
 
-static void OnEndIdleSnowman(GameObject* me) {
+static void OnEndIdleRobot(GameObject* me) {
 
 }
