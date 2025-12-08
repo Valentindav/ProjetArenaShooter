@@ -20,7 +20,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-    TileMap::CreateInstance(50, 50, 0.5f, { -12.5f, -12.5f, 0.0f });
+	TileMap tileMap(100, 100, 10, .5f, scene, { -25.0f,0.0f,-25.0f });
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
     params.width = 1920;
@@ -73,6 +73,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Light* light2 = Floor.AddComponent<Light>();
     light2->DefaultDirectionLight();
     light2->intensity = 1.0f;
+
+	tileMap.DebugMode(scene);
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });

@@ -12,7 +12,8 @@ private:
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
 	 bool onGround = false;
      float sensitivity = 0.0005f;
-	 float jumpForce = 50.0f;
+	 float jumpForce = 40.0f;
+	 float moveSpeed = 5.0f;
 
 public:
     void Update()
@@ -21,21 +22,25 @@ public:
         GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();        
         obj->GetComponent<PhysicComponent>()->SetBounciness(-1.0f);
+        if (GetKey(Keyboard::ESC))
+        {
+            exit(0);
+        }
         if (GetKey(Keyboard::Z))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * moveSpeed * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::S))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-moveSpeed) * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::Q)) 
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-moveSpeed) * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::D)) 
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * moveSpeed * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::SPACE))
         {

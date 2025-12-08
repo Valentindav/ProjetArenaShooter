@@ -26,6 +26,9 @@ private:
     Box m_worldBox;
 
     friend class PhysicSystem;
+
+public:
+	const Box& GetWorldBox() const { return m_worldBox; }
 };
 
 }
