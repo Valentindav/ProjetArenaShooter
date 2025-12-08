@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Containers/Vector.hpp>
-#include "Maths/Vector3.h"
-#include "Maths/Vector2.hpp"
 #include "Node.h"
 #include <Engine.h>
 

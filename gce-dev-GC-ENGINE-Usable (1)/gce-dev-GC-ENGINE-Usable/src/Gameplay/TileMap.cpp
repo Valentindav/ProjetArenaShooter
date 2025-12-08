@@ -1,5 +1,4 @@
 #include "TileMap.h"
-#include <algorithm>
 #include <queue>
 #include <cmath>
 
@@ -154,48 +153,6 @@ std::vector<Node<Tile>*> TileMap::FindPath(Vector3f32 const& startPos, Vector3f3
     start->Data->totalCost = start->Data->DistanceToStart + start->Data->DistanceToEnd;
     start->Visited = false;
     start->CameFrom = nullptr;
-
-    for (auto& neighbourNode : start->neighbors)
-    {
-        dx = neighbourNode->Data->gridX - targetX;
-        dy = neighbourNode->Data->gridY - targetY;
-        dz = neighbourNode->Data->gridZ - targetZ;
-        neighbourNode->Data->DistanceToEnd = std::abs(dx) + std::abs(dy) + std::abs(dz);
-        neighbourNode->Data->DistanceToStart = start->Data->DistanceToStart + neighbourNode->Data->Cost;
-        neighbourNode->Data->totalCost = neighbourNode->Data->DistanceToStart + neighbourNode->Data->DistanceToEnd;
-        neighbourNode->CameFrom = start;
-        priority.push(neighbourNode);
-        m_modifiedNodes.push_back(neighbourNode);
-
-        Node<Tile>* neighbor = front->neighbors[i];
-
-        if (neighbor == nullptr) continue;
-        if (neighbor->Visited) continue;
-        if (neighbor->Data->Player && neighbor != Cursor) {
-            continue;
-        }
-        int dX = std::abs(front->Data->gridX - neighbor->Data->gridX);
-        int dY = std::abs(front->Data->gridY - neighbor->Data->gridY);
-
-        float dist_base_move;
-
-        if (dX == 1 && dY == 1) {
-            dist_base_move = std::sqrt(2.0f);
-        }
-        else {
-            dist_base_move = 1.0f;
-        }
-        float movementCost = dist_base_move * (1.0f + neighbor->Data->Cost);
-
-        float newDist = front->Data->DistanceToStart + movementCost;
-
-        if (newDist < front->neighbors[i]->Data->DistanceToStart) {
-            front->neighbors[i]->Data->DistanceToStart = newDist;
-            front->neighbors[i]->Data->totalCost = newDist + front->neighbors[i]->Data->DistanceToEnd;
-            front->neighbors[i]->CameFrom = front;
-            priority.push(front->neighbors[i]);
-        }
-	}
         
 	return {};
 }
