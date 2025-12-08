@@ -1,16 +1,20 @@
 #pragma once
-#include "Engine.h"
+#include <Engine.h>
+
 using namespace gce;
 
-class Entity
-{
-private:
-	float m_speed;
-	float m_life;
-	GameObject* m_gameObject;
+class Entity {
+protected:
+    GameObject* m_gameObject;
+    float m_speed;
+
 public:
-	 Entity(GameObject* obj, float spd = 100);
-	 virtual void SetSpeed(float spd) { m_speed = spd; }
-	 virtual float GetSpeed() const { return m_speed; }
-	 virtual GameObject* GetGameObject() const { return m_gameObject; }
+    Entity(GameObject* obj, float spd = 1.0f);
+    virtual ~Entity() = default;
+
+    GameObject* GetGameObject() { return m_gameObject; }
+    float GetSpeed() const { return m_speed; }
+
+    void AddLifeScript();
+    virtual void Die() {}
 };

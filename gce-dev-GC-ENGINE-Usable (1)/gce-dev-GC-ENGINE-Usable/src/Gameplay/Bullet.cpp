@@ -79,6 +79,7 @@ END_SCRIPT
 void Bullet::AddShoot()
 {
 	GameObject* obj = GetGameObject();
+	obj->SetName("Bullet"); 
 	obj->AddScript<Shoot_Update>();
 }
 

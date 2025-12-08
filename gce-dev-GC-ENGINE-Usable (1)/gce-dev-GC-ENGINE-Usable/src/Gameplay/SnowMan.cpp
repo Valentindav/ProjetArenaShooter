@@ -63,17 +63,21 @@ public:
 
     END_SCRIPT
 
-SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
-{
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
-    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-    obj->AddComponent<BoxCollider>()->SetActive(true);
-    obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-    AddScript();
-}
+    SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
+    {
+        MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
+        pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+        Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
+        pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+        obj->AddComponent<BoxCollider>()->SetActive(true);
+        obj->AddComponent<PhysicComponent>();
+        obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+
+        obj->SetName("SnowMan");
+
+        AddScript();
+        AddLifeScript();
+    }
 
 void SnowMan::Die()
 {
