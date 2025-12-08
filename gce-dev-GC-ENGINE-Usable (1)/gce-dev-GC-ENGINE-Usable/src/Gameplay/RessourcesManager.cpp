@@ -26,6 +26,12 @@ Player* RessourcesManager::GetPlayer()
     return m_Instance->m_player;
 }
 
+SnowMan* RessourcesManager::GetSnowMan()
+{
+    if (m_Instance == nullptr) return nullptr;
+    return m_Instance->m_snowman;
+}
+
 void RessourcesManager::SetPlayer(Player* player)
 {
     if (m_Instance == nullptr) Create();
@@ -53,3 +59,8 @@ gce::Texture* RessourcesManager::GetTexture()
      }
      return nullptr;
  }
+void RessourcesManager::SetSnowMan(SnowMan* snowman)
+{
+    if (m_Instance == nullptr) Create();
+    m_Instance->m_snowman = snowman;
+}
