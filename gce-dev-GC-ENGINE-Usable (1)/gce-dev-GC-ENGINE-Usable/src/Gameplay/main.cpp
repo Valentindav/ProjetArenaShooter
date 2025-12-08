@@ -13,7 +13,8 @@
 - other weapons
 
 */
-int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {	
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) 
+{	
     //----------------------------------INIT WORLD----------------------------------
     gce::Console::Init();
     gce::GameManager::Create();

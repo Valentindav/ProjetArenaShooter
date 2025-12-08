@@ -8,7 +8,8 @@ private:
 	inline static Vector<GameObject*> s_pendingDestroy;
 
 public:
-void Start() {
+void Start() 
+{
 	 m_lifeTime = 5.0f;
 	
 }
@@ -24,16 +25,24 @@ void Update()
 		s_pendingDestroy.Clear();
 	}
 
-	if (m_lifeTime >= 0.0f) {
+	if (m_lifeTime >= 0.0f) 
+	{
 		m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
 	}
-	else {
-		if (!m_pOwner->IsActive()) return;
+	else 
+	{
+		if (!m_pOwner->IsActive())
+		{
+			return;
+		}
+
 		m_pOwner->SetActive(false);
 
 		bool already = false;
-		for (GameObject* p : s_pendingDestroy) { 
-			if (p == m_pOwner) {
+		for (GameObject* p : s_pendingDestroy)
+		{ 
+			if (p == m_pOwner)
+			{
 				already = true; break; 
 			}
 		}
@@ -42,11 +51,14 @@ void Update()
 	m_lifeTime -= GameManager::DeltaTime();
 }
 
-void CollisionEnter(GameObject* other) {
+void CollisionEnter(GameObject* other) 
+{
 	gce::Vector<Entity*> entity = RessourcesManager::getEntities();
 	Entity* ownerEntity = nullptr;
-	for (Entity* p : entity) {
-		if (m_pOwner == p->GetGameObject()) {
+	for (Entity* p : entity) 
+	{
+		if (m_pOwner == p->GetGameObject()) 
+		{
 			ownerEntity = p;
 		}
 	}
@@ -54,23 +66,33 @@ void CollisionEnter(GameObject* other) {
 	{
 		m_pOwner->SetActive(false);
 		bool already = false;
-		for (GameObject* p : s_pendingDestroy) {
-			if (p == m_pOwner) {
+		for (GameObject* p : s_pendingDestroy)
+		{
+			if (p == m_pOwner) 
+			{
 				already = true; break;
 			} 
 		}
-		if (!already) s_pendingDestroy.PushBack(m_pOwner);
+		if (!already)
+		{
+			s_pendingDestroy.PushBack(m_pOwner);
+		}
 	}
 	if (other && other->IsActive()&& dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 	{
 		other->SetActive(false);
 		bool alreadyOther = false;
-		for (GameObject* p : s_pendingDestroy) {
-			if (p == other) { 
+		for (GameObject* p : s_pendingDestroy)
+		{
+			if (p == other)
+			{ 
 				alreadyOther = true; break; 
 			} 
 		}
-		if (!alreadyOther) s_pendingDestroy.PushBack(other);
+		if (!alreadyOther)
+		{
+			s_pendingDestroy.PushBack(other);
+		}
 	}
 }
 

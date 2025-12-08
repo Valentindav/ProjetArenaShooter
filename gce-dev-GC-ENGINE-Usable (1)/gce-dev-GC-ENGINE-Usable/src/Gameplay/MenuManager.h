@@ -3,14 +3,16 @@
 
 using namespace gce;
 
-enum class GameState {
+enum class GameState
+{
     MainMenu,
     Playing,
     GameOver,
     Victory
 };
 
-class MenuManager {
+class MenuManager 
+{
 private:
     static MenuManager* m_Instance;
     GameState m_currentState;
@@ -26,10 +28,16 @@ private:
 
 public:
     static void Create(Scene* scene);
-    static MenuManager* GetInstance() { return m_Instance; }
+    static MenuManager* GetInstance() 
+    {
+        return m_Instance;
+    }
 
     void SetGameState(GameState state);
-    GameState GetGameState() const { return m_currentState; }
+    GameState GetGameState() const
+    {
+        return m_currentState; 
+    }
 
     void CreateMainMenu();
     void CreateGameOverMenu();
