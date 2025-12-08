@@ -48,7 +48,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& SnowManObject = GameObject::Create(scene);
 
-   // GameObject& RobotObject = GameObject::Create(scene);
+    GameObject& RobotObject = GameObject::Create(scene);
 
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
@@ -89,10 +89,10 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     RessourcesManager::AddEntities(Snowman);
 
 
-    //RobotObject.transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
-   // RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
-   // Robot* robot = new Robot(&SnowManObject);
-   // RessourcesManager::AddEntities(robot);
+    RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
+    RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
+    Robot* robot = new Robot(&RobotObject);
+    RessourcesManager::AddEntities(robot);
 
    /* GameObject& SnowManObject2 = GameObject::Create(scene);
     SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });

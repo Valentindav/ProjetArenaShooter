@@ -47,7 +47,7 @@ static void OnUpdateShootRobot(GameObject* me) {
         pWeaponRenderer->SetGeometry(RessourcesManager::GetBottle());
         Texture* pWeaponTexture = RessourcesManager::GetTexture();
         pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-        BulletObject.transform.LocalScale({ 50,0.25,0.25 });
+        BulletObject.transform.LocalScale({ 0.25,50,0.25 });
         BulletObject.AddComponent<BoxCollider>()->SetActive(true);
         BulletObject.AddComponent<PhysicComponent>();
         BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
