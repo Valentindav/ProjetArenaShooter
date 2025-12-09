@@ -8,7 +8,7 @@ public:
 	void Die() override;
 	void Attack()override;
 
-	float m_ShootCooldown = 2.f;
 	float m_WaitCooldown = 2.f;
+	float m_laserTimer = 1.f;
 };
 
