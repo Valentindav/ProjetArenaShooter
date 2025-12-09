@@ -123,7 +123,15 @@ void CollisionEnter(GameObject* other)
 			}
 			if (!alreadyOther)
 			{
-				SnowMan* m_snowman = dynamic_cast<SnowMan*>(other);
+				SnowMan* m_snowman = nullptr;
+				for (Entity* p : entity)
+				{
+					if (other == p->GetGameObject())
+					{
+						m_snowman = dynamic_cast<SnowMan*>(p);
+						break;
+					}
+				}
 				if (m_snowman->m_life <= 0)
 				{
 					s_pendingDestroy.PushBack(other);
