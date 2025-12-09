@@ -13,16 +13,15 @@ private:
     int m_height;
     int m_length;
     float m_cellSize;
-    std::vector<std::vector<std::vector<Node<Tile>*>>> m_nodeVector;
-	std::vector<Node<Tile>*> m_modifiedNodes;
+	Vector3f32 m_origin;
+    std::vector<std::vector<Node<Tile>*>> m_nodeVector;
 public:
 
-    TileMap(int width, int lenght, int height, float cellSize, gce::Scene &scene, Vector3f32 const& origin = { 0,0,0 });
+    TileMap(int width, int lenght, float cellSize, gce::Scene &scene, Vector3f32 const& origin = { 0,0,0 });
     ~TileMap() = default;
 
-    std::vector<std::vector<std::vector<Node<Tile>*>>> GetNodeVector() const { return m_nodeVector; }	
-	void SetInNodeVector(GameObject * obj);
-	void LeaveInNodeVector(GameObject* obj);
+    std::vector<std::vector<Node<Tile>*>> GetNodeVector() const { return m_nodeVector; }	
 	GameObject* DebugMode(gce::Scene& scene);
-    std::vector<Node<Tile>*> FindPath(Vector3f32 const& startPos, Vector3f32 const& targetPos);
+    bool FindPath(Node<Tile>* const& start, Node<Tile>* const& target);
+    vector<Node<Tile>*> GetTilePath(Node<Tile>* player, Node<Tile>* target);
 };

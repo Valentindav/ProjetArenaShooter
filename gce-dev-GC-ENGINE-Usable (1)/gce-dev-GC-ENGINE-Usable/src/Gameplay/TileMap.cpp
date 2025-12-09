@@ -2,109 +2,44 @@
 #include <queue>
 #include <cmath>
 
-TileMap::TileMap(int width, int length, int height, float cellSize, gce::Scene &scene, Vector3f32 const& origin) : m_width(width), m_height(height), m_length(length), m_cellSize(cellSize)
+TileMap::TileMap(int width, int length, float cellSize, gce::Scene& scene, Vector3f32 const& origin) : m_width(width), m_length(length), m_cellSize(cellSize), m_origin(origin)
 {
-	m_nodeVector = std::vector<std::vector<std::vector<Node<Tile>*>>>(height, std::vector<std::vector<Node<Tile>*>>(width, std::vector<Node<Tile>*>(length, nullptr)));
-    int directions[26][3] =
+	m_nodeVector = std::vector<std::vector<Node<Tile>*>>(width, std::vector<Node<Tile>*>(length, nullptr));
+    int directions[8][2] =
     {
-        // 6 directions cardinales (faces)
-        {1, 0, 0},   // +X
-        {-1, 0, 0},  // -X
-        {0, 1, 0},   // +Y
-        {0, -1, 0},  // -Y
-        {0, 0, 1},   // +Z
-        {0, 0, -1},  // -Z
-        // 12 diagonales sur les arêtes
-        {1, 1, 0},   // +X +Y
-        {1, -1, 0},  // +X -Y
-        {-1, 1, 0},  // -X +Y
-        {-1, -1, 0}, // -X -Y
-        {1, 0, 1},   // +X +Z
-        {1, 0, -1},  // +X -Z
-        {-1, 0, 1},  // -X +Z
-        {-1, 0, -1}, // -X -Z
-        {0, 1, 1},   // +Y +Z
-        {0, 1, -1},  // +Y -Z
-        {0, -1, 1},  // -Y +Z
-        {0, -1, -1}, // -Y -Z
-        // 8 diagonales dans les coins
-        {1, 1, 1},   // +X +Y +Z
-        {1, 1, -1},  // +X +Y -Z
-        {1, -1, 1},  // +X -Y +Z
-        {1, -1, -1}, // +X -Y -Z
-        {-1, 1, 1},  // -X +Y +Z
-        {-1, 1, -1}, // -X +Y -Z
-        {-1, -1, 1}, // -X -Y +Z
-        {-1, -1, -1} // -X -Y -Z
+        // 4 directions cardinales
+        {1, 0},   // +X
+        {-1, 0},  // -X
+        {0, 1},   // +Y
+        {0, -1},  // -Y
+        // 4 diagonales
+        {1, 1},   // +X +Y
+        {1, -1},  // +X -Y
+        {-1, 1},  // -X +Y
+        {-1, -1}  // -X -Y
     };
-    for (int i = 0; i < height; ++i)
+    for (int i = 0; i < width; ++i)
     {
-        for (int j = 0; j < width; ++j)
+        for (int j = 0; j < length; ++j)
         {
-            for (int k = 0; k < length; ++k)
+            m_nodeVector[i][j] = new Node<Tile>();
+            m_nodeVector[i][j]->data = new Tile();
+            m_nodeVector[i][j]->data->gridX = i;
+            m_nodeVector[i][j]->data->gridY = j;
+            m_nodeVector[i][j]->data->worldPosition.x = origin.x + (i * cellSize);
+            m_nodeVector[i][j]->data->worldPosition.y = origin.y + (j * cellSize);
+            m_nodeVector[i][j]->data->way = false;
+            m_nodeVector[i][j]->cameFrom = nullptr;
+			m_nodeVector[i][j]->data->walkable = true;
+            m_nodeVector[i][j]->data->cost = 1.0f;
+            m_nodeVector[i][j]->neighbors.clear();
+            for (int l = 0; l < 8; l++)
             {
-                m_nodeVector[i][j][k] = new Node<Tile>();
-                m_nodeVector[i][j][k]->Data = new Tile();
-                m_nodeVector[i][j][k]->Data->gridX = i;
-                m_nodeVector[i][j][k]->Data->gridY = j;
-                m_nodeVector[i][j][k]->Data->gridZ = k;
-                m_nodeVector[i][j][k]->Data->X = origin.x + (i * cellSize);
-                m_nodeVector[i][j][k]->Data->Y = origin.y + (j * cellSize);
-                m_nodeVector[i][j][k]->Data->Z = origin.z + (k * cellSize);
-                m_nodeVector[i][j][k]->Visited = false;
-                m_nodeVector[i][j][k]->CameFrom = nullptr;
-                m_nodeVector[i][j][k]->Data->Walkable = false;
-                m_nodeVector[i][j][k]->Data->Cost = 1.0f;
-                m_nodeVector[i][j][k]->neighbors.clear();
-                for (int l = 0; l < 26; l++)
+                int dx = i + directions[l][0];
+                int dy = j + directions[l][1];
+                if (dx >= 0 && dx < width && dy >= 0 && dy < length)
                 {
-                    int Dx = i + directions[l][0];
-                    int Dy = j + directions[l][1];
-                    int Dz = k + directions[l][2];
-                    if (Dx >= 0 && Dx < height && Dy >= 0 && Dy < width && Dz >= 0 && Dz < length)
-                    {
-                        m_nodeVector[i][j][k]->neighbors.push_back(m_nodeVector[Dx][Dy][Dz]);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void TileMap::SetInNodeVector(GameObject* obj)
-{
-    gce::Box objectBox = obj->GetComponent<BoxCollider>()->GetWorldBox();
-    gce::Vector3f32 objectBoxMinimum = objectBox.min;
-    gce::Vector3f32 objectBoxMaximum = objectBox.max;
-    for (int i = objectBoxMinimum.x / m_cellSize; i < objectBoxMaximum.x/m_cellSize; i++)
-    {      
-        for (int j = objectBoxMinimum.y/m_cellSize ; j < objectBoxMaximum.y/m_cellSize; j++)
-        {
-            for (int k = objectBoxMinimum.z; k < objectBoxMaximum.z/m_cellSize; k++)
-            {
-                if (i >= 0 && i < m_width && j >= 0 && j < m_height && k >= 0 && k < m_length)
-                {
-                    m_nodeVector[i][j][k]->Data->Walkable = false;
-                }
-            }
-		}
-	}
-}
-
-void TileMap::LeaveInNodeVector(GameObject* obj)
-{
-    gce::Box objectBox = obj->GetComponent<BoxCollider>()->GetWorldBox();
-    gce::Vector3f32 objectBoxMinimum = objectBox.min;
-    gce::Vector3f32 objectBoxMaximum = objectBox.max;
-    for (int i = objectBoxMinimum.x / m_cellSize; i < objectBoxMaximum.x / m_cellSize; i++)
-    {
-        for (int j = objectBoxMinimum.y / m_cellSize; j < objectBoxMaximum.y / m_cellSize; j++)
-        {
-            for (int k = objectBoxMinimum.z; k < objectBoxMaximum.z / m_cellSize; k++)
-            {
-                if (i >= 0 && i < m_width && j >= 0 && j < m_height && k >= 0 && k < m_length)
-                {
-                    m_nodeVector[i][j][k]->Data->Walkable = true;
+                    m_nodeVector[i][j]->neighbors.push_back(m_nodeVector[dx][dy]);
                 }
             }
         }
@@ -121,38 +56,97 @@ GameObject* TileMap::DebugMode(gce::Scene& scene)
 	return &zone;
 }
 
-std::vector<Node<Tile>*> TileMap::FindPath(Vector3f32 const& startPos, Vector3f32 const& targetPos)
-{
-    for (auto& modifiedNode : m_modifiedNodes)
-    {
-        modifiedNode->Visited = false;
-        modifiedNode->CameFrom = nullptr;
-        modifiedNode->Data->DistanceToStart = 0.f;
-        modifiedNode->Data->DistanceToEnd = 0.f;
-        modifiedNode->Data->totalCost = 0.f;
-	}
+std::vector<Node<Tile>*> TileMap::GetTilePath(Node<Tile>* player, Node<Tile>* target) {
+    std::vector<Node<Tile>*> path;
+    Node<Tile>* current = target;
 
+    // Réinitialiser les flags 'way' en 2D
+    for (int i = 0; i < m_nodeVector.size(); i++) {
+        for (int j = 0; j < m_nodeVector[i].size(); j++) {
+            if (m_nodeVector[i][j]->data->way) {
+                m_nodeVector[i][j]->data->way = false;
+            }
+        }
+    }
+
+    // Reconstruire le chemin de target vers player
+    while (current != nullptr && current != player) {
+        path.push_back(current);
+        current->data->way = true;
+        current = current->cameFrom;
+    }
+
+    return path;
+}
+
+bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
+{
     std::priority_queue<Node<Tile>*, std::vector<Node<Tile>*>, CompareTileAStar> priority;
 
     int dx;
     int dy;
-    int dz;
-	int startX = static_cast<int>(startPos.x / m_cellSize);
-	int startY = static_cast<int>(startPos.y / m_cellSize);
-	int startZ = static_cast<int>(startPos.z / m_cellSize);
-	int targetX = static_cast<int>(targetPos.x / m_cellSize);
-	int targetY = static_cast<int>(targetPos.y / m_cellSize);
-    int targetZ = static_cast<int>(targetPos.z / m_cellSize);
-	Node<Tile>* start = m_nodeVector[startX][startY][startZ];
+    const float INF = std::numeric_limits<float>::infinity();
+    const float D = 1.0f;
+    const float D2 = std::sqrt(2.0f);
+    float movementCost;
+    float newDist;
 
-    dx = startX - targetX;
-    dy = startY - targetY;
-    dz = startZ - targetZ;
+    for (int i = 0; i < m_width; ++i) {
+        for (int j = 0; j < m_length; ++j) {
+            m_nodeVector[i][j]->visited = false;
+            m_nodeVector[i][j]->cameFrom = nullptr;
+            dx = std::abs(m_nodeVector[i][j]->data->gridX - target->data->gridX);
+            dy = std::abs(m_nodeVector[i][j]->data->gridY - target->data->gridY);
+            m_nodeVector[i][j]->data->distanceToEnd = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy); // Heuristique de distance diagonale
+            m_nodeVector[i][j]->data->distanceToStart = INF;
+            m_nodeVector[i][j]->data->totalCost = INF;
+        }
+    }
 
-	start->Data->DistanceToEnd = std::abs(dx) + std::abs(dy) + std::abs(dz);
-    start->Data->totalCost = start->Data->DistanceToStart + start->Data->DistanceToEnd;
-    start->Visited = false;
-    start->CameFrom = nullptr;
+    start->data->distanceToStart = 0.0f;
+    dx = std::abs(start->data->gridX - target->data->gridX);
+    dy = std::abs(start->data->gridY - target->data->gridY);
+    start->data->distanceToEnd = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+    start->data->totalCost = start->data->distanceToStart + start->data->distanceToEnd;
+    start->visited = false;
+    start->cameFrom = nullptr;
         
-	return {};
+    priority.push(start);
+
+    while (!priority.empty()) {
+        Node<Tile>* front = priority.top();
+        priority.pop();
+
+        if (front == target) {
+            return true;
+        }
+
+        if (front->visited || !front->data->walkable) continue;
+        front->visited = true;
+
+        for (size_t i = 0; i < front->neighbors.size(); i++) {
+            Node<Tile>* neighbor = front->neighbors[i];
+            if (neighbor == nullptr || neighbor->visited || !neighbor->data->walkable) continue;
+
+            dx = std::abs(front->data->gridX - neighbor->data->gridX);
+            dy = std::abs(front->data->gridY - neighbor->data->gridY);
+
+            movementCost = (dx == 1 && dy == 1) ? D2 : D;
+            movementCost *= neighbor->data->cost;
+
+            newDist = front->data->distanceToStart + movementCost;
+
+            if (newDist < neighbor->data->distanceToStart) {
+                neighbor->data->distanceToStart = newDist;
+                dx = std::abs(neighbor->data->gridX - target->data->gridX);
+                dy = std::abs(neighbor->data->gridY - target->data->gridY);
+                neighbor->data->distanceToEnd = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+                neighbor->data->totalCost = newDist + neighbor->data->distanceToEnd;
+                neighbor->cameFrom = front;
+                priority.push(neighbor);
+            }
+        }
+    }
+
+	return false;
 }

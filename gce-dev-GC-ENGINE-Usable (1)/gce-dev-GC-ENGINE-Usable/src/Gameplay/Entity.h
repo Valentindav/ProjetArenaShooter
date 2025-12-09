@@ -8,7 +8,7 @@ class Entity
 protected:
     GameObject* m_gameObject;
     float m_speed;
-	Vector3f32 m_targetPosition;
+    vector<Node<Tile>*> path;
 
 public:
     Entity(GameObject* obj, float spd = 1.0f);

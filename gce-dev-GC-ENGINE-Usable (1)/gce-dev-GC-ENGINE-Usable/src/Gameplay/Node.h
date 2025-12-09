@@ -1,44 +1,45 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <Engine.h>
 
 class Agent;
 struct Tile {
-	int gridX = 0, gridY = 0, gridZ = 0;
-	float X = 0.f, Y = 0.f, Z = 0.f;
-	bool Walkable = true;
+	int gridX = 0, gridY = 0;	
+	bool walkable = true;
 
-	float DistanceToEnd = 0.f;
-	float DistanceToStart = 0.f;
+	float distanceToEnd = 0.f;
+	float distanceToStart = 0.f;
 	float totalCost = 0.f;
-	bool Way = false;
+	bool way = false;
 	
-	float Cost = 1.0f;
+	float cost = 1.0f;
+	gce::Vector2f32 worldPosition;
 };
 
 template<typename T>
 struct Node {
-	T* Data;
+	T* data;
 
-	bool Visited = false;
-	Node* CameFrom = nullptr;
+	bool visited = false;
+	Node* cameFrom = nullptr;
 
 	std::vector<Node<Tile>*> neighbors;
 };
 
 struct CompareTile {
 	bool operator()(Node<Tile>* a, Node<Tile>* b) {
-		return a->Data->DistanceToStart > b->Data->DistanceToStart;
+		return a->data->distanceToStart > b->data->distanceToStart;
 	}
 };
 
 struct CompareTileAStar {
 	bool operator()(Node<Tile>* a, Node<Tile>* b) const {
-		if (a->Data->totalCost == b->Data->totalCost) {
-			if (a->Data->gridX != b->Data->gridX)
-				return a->Data->gridX > b->Data->gridX;
-			return a->Data->gridY > b->Data->gridY;
+		if (a->data->totalCost == b->data->totalCost) {
+			if (a->data->gridX != b->data->gridX)
+				return a->data->gridX > b->data->gridX;
+			return a->data->gridY > b->data->gridY;
 		}
-		return a->Data->totalCost > b->Data->totalCost;
+		return a->data->totalCost > b->data->totalCost;
 	}
 };
