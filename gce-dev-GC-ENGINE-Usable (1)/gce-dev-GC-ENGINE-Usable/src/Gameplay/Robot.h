@@ -4,6 +4,8 @@
 class Robot : public Ennemy
 {
 public:
+	float m_life = 10.0f;
+
 	Robot(GameObject* obj, float spd = 50);
 	void Die() override;
 	void Attack()override;

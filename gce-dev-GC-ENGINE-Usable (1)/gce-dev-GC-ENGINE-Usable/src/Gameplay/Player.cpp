@@ -69,15 +69,18 @@ public:
                     BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
                     BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
                     MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-                    pWeaponRenderer->SetGeometry(RessourcesManager::GetBottle());
+                    pWeaponRenderer->SetGeometry(SHAPES.CUBE);
                     /*Texture* pWeaponTexture = bulletTex;
                     pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);*/
                     BulletObject.transform.LocalScale({ 0.05,0.05,0.05 });
-                    BulletObject.AddComponent<BoxCollider>()->SetActive(false);
+                    BulletObject.AddComponent<BoxCollider>()->SetActive(true);
                     BulletObject.AddComponent<PhysicComponent>();
                     BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
                     Bullet* bullet = new Bullet(&BulletObject);
                     bullet->AddShoot();
+					bullet->SetOwner(obj);
+                    RessourcesManager::AddEntities(bullet);
+                    bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
                     lastBullet = bullet;
                     m_shootTimer = SHOOT_TIMER_WAIT;
                 }

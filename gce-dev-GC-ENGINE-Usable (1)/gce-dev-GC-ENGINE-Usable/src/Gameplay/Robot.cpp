@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Engine.h"
 #include "Entity.h"
-#include "RobotState.cpp"
+#include "StateRobot.h"
 
 using namespace gce;
 
@@ -16,6 +16,7 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
     Texture* pPlayerTexture = new Texture("res/Textures/crosshair.png");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);
+    obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
     obj->SetName("robot");

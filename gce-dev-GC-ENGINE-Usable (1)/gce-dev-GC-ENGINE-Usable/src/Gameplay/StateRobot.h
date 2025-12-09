@@ -26,13 +26,12 @@ static void OnUpdateShootRobot(GameObject* me) {
     float yaw = atan2f(direction.x, direction.z);
     float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
 
-    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
-    if (self->m_WaitCooldown > 0.0f && self->m_WaitCooldown < 2.0f)
+    /*if (self->m_WaitCooldown > 0.0f && self->m_WaitCooldown < 2.0f)
     {
-        
- 
-	}
-    else
+
+
+    }
+    else*/	if (self->m_WaitCooldown <= 0.0f)
     {
         GameObject* obj = me;
         Scene* scene = const_cast<Scene*>(obj->GetScene());
@@ -48,19 +47,19 @@ static void OnUpdateShootRobot(GameObject* me) {
         BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
 
         MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(RessourcesManager::GetBottle());
+        pWeaponRenderer->SetGeometry(SHAPES.CUBE);
         Texture* pWeaponTexture = RessourcesManager::GetTexture();
         pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-        BulletObject.transform.LocalScale({ 0.25,0.25,0.25 });
+        BulletObject.transform.WorldScale({ 0.25,0.25,50 });
         BulletObject.AddComponent<BoxCollider>()->SetActive(true);
         BulletObject.AddComponent<PhysicComponent>();
         BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
         Bullet* bullet = new Bullet(&BulletObject);
         bullet->AddShoot();
-        bullet->SetOwner(obj);
+        bullet->SetOwner(me);
+        bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
         RessourcesManager::AddEntities(bullet);
-		self->m_laserTimer -= GameManager::DeltaTime();
-        //self->m_WaitCooldown = 3.0f;
+        self->m_WaitCooldown = 2.0f;
     }
     self->m_WaitCooldown -= GameManager::DeltaTime();
 }

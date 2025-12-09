@@ -1,4 +1,7 @@
 #include "Bullet.h"
+#include "Player.h"
+#include "SnowMan.h"
+#include "Robot.h"
 #include "RessourcesManager.h"
 using namespace gce;
 
@@ -8,157 +11,189 @@ private:
 	inline static Vector<GameObject*> s_pendingDestroy;
 
 public:
-void Start() 
-{
-	 m_lifeTime = 5.0f;
-	
-}
-
-void Update()
-{
-	if (!s_pendingDestroy.Empty())
+	void Start()
 	{
-		for (GameObject* pObj : s_pendingDestroy)
-		{
-			if (pObj) pObj->Destroy();
-		}
-		s_pendingDestroy.Clear();
+		m_lifeTime = 5.0f;
 	}
 
-	if (m_lifeTime >= 0.0f) 
+	void Update()
 	{
-		m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
-	}
-	else 
-	{
-		if (!m_pOwner->IsActive())
+		if (!s_pendingDestroy.Empty())
 		{
-			return;
-		}
-
-		m_pOwner->SetActive(false);
-
-		bool already = false;
-		for (GameObject* p : s_pendingDestroy)
-		{ 
-			if (p == m_pOwner)
+			for (GameObject* pObj : s_pendingDestroy)
 			{
-				already = true; break; 
+				pObj->Destroy();
 			}
+			s_pendingDestroy.Clear();
 		}
-		if (!already) s_pendingDestroy.PushBack(m_pOwner);
-	}
-	m_lifeTime -= GameManager::DeltaTime();
-}
 
-void CollisionEnter(GameObject* other) 
-{
-	gce::Vector<Entity*> entity = RessourcesManager::getEntities();
-	Entity* ownerEntity = nullptr;
-	for (Entity* p : entity) 
-	{
-		if (m_pOwner == p->GetGameObject()) 
+		if (m_lifeTime >= 0.0f)
 		{
-			ownerEntity = p;
+			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
 		}
-	}
-	if (m_pOwner && m_pOwner->IsActive() && m_pOwner && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
-	{
-		m_pOwner->SetActive(false);
-		bool already = false;
-		for (GameObject* p : s_pendingDestroy)
+		else
 		{
-			if (p == m_pOwner) 
+			if (!m_pOwner->IsActive())
 			{
-				already = true; break;
-			} 
-		}
-		if (!already)
-		{
-			s_pendingDestroy.PushBack(m_pOwner);
-		}
-	}
-	if (other && other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
-	{
-		other->SetActive(false);
-		bool alreadyOther = false;
-		for (GameObject* p : s_pendingDestroy)
-		{
-			bool alreadyOther = false;
+				return;
+			}
+
+			m_pOwner->SetActive(false);
+
+			bool already = false;
 			for (GameObject* p : s_pendingDestroy)
 			{
-				if (p == other)
+				if (p == m_pOwner)
 				{
-					alreadyOther = true; break;
+					already = true; break;
 				}
 			}
-			if (!alreadyOther)
+			if (!already) s_pendingDestroy.PushBack(m_pOwner);
+		}
+		m_lifeTime -= GameManager::DeltaTime();
+	}
+
+	void CollisionEnter(GameObject* other)
+	{
+		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+		Entity* ownerEntity = nullptr;
+		for (Entity* p : entity)
+		{
+			if (m_pOwner == p->GetGameObject())
 			{
-				Player* m_player = RessourcesManager::GetPlayer();
-				if (m_player->m_life <= 0)
-				{
-					other->SetActive(false);
-					s_pendingDestroy.PushBack(other);
-					std::cout << "dead" << std::endl;
-				}
-				else
-				{
-					m_player->m_life = m_player->m_life - 1;
-					std::cout << m_player->m_life << std::endl;
-				}
+				ownerEntity = p;
+				break;
 			}
 		}
-
-		if (other->GetName() == "SnowMan")
+		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 		{
-
-			bool alreadyOther = false;
+			m_pOwner->SetActive(false);
+			bool already = false;
 			for (GameObject* p : s_pendingDestroy)
 			{
-				if (p == other)
+				if (p == m_pOwner)
 				{
-					alreadyOther = true;
-					break;
+					already = true; break;
 				}
 			}
-			if (!alreadyOther)
+			if (!already)
 			{
-				SnowMan* m_snowman = nullptr;
-				for (Entity* p : entity)
+				s_pendingDestroy.PushBack(m_pOwner);
+			}
+		}
+		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+		{
+			if (other->GetName() == "Player")
+			{
+				bool alreadyOther = false;
+				for (GameObject* p : s_pendingDestroy)
 				{
-					if (other == p->GetGameObject())
+					if (p == other)
 					{
-						m_snowman = dynamic_cast<SnowMan*>(p);
+						alreadyOther = true; break;
+					}
+				}
+				if (!alreadyOther)
+				{
+					Player* m_player = RessourcesManager::GetPlayer();
+					if (m_player->m_life <= 0)
+					{
+						other->SetActive(false);
+						s_pendingDestroy.PushBack(other);
+						std::cout << "dead" << std::endl;
+					}
+					else
+					{
+						m_player->m_life = m_player->m_life - 1;
+						std::cout << m_player->m_life << std::endl;
+					}
+				}
+			}
+
+			if (other->GetName() == "SnowMan")
+			{
+
+				bool alreadyOther = false;
+				for (GameObject* p : s_pendingDestroy)
+				{
+					if (p == other)
+					{
+						alreadyOther = true;
 						break;
 					}
 				}
-				if (m_snowman->m_life <= 0)
+				if (!alreadyOther)
 				{
-					s_pendingDestroy.PushBack(other);
-					std::cout << "dead" << std::endl;
+					SnowMan* m_snowman = nullptr;
+					for (Entity* p : entity)
+					{
+						if (other == p->GetGameObject())
+						{
+							m_snowman = dynamic_cast<SnowMan*>(p);
+							break;
+						}
+					}
+					if (m_snowman->m_life <= 0)
+					{
+						s_pendingDestroy.PushBack(other);
+						std::cout << "dead" << std::endl;
+					}
+					else
+					{
+						m_snowman->m_life = m_snowman->m_life - 1;
+						std::cout << m_snowman->m_life << std::endl;
+					}
 				}
-				else
+			}
+			if (other->GetName() == "robot")
+			{
+
+				bool alreadyOther = false;
+				for (GameObject* p : s_pendingDestroy)
 				{
-					m_snowman->m_life = m_snowman->m_life - 1;
-					std::cout << m_snowman->m_life << std::endl;
+					if (p == other)
+					{
+						alreadyOther = true;
+						break;
+					}
+				}
+				if (!alreadyOther)
+				{
+					Robot* m_robot = nullptr;
+					for (Entity* p : entity)
+					{
+						if (other == p->GetGameObject())
+						{
+							m_robot = dynamic_cast<Robot*>(p);
+							break;
+						}
+					}
+					if (m_robot->m_life <= 0)
+					{
+						s_pendingDestroy.PushBack(other);
+						std::cout << "dead" << std::endl;
+					}
+					else
+					{
+						m_robot->m_life = m_robot->m_life - 1;
+						std::cout << m_robot->m_life << std::endl;
+					}
 				}
 			}
 		}
-		if (!alreadyOther) s_pendingDestroy.PushBack(other);
 	}
-}
 
-END_SCRIPT	
+	END_SCRIPT
 
-void Bullet::AddShoot()
-{
-	GameObject* obj = GetGameObject();
-	obj->SetName("Bullet"); 
-	obj->AddScript<Shoot_Update>();
-}
+	void Bullet::AddShoot()
+	{
+		GameObject* obj = GetGameObject();
+		obj->SetName("Bullet");
+		obj->AddScript<Shoot_Update>();
+	}
 
-void Bullet::DeleteShoot()
-{
-	GameObject* obj = GetGameObject();
-	obj->RemoveScript<Shoot_Update>();
-}
+	void Bullet::DeleteShoot()
+	{
+		GameObject* obj = GetGameObject();
+		obj->RemoveScript<Shoot_Update>();
+	}
