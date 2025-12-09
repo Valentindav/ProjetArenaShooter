@@ -84,11 +84,65 @@ void CollisionEnter(GameObject* other)
 		bool alreadyOther = false;
 		for (GameObject* p : s_pendingDestroy)
 		{
-			if (p == other)
-			{ 
-				alreadyOther = true;
-				break; 
-			} 
+			bool alreadyOther = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == other)
+				{
+					alreadyOther = true; break;
+				}
+			}
+			if (!alreadyOther)
+			{
+				Player* m_player = RessourcesManager::GetPlayer();
+				if (m_player->m_life <= 0)
+				{
+					other->SetActive(false);
+					s_pendingDestroy.PushBack(other);
+					std::cout << "dead" << std::endl;
+				}
+				else
+				{
+					m_player->m_life = m_player->m_life - 1;
+					std::cout << m_player->m_life << std::endl;
+				}
+			}
+		}
+
+		if (other->GetName() == "SnowMan")
+		{
+
+			bool alreadyOther = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == other)
+				{
+					alreadyOther = true;
+					break;
+				}
+			}
+			if (!alreadyOther)
+			{
+				SnowMan* m_snowman = nullptr;
+				for (Entity* p : entity)
+				{
+					if (other == p->GetGameObject())
+					{
+						m_snowman = dynamic_cast<SnowMan*>(p);
+						break;
+					}
+				}
+				if (m_snowman->m_life <= 0)
+				{
+					s_pendingDestroy.PushBack(other);
+					std::cout << "dead" << std::endl;
+				}
+				else
+				{
+					m_snowman->m_life = m_snowman->m_life - 1;
+					std::cout << m_snowman->m_life << std::endl;
+				}
+			}
 		}
 		if (!alreadyOther) s_pendingDestroy.PushBack(other);
 	}

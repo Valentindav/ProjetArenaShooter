@@ -11,6 +11,7 @@ public:
     static gce::Vector<Entity*> getEntities();
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
+    
     static gce::Geometry* GetBottle();
     static gce::Texture* GetTexture();
     static Entity* GetEntityFromGameObject(gce::GameObject* go);
