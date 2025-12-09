@@ -26,6 +26,7 @@ static void OnUpdateShootRobot(GameObject* me) {
     float yaw = atan2f(direction.x, direction.z);
     float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
 
+    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
     /*if (self->m_WaitCooldown > 0.0f && self->m_WaitCooldown < 2.0f)
     {
 
