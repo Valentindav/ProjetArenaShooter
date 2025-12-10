@@ -1,6 +1,7 @@
-#include "MenuManager.h"
+﻿#include "MenuManager.h"
 #include "RessourcesManager.h"
 #include "Player.h"
+#include "SnowMan.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -9,20 +10,33 @@ public:
     void Update()
     {
         MenuManager* menuManager = MenuManager::GetInstance();
-        if (!menuManager)
+        if (!menuManager) return;
+
+        // --- GESTION DU MENU PAUSE AVEC ESC ---
+        if (GetKeyDown(Keyboard::ESCAPE))
         {
-            return;
+            if (menuManager->GetGameState() == GameState::Playing)
+            {
+                menuManager->PauseGame();
+            }
+            else if (menuManager->GetGameState() == GameState::Paused)
+            {
+                menuManager->ResumeGame();
+            }
         }
 
+        // --- LOGIQUE DE JEU (GAME OVER / VICTOIRE) ---
         if (menuManager->GetGameState() == GameState::Playing)
         {
             Player* player = RessourcesManager::GetPlayer();
+            // Vérification Game Over
             if (player && player->GetGameObject() && !player->GetGameObject()->IsActive())
             {
                 menuManager->SetGameState(GameState::GameOver);
                 menuManager->ShowGameOverMenu();
             }
 
+            // Vérification Victoire
             gce::Vector<Entity*> entities = RessourcesManager::getEntities();
             int aliveCount = 0;
             for (Entity* entity : entities)
@@ -30,7 +44,7 @@ public:
                 if (entity && entity->GetGameObject() && entity->GetGameObject()->IsActive())
                 {
                     Player* playerCheck = dynamic_cast<Player*>(entity);
-                    if (playerCheck == nullptr)
+                    if (playerCheck == nullptr) // Si ce n'est pas le joueur (donc un ennemi)
                     {
                         aliveCount++;
                     }
@@ -47,169 +61,357 @@ public:
     END_SCRIPT
 
         MenuManager::MenuManager() : m_currentState(GameState::MainMenu), m_scene(nullptr),
-        m_startButton(nullptr),
-        m_mainMenuPanel(nullptr), m_gameOverPanel(nullptr), m_victoryPanel(nullptr)
+        m_menuCameraObject(nullptr),
+        m_mainMenuPanel(nullptr), m_playButton(nullptr), m_quitButton(nullptr),
+        m_pauseMenuPanel(nullptr), m_resumeButton(nullptr), m_restartButtonPause(nullptr), m_mainMenuButtonPause(nullptr),
+        m_gameOverPanel(nullptr), m_gameOverBackground(nullptr), m_gameOverText(nullptr), m_restartButtonGameOver(nullptr), m_mainMenuButtonGameOver(nullptr),
+        m_victoryPanel(nullptr), m_victoryBackground(nullptr), m_victoryText(nullptr), m_restartButtonVictory(nullptr), m_mainMenuButtonVictory(nullptr)
     {
     }
 
     void MenuManager::Create(Scene* scene)
     {
-        if (m_Instance != nullptr)
-        {
-            return;
-        }
-
+        if (m_Instance != nullptr) return;
         m_Instance = new MenuManager();
         m_Instance->m_scene = scene;
+
+        // --- CRÉATION DE LA CAMÉRA DU MENU ---
+        m_Instance->m_menuCameraObject = &GameObject::Create(*scene);
+        m_Instance->m_menuCameraObject->SetName("MenuCamera");
+        m_Instance->m_menuCameraObject->transform.LocalTranslate({ 0, 0, -10 }); // Recul de la caméra
+        Camera* menuCam = m_Instance->m_menuCameraObject->AddComponent<Camera>();
+        menuCam->SetMainCamera();
+        menuCam->SetType(PERSPECTIVE);
+        menuCam->perspective.fov = XM_PIDIV4;
+        menuCam->perspective.nearPlane = 0.001f;
+        menuCam->perspective.farPlane = 500.0f;
+        menuCam->perspective.aspectRatio = 1000.0f / 800.0f;
+        menuCam->perspective.up = { 0.0f, 1.0f, 0.0f };
+        // --------------------------------------------------
+
         m_Instance->CreateMainMenu();
+        m_Instance->CreatePauseMenu();
         m_Instance->CreateGameOverMenu();
         m_Instance->CreateVictoryMenu();
+
+        // On crée l'objet qui va surveiller les touches (ESC)
+        GameObject* stateChecker = &GameObject::Create(*scene);
+        stateChecker->SetName("GameStateChecker");
+        stateChecker->AddScript<GameStateChecker>();
+
         m_Instance->ShowMainMenu();
     }
 
-    void MenuManager::OnStartButtonClick()
-    {
-        if (m_Instance)
-        {
-            m_Instance->StartGame();
-        }
-    }
+    // --- CALLBACKS ---
+    void MenuManager::OnPlayButtonClick() { if (m_Instance) m_Instance->StartGame(); }
+    void MenuManager::OnQuitButtonClick() { if (m_Instance) m_Instance->QuitGame(); }
+    void MenuManager::OnResumeButtonClick() { if (m_Instance) m_Instance->ResumeGame(); }
+    void MenuManager::OnRestartButtonClick() { if (m_Instance) m_Instance->RestartGame(); }
+    void MenuManager::OnMainMenuButtonClick() { if (m_Instance) m_Instance->ReturnToMainMenu(); }
 
+    // --- CRÉATION UI AVEC LocalTranslate et BitMapBrush ---
     void MenuManager::CreateMainMenu()
     {
-        if (!m_scene)
-        {
-            return;
-        }
-
+        if (!m_scene) return;
         m_mainMenuPanel = &GameObject::Create(*m_scene);
         m_mainMenuPanel->SetName("MainMenuPanel");
+        m_mainMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
 
-        m_startButton = &GameObject::Create(*m_scene);
-        m_startButton->SetName("StartButton");
-        m_mainMenuPanel->AddChild(*m_startButton);
+        m_playButton = &GameObject::Create(*m_scene);
+        m_playButton->SetName("PlayButton");
+        m_mainMenuPanel->AddChild(*m_playButton);
+        // CORRECTION LocalTranslate
+        m_playButton->transform.LocalTranslate({ 0.0f, 1.0f, 0.0f });
+        m_playButton->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pPlayButton = m_playButton->AddComponent<UiButton>();
+        pPlayButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pPlayButton->AddListener(OnPlayButtonClick);
 
-        UiButton* pStartButton = m_startButton->AddComponent<UiButton>();
-        BitMapBrush* startBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        pStartButton->pBitMapBrush = startBrush;
-        pStartButton->AddListener(OnStartButtonClick);
+        m_quitButton = &GameObject::Create(*m_scene);
+        m_quitButton->SetName("QuitButton");
+        m_mainMenuPanel->AddChild(*m_quitButton);
+        // CORRECTION LocalTranslate
+        m_quitButton->transform.LocalTranslate({ 0.0f, -1.0f, 0.0f });
+        m_quitButton->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pQuitButton = m_quitButton->AddComponent<UiButton>();
+        pQuitButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pQuitButton->AddListener(OnQuitButtonClick);
+    }
+
+    void MenuManager::CreatePauseMenu()
+    {
+        if (!m_scene) return;
+        m_pauseMenuPanel = &GameObject::Create(*m_scene);
+        m_pauseMenuPanel->SetName("PauseMenuPanel");
+        m_pauseMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+        m_resumeButton = &GameObject::Create(*m_scene);
+        m_resumeButton->SetName("ResumeButton");
+        m_pauseMenuPanel->AddChild(*m_resumeButton);
+        // CORRECTION LocalTranslate
+        m_resumeButton->transform.LocalTranslate({ 0.0f, 2.0f, 0.0f });
+        m_resumeButton->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pResumeButton = m_resumeButton->AddComponent<UiButton>();
+        pResumeButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pResumeButton->AddListener(OnResumeButtonClick);
+
+        m_restartButtonPause = &GameObject::Create(*m_scene);
+        m_restartButtonPause->SetName("RestartButtonPause");
+        m_pauseMenuPanel->AddChild(*m_restartButtonPause);
+        // CORRECTION LocalTranslate
+        m_restartButtonPause->transform.LocalTranslate({ 0.0f, 0.0f, 0.0f });
+        m_restartButtonPause->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pRestartButton = m_restartButtonPause->AddComponent<UiButton>();
+        pRestartButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pRestartButton->AddListener(OnRestartButtonClick);
+
+        m_mainMenuButtonPause = &GameObject::Create(*m_scene);
+        m_mainMenuButtonPause->SetName("MainMenuButtonPause");
+        m_pauseMenuPanel->AddChild(*m_mainMenuButtonPause);
+        // CORRECTION LocalTranslate
+        m_mainMenuButtonPause->transform.LocalTranslate({ 0.0f, -2.0f, 0.0f });
+        m_mainMenuButtonPause->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pMainMenuButton = m_mainMenuButtonPause->AddComponent<UiButton>();
+        pMainMenuButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pMainMenuButton->AddListener(OnMainMenuButtonClick);
+
+        m_pauseMenuPanel->SetActive(false);
     }
 
     void MenuManager::CreateGameOverMenu()
     {
-        if (!m_scene)
-        {
-            return;
-        }
-
+        if (!m_scene) return;
         m_gameOverPanel = &GameObject::Create(*m_scene);
         m_gameOverPanel->SetName("GameOverPanel");
+        m_gameOverPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+        m_gameOverBackground = &GameObject::Create(*m_scene);
+        m_gameOverBackground->SetName("GameOverBackground");
+        // CORRECTION LocalTranslate
+        m_gameOverBackground->transform.LocalTranslate({ 0.0f, 0.0f, 0.5f }); // Légèrement en arrière
+        m_gameOverBackground->transform.LocalScale({ 20.0f, 15.0f, 0.1f });
+        MeshRenderer* pBackgroundRenderer = m_gameOverBackground->AddComponent<MeshRenderer>();
+        pBackgroundRenderer->SetGeometry(SHAPES.CUBE);
+        m_gameOverPanel->AddChild(*m_gameOverBackground);
+
+        m_gameOverText = &GameObject::Create(*m_scene);
+        m_gameOverText->SetName("GameOverText");
+        // CORRECTION LocalTranslate
+        m_gameOverText->transform.LocalTranslate({ 0.0f, 3.0f, 0.0f });
+        m_gameOverText->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        MeshRenderer* pTextRenderer = m_gameOverText->AddComponent<MeshRenderer>();
+        pTextRenderer->SetGeometry(SHAPES.CUBE);
+        pTextRenderer->SetAlbedoTexture(new Texture("res/Exemple/TexturesTest.jpg"));
+        m_gameOverPanel->AddChild(*m_gameOverText);
+
+        m_restartButtonGameOver = &GameObject::Create(*m_scene);
+        m_restartButtonGameOver->SetName("RestartButtonGameOver");
+        m_gameOverPanel->AddChild(*m_restartButtonGameOver);
+        // CORRECTION LocalTranslate
+        m_restartButtonGameOver->transform.LocalTranslate({ 0.0f, 0.0f, 0.0f });
+        m_restartButtonGameOver->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pRestartButton = m_restartButtonGameOver->AddComponent<UiButton>();
+        pRestartButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pRestartButton->AddListener(OnRestartButtonClick);
+
+        m_mainMenuButtonGameOver = &GameObject::Create(*m_scene);
+        m_mainMenuButtonGameOver->SetName("MainMenuButtonGameOver");
+        m_gameOverPanel->AddChild(*m_mainMenuButtonGameOver);
+        // CORRECTION LocalTranslate
+        m_mainMenuButtonGameOver->transform.LocalTranslate({ 0.0f, -2.0f, 0.0f });
+        m_mainMenuButtonGameOver->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pMainMenuButton = m_mainMenuButtonGameOver->AddComponent<UiButton>();
+        pMainMenuButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pMainMenuButton->AddListener(OnMainMenuButtonClick);
 
         m_gameOverPanel->SetActive(false);
     }
 
     void MenuManager::CreateVictoryMenu()
     {
-        if (!m_scene)
-        {
-            return;
-        }
-
+        if (!m_scene) return;
         m_victoryPanel = &GameObject::Create(*m_scene);
         m_victoryPanel->SetName("VictoryPanel");
+        m_victoryPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+        m_victoryBackground = &GameObject::Create(*m_scene);
+        m_victoryBackground->SetName("VictoryBackground");
+        // CORRECTION LocalTranslate
+        m_victoryBackground->transform.LocalTranslate({ 0.0f, 0.0f, 0.5f });
+        m_victoryBackground->transform.LocalScale({ 20.0f, 15.0f, 0.1f });
+        MeshRenderer* pBackgroundRenderer = m_victoryBackground->AddComponent<MeshRenderer>();
+        pBackgroundRenderer->SetGeometry(SHAPES.CUBE);
+        m_victoryPanel->AddChild(*m_victoryBackground);
+
+        m_victoryText = &GameObject::Create(*m_scene);
+        m_victoryText->SetName("VictoryText");
+        // CORRECTION LocalTranslate
+        m_victoryText->transform.LocalTranslate({ 0.0f, 3.0f, 0.0f });
+        m_victoryText->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        MeshRenderer* pTextRenderer = m_victoryText->AddComponent<MeshRenderer>();
+        pTextRenderer->SetGeometry(SHAPES.CUBE);
+        pTextRenderer->SetAlbedoTexture(new Texture("res/Exemple/TexturesTest.jpg"));
+        m_victoryPanel->AddChild(*m_victoryText);
+
+        m_restartButtonVictory = &GameObject::Create(*m_scene);
+        m_restartButtonVictory->SetName("RestartButtonVictory");
+        m_victoryPanel->AddChild(*m_restartButtonVictory);
+        // CORRECTION LocalTranslate
+        m_restartButtonVictory->transform.LocalTranslate({ 0.0f, 0.0f, 0.0f });
+        m_restartButtonVictory->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pRestartButton = m_restartButtonVictory->AddComponent<UiButton>();
+        pRestartButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pRestartButton->AddListener(OnRestartButtonClick);
+
+        m_mainMenuButtonVictory = &GameObject::Create(*m_scene);
+        m_mainMenuButtonVictory->SetName("MainMenuButtonVictory");
+        m_victoryPanel->AddChild(*m_mainMenuButtonVictory);
+        // CORRECTION LocalTranslate
+        m_mainMenuButtonVictory->transform.LocalTranslate({ 0.0f, -2.0f, 0.0f });
+        m_mainMenuButtonVictory->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
+        UiButton* pMainMenuButton = m_mainMenuButtonVictory->AddComponent<UiButton>();
+        pMainMenuButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        pMainMenuButton->AddListener(OnMainMenuButtonClick);
 
         m_victoryPanel->SetActive(false);
     }
 
-    void MenuManager::ShowMainMenu()
-    {
-        if (m_mainMenuPanel)
-        {
-            m_mainMenuPanel->SetActive(true);
-        }
-
-        if (m_gameOverPanel)
-        {
-            m_gameOverPanel->SetActive(false);
-        }
-
-        if (m_victoryPanel)
-        {
-            m_victoryPanel->SetActive(false);
-        }
-
+    // --- LOGIQUE D'AFFICHAGE ---
+    void MenuManager::ShowMainMenu() {
+        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(true);
+        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
+        if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
+        if (m_victoryPanel) m_victoryPanel->SetActive(false);
         gce::UnlockMouseCursor();
     }
-
-    void MenuManager::ShowGameOverMenu()
-    {
-        if (m_mainMenuPanel)
-        { 
-            m_mainMenuPanel->SetActive(false); 
-        }
-
-        if (m_gameOverPanel)
-        {
-            m_gameOverPanel->SetActive(true);
-        }
-
-        if (m_victoryPanel)
-        {
-            m_victoryPanel->SetActive(false);
-        }
-
+    void MenuManager::ShowPauseMenu() {
+        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(false);
+        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(true);
+        if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
+        if (m_victoryPanel) m_victoryPanel->SetActive(false);
         gce::UnlockMouseCursor();
     }
-
-    void MenuManager::ShowVictoryMenu()
-    {
-        if (m_mainMenuPanel)
-        {
-            m_mainMenuPanel->SetActive(false);
-        }
-
-        if (m_gameOverPanel)
-        {
-            m_gameOverPanel->SetActive(false);
-        }
-
-        if (m_victoryPanel)
-        {
-            m_victoryPanel->SetActive(true);
-        }
-
+    void MenuManager::ShowGameOverMenu() {
+        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(false);
+        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
+        if (m_gameOverPanel) m_gameOverPanel->SetActive(true);
+        if (m_victoryPanel) m_victoryPanel->SetActive(false);
         gce::UnlockMouseCursor();
     }
-
-    void MenuManager::HideAllMenus()
-    {
-        if (m_mainMenuPanel)
-        {
-            m_mainMenuPanel->SetActive(false);
-        }
-
-        if (m_gameOverPanel)
-        {
-            m_gameOverPanel->SetActive(false);
-        }
-
-        if (m_victoryPanel)
-        {
-            m_victoryPanel->SetActive(false);
-        }
+    void MenuManager::ShowVictoryMenu() {
+        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(false);
+        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
+        if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
+        if (m_victoryPanel) m_victoryPanel->SetActive(true);
+        gce::UnlockMouseCursor();
     }
-
-    void MenuManager::SetGameState(GameState state)
-    {
-        m_currentState = state;
+    void MenuManager::HideAllMenus() {
+        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(false);
+        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
+        if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
+        if (m_victoryPanel) m_victoryPanel->SetActive(false);
     }
+    void MenuManager::SetGameState(GameState state) { m_currentState = state; }
 
+    // --- FLOW DU JEU ---
     void MenuManager::StartGame()
     {
         m_currentState = GameState::Playing;
         HideAllMenus();
 
-        GameObject* stateChecker = &GameObject::Create(*m_scene);
-        stateChecker->SetName("GameStateChecker");
-        stateChecker->AddScript<GameStateChecker>();
+        // 1. Désactiver la caméra du menu 
+        if (m_menuCameraObject)
+        {
+            m_menuCameraObject->SetActive(false);
+        }
+
+        // 2. Creation de la Camera du joueur
+        GameObject& CameraObject = GameObject::Create(*m_scene);
+        CameraObject.transform.LocalTranslate({ 0,0, -10 });
+        Camera* pCamera = CameraObject.AddComponent<Camera>();
+        pCamera->SetMainCamera();
+        pCamera->SetType(PERSPECTIVE);
+        pCamera->perspective.fov = XM_PIDIV4;
+        pCamera->perspective.nearPlane = 0.001f;
+        pCamera->perspective.farPlane = 500.0f;
+        pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
+        pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
+
+        // 3. Creation du Joueur et du monde (inchangé)
+        GameObject& PlayerObject = GameObject::Create(*m_scene);
+        Light* light = PlayerObject.AddComponent<Light>();
+        light->DefaultDirectionLight();
+        light->intensity = 1.0f;
+        PlayerObject.transform.SetWorldPosition({ 0.0f,-5.0f,-10.0f });
+
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        GameObject& testObject = GameObject::Create(*m_scene);
+        MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
+        pMeshRenderer->SetGeometry(SHAPES.CUBE);
+        pMeshRenderer->SetAlbedoTexture(new Texture("res/Exemple/TexturesTest.jpg"));
+        testObject.AddComponent<BoxCollider>()->SetActive(true);
+        testObject.AddComponent<PhysicComponent>()->SetGravityScale(0.0f);
+        testObject.SetName("TestObject");
+        testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
+
+        GameObject& Weapon = GameObject::Create(*m_scene);
+        MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
+        pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
+        Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
+        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+        Weapon.SetName("Weapon_1");
+
+        GameObject& Floor = GameObject::Create(*m_scene);
+        Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
+        MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
+        pFloorRenderer->SetGeometry(SHAPES.CUBE);
+        Floor.transform.LocalScale({ 20.f,1.f,20.f });
+        Floor.AddComponent<BoxCollider>()->SetActive(true);
+        Floor.AddComponent<PhysicComponent>()->SetGravityScale(.0f);
+        Floor.AddComponent<PhysicComponent>()->SetMass(10000000.f);
+        Floor.SetName("Floor");
+
+        SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        SnowMan* Snowman = new SnowMan(&SnowManObject);
+        RessourcesManager::AddEntities(Snowman);
+
+        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
+        SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
+        RessourcesManager::AddEntities(Snowman2);
+
+        GameObject& SnowManObject3 = GameObject::Create(*m_scene);
+        SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
+        SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
+        RessourcesManager::AddEntities(Snowman3);
+
+        Player* player = new Player(&PlayerObject);
+        player->GetGameObject()->AddChild(CameraObject);
+        player->GetGameObject()->AddChild(Weapon);
+        RessourcesManager::SetPlayer(player);
+        RessourcesManager::AddEntities(player);
     }
+
+    void MenuManager::PauseGame()
+    {
+        m_currentState = GameState::Paused;
+        ShowPauseMenu();
+    }
+
+    void MenuManager::ResumeGame()
+    {
+        m_currentState = GameState::Playing;
+        HideAllMenus();
+    }
+
+    void MenuManager::RecreateScene()
+    {
+        exit(0);
+    }
+
+    void MenuManager::RestartGame() { RecreateScene(); }
+    void MenuManager::ReturnToMainMenu() { RecreateScene(); }
+    void MenuManager::QuitGame() { exit(0); }
