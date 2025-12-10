@@ -41,6 +41,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
     pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
+    //----------------------------------INIT GameObject----------------------------------
     GameObject& PlayerObject = GameObject::Create(scene);
     Light* light = PlayerObject.AddComponent<Light>();
     light->DefaultDirectionLight();
@@ -60,7 +61,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
     testObject.SetName("TestObject");
 
-   GameObject& Weapon = GameObject::Create(scene);
+    GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
@@ -86,19 +87,16 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowManObject.transform.SetWorldPosition({ -10.0f,-9.0f,-5.0f });
     SnowManObject.transform.SetWorldRotation({ 0.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject);
-    RessourcesManager::AddEntities(Snowman);
 
 
     RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
     RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
     Robot* robot = new Robot(&RobotObject);
-    RessourcesManager::AddEntities(robot);
 
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
     RessourcesManager::SetPlayer(player);
-    RessourcesManager::AddEntities(player);
 
     MenuManager::Create(&scene);
 

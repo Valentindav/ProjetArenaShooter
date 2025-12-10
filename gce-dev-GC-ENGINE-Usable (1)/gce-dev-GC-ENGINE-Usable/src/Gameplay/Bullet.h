@@ -5,9 +5,11 @@ class Bullet :public Entity
 {
 	GameObject* m_owner = nullptr;
 public:
-	Bullet(GameObject* obj, float spd = 500) : Entity(obj, spd) { obj->SetName("bullet"); }
+	Bullet(GameObject* obj, float spd = 500);
 	void AddShoot();
 	void DeleteShoot();
+	void SetTexture(std::string_view path);
+	void SetShape(gce::Geometry* geo);
 	void SetOwner(GameObject* owner) 
 	{
 		m_owner = owner;

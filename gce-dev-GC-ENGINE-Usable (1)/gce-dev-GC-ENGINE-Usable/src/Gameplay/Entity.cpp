@@ -1,43 +1,26 @@
 #include "Entity.h"
+#include "RessourcesManager.h"
 
-DECLARE_SCRIPT(LifeScript, ScriptFlag::Update | ScriptFlag::CollisionEnter)
-private:
-    float life = 5.0f;
+Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
+  {
+      RessourcesManager::AddEntities(this);
+  }
 
-public:
-    void Update()
-    {
-        GameObject* obj = m_pOwner;
-    }
-
-    void CollisionEnter(GameObject* other)
-    {
-        if (m_pOwner && m_pOwner->IsActive())
-        {
-            if (other->GetName() == "Player")
-            {
-                if (other->GetName() == "Bullet")
-                {
-                    life = life - 1.0f;
-
-                    if (life <= 0.0f)
-                    {
-                        m_pOwner->Destroy();
-                    }
-                }
-            }           
+ void Entity::TakeDamage() // Entity action when she take damage ->maybe override this with certain entity when needed
+   {
+       if (this->m_life <= 0)
+       {
+            std::cout << "dead " << this->GetGameObject()->GetName() << std::endl;
+            if (this->GetGameObject()->GetName() == "Player") {
+                RessourcesManager::SetPlayer(nullptr);
+            }
+            this->GetGameObject()->SetActive(false);
+            this->GetGameObject()->Destroy();
+            delete this;
         }
-    }
-    END_SCRIPT
-
-        Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
-    {
-    }
-
-    void Entity::AddLifeScript()
-    {
-        if (m_gameObject)
+        else
         {
-            m_gameObject->AddScript<LifeScript>();
+            this->m_life = this->m_life - 1;
+            std::cout << this->m_life << std::endl;
         }
     }

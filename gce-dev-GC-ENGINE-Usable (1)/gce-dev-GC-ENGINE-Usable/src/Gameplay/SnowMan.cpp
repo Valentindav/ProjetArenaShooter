@@ -50,7 +50,7 @@ SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
             {
                 [](GameObject* me)->bool {
                     Player* p = RessourcesManager::GetPlayer();
-                    if (!p) return false;
+                    if (!p || !p->GetGameObject()) return false;
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Idle") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
@@ -60,7 +60,6 @@ SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
         );
         sm->AddTransition(conds, idle);
     }
-    AddLifeScript();
 }
 
 void SnowMan::Die()

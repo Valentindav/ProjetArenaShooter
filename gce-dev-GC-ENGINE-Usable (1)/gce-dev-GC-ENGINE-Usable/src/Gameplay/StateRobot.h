@@ -17,6 +17,7 @@ static void OnUpdateShootRobot(GameObject* me) {
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
     Vector3f32 snowmanPos = me->transform.GetWorldPosition();
 
@@ -59,7 +60,6 @@ static void OnUpdateShootRobot(GameObject* me) {
         bullet->AddShoot();
         bullet->SetOwner(me);
         bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
-        RessourcesManager::AddEntities(bullet);
         self->m_WaitCooldown = 2.0f;
     }
     self->m_WaitCooldown -= GameManager::DeltaTime();

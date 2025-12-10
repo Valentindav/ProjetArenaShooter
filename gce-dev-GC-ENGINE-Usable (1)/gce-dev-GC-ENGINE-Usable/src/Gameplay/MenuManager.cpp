@@ -4,7 +4,7 @@
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
-DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update)
+DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update) 
 public:
     void Update()
     {
@@ -52,7 +52,7 @@ public:
     {
     }
 
-    void MenuManager::Create(Scene* scene)
+    void MenuManager::Create(Scene* scene) // create the menu instance
     {
         if (m_Instance != nullptr)
         {
@@ -67,7 +67,7 @@ public:
         m_Instance->ShowMainMenu();
     }
 
-    void MenuManager::OnStartButtonClick()
+    void MenuManager::OnStartButtonClick() // start button behavior
     {
         if (m_Instance)
         {
@@ -75,7 +75,7 @@ public:
         }
     }
 
-    void MenuManager::CreateMainMenu()
+    void MenuManager::CreateMainMenu() // create main menu
     {
         if (!m_scene)
         {
@@ -95,7 +95,7 @@ public:
         pStartButton->AddListener(OnStartButtonClick);
     }
 
-    void MenuManager::CreateGameOverMenu()
+    void MenuManager::CreateGameOverMenu()// create game over menu
     {
         if (!m_scene)
         {
@@ -108,7 +108,7 @@ public:
         m_gameOverPanel->SetActive(false);
     }
 
-    void MenuManager::CreateVictoryMenu()
+    void MenuManager::CreateVictoryMenu()// create victory menu
     {
         if (!m_scene)
         {
@@ -121,7 +121,7 @@ public:
         m_victoryPanel->SetActive(false);
     }
 
-    void MenuManager::ShowMainMenu()
+    void MenuManager::ShowMainMenu()// show main menu
     {
         if (m_mainMenuPanel)
         {
@@ -141,7 +141,7 @@ public:
         gce::UnlockMouseCursor();
     }
 
-    void MenuManager::ShowGameOverMenu()
+    void MenuManager::ShowGameOverMenu()// show game over menu
     {
         if (m_mainMenuPanel)
         { 
@@ -161,7 +161,7 @@ public:
         gce::UnlockMouseCursor();
     }
 
-    void MenuManager::ShowVictoryMenu()
+    void MenuManager::ShowVictoryMenu()// show victory menu
     {
         if (m_mainMenuPanel)
         {
@@ -181,7 +181,7 @@ public:
         gce::UnlockMouseCursor();
     }
 
-    void MenuManager::HideAllMenus()
+    void MenuManager::HideAllMenus() //hide all menus
     {
         if (m_mainMenuPanel)
         {
@@ -199,12 +199,12 @@ public:
         }
     }
 
-    void MenuManager::SetGameState(GameState state)
+    void MenuManager::SetGameState(GameState state) 
     {
         m_currentState = state;
     }
 
-    void MenuManager::StartGame()
+    void MenuManager::StartGame() // start games
     {
         m_currentState = GameState::Playing;
         HideAllMenus();

@@ -17,6 +17,7 @@ static void OnUpdateShootSnowman(GameObject* me) {
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
     Vector3f32 snowmanPos = me->transform.GetWorldPosition();
 
@@ -42,21 +43,10 @@ static void OnUpdateShootSnowman(GameObject* me) {
 
         BulletObject.transform.SetWorldPosition(spawnPosition);
         BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-
-        MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-        Texture* pWeaponTexture = RessourcesManager::GetTexture();
-        pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
         BulletObject.transform.WorldScale({ 0.25,0.25,0.25 });
-        BulletObject.AddComponent<BoxCollider>()->SetActive(true);
-        BulletObject.AddComponent<PhysicComponent>();
-        BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-		std::cout << "Shooting snowball!" << std::endl;
+
         Bullet* bullet = new Bullet(&BulletObject);
-        bullet->AddShoot();
         bullet->SetOwner(me);
-        bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
-        RessourcesManager::AddEntities(bullet);
         self->m_ShootCooldown = 2.0f;
     }
     self->m_ShootCooldown -= GameManager::DeltaTime();

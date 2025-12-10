@@ -60,7 +60,6 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
         );
         sm->AddTransition(conds, idle);
     }
-    AddLifeScript();
 }
 
 void Robot::Die()
