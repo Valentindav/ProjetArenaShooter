@@ -3,9 +3,18 @@
 #include <cmath>
 #include <algorithm>
 
-TileMap::TileMap(int width, int length, float cellSize, gce::Scene& scene, Vector2f32 const& origin) : m_width(width), m_length(length), m_cellSize(cellSize), m_origin(origin)
+TileMap::TileMap(int width, int length, float cellSize, gce::Scene& scene, Vector3f32 const& origin) 
+    : m_width(width), m_length(length), m_cellSize(cellSize), m_origin(origin)
 {
 	m_nodeVector = std::vector<std::vector<Node<Tile>*>>(width, std::vector<Node<Tile>*>(length, nullptr));
+
+    // Calcul du coin supérieur gauche (Start) pour que 'origin' soit le CENTRE de la grille
+    float halfWidth = (width * cellSize) / 2.0f;
+    float halfLength = (length * cellSize) / 2.0f;
+    
+    // On assume que la grille est sur le plan XZ (Y est la hauteur)
+    float startX = origin.x - halfWidth;
+    float startZ = origin.z - halfLength;
 
     for (int i = 0; i < width; ++i)
     {
@@ -15,8 +24,10 @@ TileMap::TileMap(int width, int length, float cellSize, gce::Scene& scene, Vecto
             m_nodeVector[i][j]->data = new Tile();
             m_nodeVector[i][j]->data->gridX = i;
             m_nodeVector[i][j]->data->gridY = j;
-            m_nodeVector[i][j]->data->worldPosition.x = origin.x + (i * cellSize);
-            m_nodeVector[i][j]->data->worldPosition.y = origin.y + (j * cellSize);
+            
+            // Position du CENTRE de la cellule
+            m_nodeVector[i][j]->data->worldPosition.x = startX + (i * cellSize) + (cellSize * 0.5f);
+            m_nodeVector[i][j]->data->worldPosition.y = startZ + (j * cellSize) + (cellSize * 0.5f); // .y stocke le Z monde
         }
     }
 
@@ -62,23 +73,39 @@ GameObject* TileMap::DebugMode(gce::Scene& scene)
     MeshRenderer* pZoneRenderer = zone.AddComponent<MeshRenderer>();
     pZoneRenderer->SetGeometry(SHAPES.CUBE);
 
-    // CORRECTION : Calcul correct de la taille réelle de la grille
     float widthReal = m_width * m_cellSize;
     float lengthReal = m_length * m_cellSize;
 
-    // On applique la taille réelle (X = Largeur, Z = Longueur)
     zone.transform.LocalScale({ widthReal, m_cellSize, lengthReal });
 
-    // CORRECTION : Positionnement au centre de la zone définie par l'origine
-    // Le centre est à : Origine + (Taille / 2)
     zone.transform.SetWorldPosition({
-        m_origin.x + widthReal * 0.5f,
-        -m_cellSize * 0.5f + 50.f, // Légèrement décalé vers le bas pour ne pas chevaucher les pieds
-        m_origin.y + lengthReal * 0.5f
-        });
+        m_origin.x,
+        m_origin.y - (m_cellSize * 0.5f) + 30, 
+        m_origin.z
+    });
 
     zone.SetName("Floor");
 	return &zone;
+}
+
+Node<Tile>* TileMap::GetNodeFromWorldPosition(Vector3f32 const& worldPos)
+{
+    float halfWidth = (m_width * m_cellSize) / 2.0f;
+    float halfLength = (m_length * m_cellSize) / 2.0f;
+    float startX = m_origin.x - halfWidth;
+    float startZ = m_origin.z - halfLength;
+
+    float relX = worldPos.x - startX;
+    float relZ = worldPos.z - startZ;
+
+    int x = static_cast<int>(relX / m_cellSize);
+    int y = static_cast<int>(relZ / m_cellSize);
+
+    if (x >= 0 && x < m_width && y >= 0 && y < m_length)
+    {
+        return m_nodeVector[x][y];
+    }
+    return nullptr;
 }
 
 vector<Node<Tile>*> TileMap::GeneratePath(Node<Tile>* start, Node<Tile>* target)
@@ -136,7 +163,7 @@ bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
     std::priority_queue<Node<Tile>*, std::vector<Node<Tile>*>, CompareTileAStar> priority;
 
     const float D = 1.0f;
-    const float D2 = std::sqrt(2);
+    const float D2 = std::sqrt(2.0f);
 
     for (auto& row : m_nodeVector) {
         for (auto& node : row) {

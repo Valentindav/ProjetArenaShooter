@@ -104,51 +104,46 @@ void SnowMan::Attack()
 
 void SnowMan::SetCurrentTargetNodePosition()
 {
-	m_currentNodeIndex.x = (m_gameObject->transform.GetWorldPosition().x - m_tileMap->GetOrigin().x) / m_tileMap->GetCellSize();
-	m_currentNodeIndex.y = (m_gameObject->transform.GetWorldPosition().z - m_tileMap->GetOrigin().y) / m_tileMap->GetCellSize();
+    Node<Tile>* node = m_tileMap->GetNodeFromWorldPosition(m_gameObject->transform.GetWorldPosition());
+    if (node)
+    {
+        m_currentNodeIndex.x = static_cast<float>(node->data->gridX);
+        m_currentNodeIndex.y = static_cast<float>(node->data->gridY);
+    }
 }
 
 void SnowMan::GeneratePathToPlayer(GameObject* player) 
 {
-	auto grid = m_tileMap->GetNodeVector();
-	if (grid.empty()) return;
+    if (!m_tileMap) return;
 
-    int width = static_cast<int>(grid.size());
-    int length = static_cast<int>(grid[0].size());
-    float cellSize = m_tileMap->GetCellSize();
-    Vector2f32 origin = m_tileMap->GetOrigin();
+    Node<Tile>* startNode = m_tileMap->GetNodeFromWorldPosition(m_gameObject->transform.GetWorldPosition());
+    Node<Tile>* targetNode = m_tileMap->GetNodeFromWorldPosition(player->transform.GetWorldPosition());
 
-    // Calcul des indices du joueur (Cible)
-    Vector3f32 playerPos = player->transform.GetWorldPosition();
-    int playerGridX = static_cast<int>((playerPos.x - origin.x) / cellSize);
-    int playerGridY = static_cast<int>((playerPos.z - origin.y) / cellSize);
-
-    // Indices du SnowMan (Départ)
-    int startX = static_cast<int>(m_currentNodeIndex.x);
-    int startY = static_cast<int>(m_currentNodeIndex.y);
-
-    // Vérification des limites (Bounds Check) pour éviter le crash "out of range"
-    bool isStartValid = (startX >= 0 && startX < width && startY >= 0 && startY < length);
-    bool isTargetValid = (playerGridX >= 0 && playerGridX < width && playerGridY >= 0 && playerGridY < length);
-	std::cout << isStartValid << " " << isTargetValid << std::endl;
-	std::cout << playerGridX << " " << playerGridY << std::endl;
-    if (isStartValid && isTargetValid)
+    if (startNode && targetNode && startNode != targetNode)
     {
-        m_currentPath = m_tileMap->GeneratePath(
-            grid[startX][startY],
-            grid[playerGridX][playerGridY]
-        );
+        m_currentPath = m_tileMap->GeneratePath(startNode, targetNode);
     }
 }
 
 void SnowMan::FollowPath()
 {
 	if (m_currentPath.size() < 2) return;
-    m_gameObject->transform.SetWorldPosition({
-        (m_currentPath[1]->data->worldPosition.x)*GameManager::DeltaTime(),
+    
+    Vector3f32 nextPos = {
+        m_currentPath[1]->data->worldPosition.x,
         m_gameObject->transform.GetWorldPosition().y,
-        (m_currentPath[1]->data->worldPosition.y)* GameManager::DeltaTime()
-		});
+        m_currentPath[1]->data->worldPosition.y
+    };
+
+    Vector3f32 currentPos = m_gameObject->transform.GetWorldPosition();
+    Vector3f32 direction = nextPos - currentPos;
+
+    if (direction.SquareNorm() > 0.1f)
+    {
+        direction.SelfNormalize();
+        float speed = 5.0f;
+        m_gameObject->transform.SetWorldPosition(currentPos + direction * speed * GameManager::DeltaTime());
+    }
 }
 
 void SnowMan::AddScript()
