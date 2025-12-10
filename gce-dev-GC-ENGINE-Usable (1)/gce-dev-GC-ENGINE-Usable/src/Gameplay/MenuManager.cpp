@@ -61,7 +61,7 @@ public:
     END_SCRIPT
 
         MenuManager::MenuManager() : m_currentState(GameState::MainMenu), m_scene(nullptr),
-        m_menuCameraObject(nullptr),
+        m_CameraObject(nullptr),
         m_mainMenuPanel(nullptr), m_playButton(nullptr), m_quitButton(nullptr),
         m_pauseMenuPanel(nullptr), m_resumeButton(nullptr), m_restartButtonPause(nullptr), m_mainMenuButtonPause(nullptr),
         m_gameOverPanel(nullptr), m_gameOverBackground(nullptr), m_gameOverText(nullptr), m_restartButtonGameOver(nullptr), m_mainMenuButtonGameOver(nullptr),
@@ -76,17 +76,18 @@ public:
         m_Instance->m_scene = scene;
 
         // --- CRÉATION DE LA CAMÉRA DU MENU ---
-        m_Instance->m_menuCameraObject = &GameObject::Create(*scene);
-        m_Instance->m_menuCameraObject->SetName("MenuCamera");
-        m_Instance->m_menuCameraObject->transform.LocalTranslate({ 0, 0, -10 }); // Recul de la caméra
-        Camera* menuCam = m_Instance->m_menuCameraObject->AddComponent<Camera>();
-        menuCam->SetMainCamera();
-        menuCam->SetType(PERSPECTIVE);
-        menuCam->perspective.fov = XM_PIDIV4;
-        menuCam->perspective.nearPlane = 0.001f;
-        menuCam->perspective.farPlane = 500.0f;
-        menuCam->perspective.aspectRatio = 1000.0f / 800.0f;
-        menuCam->perspective.up = { 0.0f, 1.0f, 0.0f };
+        m_Instance->m_CameraObject = &GameObject::Create(*scene);
+        m_Instance->m_CameraObject->SetName("MenuCamera");
+        m_Instance->m_CameraObject->transform.LocalTranslate({ 0, 0, -10 }); // Recul de la caméra
+
+        m_Instance->pCamera = m_Instance->m_CameraObject->AddComponent<Camera>();
+        m_Instance->pCamera->SetMainCamera();
+        m_Instance->pCamera->SetType(PERSPECTIVE);
+        m_Instance->pCamera->perspective.fov = XM_PIDIV4;
+        m_Instance->pCamera->perspective.nearPlane = 0.001f;
+        m_Instance->pCamera->perspective.farPlane = 500.0f;
+        m_Instance->pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
+        m_Instance->pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
         // --------------------------------------------------
 
         m_Instance->CreateMainMenu();
@@ -113,10 +114,22 @@ public:
     void MenuManager::CreateMainMenu()
     {
         if (!m_scene) return;
+        
         m_mainMenuPanel = &GameObject::Create(*m_scene);
         m_mainMenuPanel->SetName("MainMenuPanel");
         m_mainMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
 
+        {
+            m_playButton = &GameObject::Create(*m_scene);
+            m_playButton->transform.LocalTranslate({ 200.0f, 50.0f, 0.0f });
+            m_playButton->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
+            UiButton* button = m_playButton->AddComponent<UiButton>();
+            button->AddListener(OnPlayButtonClick);
+            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            m_mainMenuPanel->AddChild(*m_playButton);
+        }
+/*
         m_playButton = &GameObject::Create(*m_scene);
         m_playButton->SetName("PlayButton");
         m_mainMenuPanel->AddChild(*m_playButton);
@@ -125,6 +138,8 @@ public:
         m_playButton->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
         UiButton* pPlayButton = m_playButton->AddComponent<UiButton>();
         pPlayButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+        MeshRenderer* pPlayerRenderer = m_playButton->AddComponent<MeshRenderer>();
+        pPlayerRenderer->SetGeometry(SHAPES.CUBE);
         pPlayButton->AddListener(OnPlayButtonClick);
 
         m_quitButton = &GameObject::Create(*m_scene);
@@ -136,6 +151,7 @@ public:
         UiButton* pQuitButton = m_quitButton->AddComponent<UiButton>();
         pQuitButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
         pQuitButton->AddListener(OnQuitButtonClick);
+        */
     }
 
     void MenuManager::CreatePauseMenu()
@@ -316,26 +332,17 @@ public:
     // --- FLOW DU JEU ---
     void MenuManager::StartGame()
     {
+        if (m_currentState == GameState::Playing) return;
         m_currentState = GameState::Playing;
         HideAllMenus();
 
         // 1. Désactiver la caméra du menu 
-        if (m_menuCameraObject)
+        if (m_CameraObject)
         {
-            m_menuCameraObject->SetActive(false);
+            m_CameraObject->SetActive(false);
         }
 
         // 2. Creation de la Camera du joueur
-        GameObject& CameraObject = GameObject::Create(*m_scene);
-        CameraObject.transform.LocalTranslate({ 0,0, -10 });
-        Camera* pCamera = CameraObject.AddComponent<Camera>();
-        pCamera->SetMainCamera();
-        pCamera->SetType(PERSPECTIVE);
-        pCamera->perspective.fov = XM_PIDIV4;
-        pCamera->perspective.nearPlane = 0.001f;
-        pCamera->perspective.farPlane = 500.0f;
-        pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
-        pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
         // 3. Creation du Joueur et du monde (inchangé)
         GameObject& PlayerObject = GameObject::Create(*m_scene);
@@ -343,6 +350,20 @@ public:
         light->DefaultDirectionLight();
         light->intensity = 1.0f;
         PlayerObject.transform.SetWorldPosition({ 0.0f,-5.0f,-10.0f });
+
+        GameObject& Weapon = GameObject::Create(*m_scene);
+        MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
+        pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
+        Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
+        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+        Weapon.SetName("Weapon_1");
+
+        Player* player = new Player(&PlayerObject);
+        player->GetGameObject()->AddChild(*m_CameraObject);
+        player->GetGameObject()->AddChild(Weapon);
+        m_CameraObject->transform.LocalTranslate({ 0,0, -10 });
+        RessourcesManager::SetPlayer(player);
+        RessourcesManager::AddEntities(player);
 
         GameObject& SnowManObject = GameObject::Create(*m_scene);
         GameObject& testObject = GameObject::Create(*m_scene);
@@ -353,13 +374,6 @@ public:
         testObject.AddComponent<PhysicComponent>()->SetGravityScale(0.0f);
         testObject.SetName("TestObject");
         testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
-
-        GameObject& Weapon = GameObject::Create(*m_scene);
-        MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
-        Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
-        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
-        Weapon.SetName("Weapon_1");
 
         GameObject& Floor = GameObject::Create(*m_scene);
         Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
@@ -376,7 +390,7 @@ public:
         SnowMan* Snowman = new SnowMan(&SnowManObject);
         RessourcesManager::AddEntities(Snowman);
 
-        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
@@ -386,13 +400,9 @@ public:
         SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
         SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
-        RessourcesManager::AddEntities(Snowman3);
+        RessourcesManager::AddEntities(Snowman3);*/
 
-        Player* player = new Player(&PlayerObject);
-        player->GetGameObject()->AddChild(CameraObject);
-        player->GetGameObject()->AddChild(Weapon);
-        RessourcesManager::SetPlayer(player);
-        RessourcesManager::AddEntities(player);
+
     }
 
     void MenuManager::PauseGame()

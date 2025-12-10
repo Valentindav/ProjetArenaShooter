@@ -20,7 +20,8 @@ private:
     Scene* m_scene;
 
     // VARIABLE POUR LA CAMÉRA DE MENU
-    GameObject* m_menuCameraObject;
+    GameObject* m_CameraObject;
+    Camera* pCamera;
 
     GameObject* m_mainMenuPanel;
     GameObject* m_playButton;
