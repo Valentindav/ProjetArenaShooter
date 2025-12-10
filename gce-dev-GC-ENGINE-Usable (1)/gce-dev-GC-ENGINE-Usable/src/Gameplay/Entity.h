@@ -24,5 +24,5 @@ public:
         return m_speed;
     }
     virtual void Die() {}
-    virtual void TakeDamage();
+    virtual void TakeDamage(int damage);
 };

@@ -11,59 +11,77 @@ static void OnStartShootRobot(GameObject* me) {
 
 }
 
-static void OnUpdateShootRobot(GameObject* me) {
-    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    Robot* self = dynamic_cast<Robot*>(ent);
+static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting state with 3 state attack patern
+    Robot* self = dynamic_cast<Robot*>(RessourcesManager::GetEntityFromGameObject(me));
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
+
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 snowmanPos = me->transform.GetWorldPosition();
+    Vector3f32 robotPos = me->transform.GetWorldPosition();
+    Vector3f32 dir = playerPos - robotPos;
+    dir.Normalize();
 
-    Vector3f32 direction = playerPos - snowmanPos;
-    direction.Normalize();
+    float yaw = atan2f(dir.x, dir.z);
+    float pitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+    Vector3f32 targetEuler = Vector3f32(pitch, yaw, 0.0f);
 
-    float yaw = atan2f(direction.x, direction.z);
-    float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
-
-    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
-    /*if (self->m_WaitCooldown > 0.0f && self->m_WaitCooldown < 2.0f)
-    {
-
-
+    if (self->laserPhase == 0) {
+    
+        me->transform.SetWorldRotation(targetEuler);
+        Vector3f32 d = playerPos - robotPos;
+            self->lockedRotation = targetEuler;
+            self->laserPhase = 1;
+            self->laserTimer = 1.5f; 
+        return;
     }
-    else*/	if (self->m_WaitCooldown <= 0.0f)
-    {
-        GameObject* obj = me;
-        Scene* scene = const_cast<Scene*>(obj->GetScene());
-        GameObject& BulletObject = GameObject::Create(*scene);
-        Vector3f32 position = obj->transform.GetWorldPosition();
-        Vector3f32 forward = obj->transform.GetWorldForward();
 
-        BulletObject.transform.WorldScale({ 1,1,100 });
-        float spawnOffset = BulletObject.transform.GetWorldScale().z/100;
+    if (self->laserPhase == 1) {
+        me->transform.SetWorldRotation(self->lockedRotation);
 
-        Vector3f32 spawnPosition = position + forward * spawnOffset;
+        if (!self->laser) {
+            Scene* scene = (Scene*)me->GetScene();
+            GameObject& objLaser = GameObject::Create(*scene);
 
-        BulletObject.transform.SetWorldPosition(spawnPosition);
-        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+            Vector3f32 forward = me->transform.GetWorldForward();
+            Vector3f32 spawnPos = robotPos + forward * 2.5f;
 
-        MeshRenderer* pWeaponRenderer = BulletObject.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-        Texture* pWeaponTexture = RessourcesManager::GetTexture();
-        pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-        BulletObject.AddComponent<BoxCollider>()->SetActive(true);
-        BulletObject.AddComponent<PhysicComponent>();
-        BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-        Bullet* bullet = new Bullet(&BulletObject);
-        bullet->AddShoot();
-        bullet->SetOwner(me);
-        bullet->m_speed = 0.0f;
-        bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
-        self->m_WaitCooldown = 2.0f;
+            objLaser.transform.WorldScale({ 1,1,100 });
+            objLaser.transform.SetWorldPosition(spawnPos);
+            objLaser.transform.SetWorldRotation(self->lockedRotation);
+
+            self->laser = new Bullet(&objLaser);
+            self->laser->SetOwner(me);
+            self->laser->m_speed = 0.0f;
+            self->laser->SetDamage(0);
+            self->laser->SetLifeTime(5.f);
+        }
+
+        self->laserTimer -= GameManager::DeltaTime();
+        if (self->laserTimer <= 0.0f) {
+            self->laserPhase = 2;
+            self->laserTimer = 1.5f;
+        }
+        return;
     }
-    self->m_WaitCooldown -= GameManager::DeltaTime();
+    if (self->laserPhase == 2) {
+        me->transform.SetWorldRotation(self->lockedRotation);
+
+        if (self->laser) {
+            self->laser->SetDamage(5);
+        }
+
+        self->laserTimer -= GameManager::DeltaTime();
+        if (self->laserTimer <= 0.0f) {
+            if (self->laser) {
+                delete self->laser;
+                self->laser = nullptr;
+            }
+            self->laserPhase = 0; 
+        }
+        return;
+    }
 }
 
 

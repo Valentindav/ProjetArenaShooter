@@ -6,7 +6,7 @@ Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
       RessourcesManager::AddEntities(this);
   }
 
- void Entity::TakeDamage() // Entity action when she take damage ->maybe override this with certain entity when needed
+ void Entity::TakeDamage(int damage) // Entity action when she take m_damage ->maybe override this with certain entity when needed
    {
        if (this->m_life <= 0)
        {
@@ -20,7 +20,7 @@ Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
         }
         else
         {
-            this->m_life = this->m_life - 1;
+            this->m_life = this->m_life - damage;
             std::cout << this->m_life << std::endl;
         }
     }

@@ -7,17 +7,26 @@ using namespace gce;
 
 DECLARE_SCRIPT(Shoot_Update, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
 private:
-	float m_lifeTime = 0.0f;
 	inline static Vector<GameObject*> s_pendingDestroy;
 
 public:
 	void Start() // Start the lifetime of the bullet
 	{
-		m_lifeTime = 5.0f;
+		Bullet* self = dynamic_cast<Bullet*>(RessourcesManager::GetEntityFromGameObject(m_pOwner));
+		if (!self) return;
+		self->SetLifeTime(3.0f);
 	}
 
 	void Update() // move the bullet forward and destroy it when her lifetime is 0
 	{
+		Entity* entity = nullptr;
+		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		Bullet* bullet = dynamic_cast<Bullet*>(entity);
+		if (!m_pOwner || !m_pOwner->IsActive() || !bullet->GetOwner() || !bullet->GetOwner()->IsActive())
+		{
+			s_pendingDestroy.PushBack(m_pOwner);
+			return;
+		}
 		if (!s_pendingDestroy.Empty())
 		{
 			for (GameObject* pObj : s_pendingDestroy)
@@ -26,9 +35,7 @@ public:
 			}
 			s_pendingDestroy.Clear();
 		}
-		Entity* entity = nullptr;
-		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
-		if (m_lifeTime >= 0.0f)
+		if (bullet->GetLifeTime() >= 0.0f)
 		{
 			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * entity->GetSpeed()/100 * GameManager::DeltaTime());
 		}
@@ -51,14 +58,18 @@ public:
 			}
 			if (!already) s_pendingDestroy.PushBack(m_pOwner);
 		}
-		m_lifeTime -= GameManager::DeltaTime();
+		bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
 	}
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
 		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+
+		Entity* OtherEntity = nullptr;
+		OtherEntity = RessourcesManager::GetEntityFromGameObject(other);
 
 		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 		{
@@ -92,7 +103,7 @@ public:
 				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
 				if (!alreadyOther)
 				{
-						Otherentity->TakeDamage();
+						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
 				}
 			}
 		}
@@ -137,4 +148,17 @@ public:
 	{
 		MeshRenderer* pMeshRenderer = GetGameObject()->AddComponent<MeshRenderer>();
 		pMeshRenderer->SetGeometry(geo);
+	}
+
+	void Bullet::SetDamage(int dmg)
+	{
+	m_damage = dmg;
+	if (m_damage == 0) {
+		GetGameObject()->GetComponent<BoxCollider>()->SetActive(false);
+		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(false);
+	}
+	else {
+		GetGameObject()->GetComponent<BoxCollider>()->SetActive(true);
+		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(true);
+	}
 	}
