@@ -26,10 +26,11 @@ public:
 			}
 			s_pendingDestroy.Clear();
 		}
-
+		Entity* entity = nullptr;
+		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 		if (m_lifeTime >= 0.0f)
 		{
-			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * entity->GetSpeed()/100 * GameManager::DeltaTime());
 		}
 		else
 		{

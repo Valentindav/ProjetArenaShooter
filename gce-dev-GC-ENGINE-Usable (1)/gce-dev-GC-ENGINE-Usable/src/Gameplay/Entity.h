@@ -7,9 +7,9 @@ class Entity
 {
 protected:
     GameObject* m_gameObject;
+public:
     float m_speed;
 
-public:
     float m_life = 10;
     Entity(GameObject* obj, float spd = 1.0f);
     virtual ~Entity() = default;

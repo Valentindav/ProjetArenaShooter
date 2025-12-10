@@ -41,7 +41,8 @@ static void OnUpdateShootRobot(GameObject* me) {
         Vector3f32 position = obj->transform.GetWorldPosition();
         Vector3f32 forward = obj->transform.GetWorldForward();
 
-        float spawnOffset = 1.0f;
+        BulletObject.transform.WorldScale({ 1,1,100 });
+        float spawnOffset = BulletObject.transform.GetWorldScale().z/100;
 
         Vector3f32 spawnPosition = position + forward * spawnOffset;
 
@@ -52,13 +53,13 @@ static void OnUpdateShootRobot(GameObject* me) {
         pWeaponRenderer->SetGeometry(SHAPES.CUBE);
         Texture* pWeaponTexture = RessourcesManager::GetTexture();
         pWeaponRenderer->SetAlbedoTexture(pWeaponTexture);
-        BulletObject.transform.WorldScale({ 0.25,0.25,50 });
         BulletObject.AddComponent<BoxCollider>()->SetActive(true);
         BulletObject.AddComponent<PhysicComponent>();
         BulletObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
         Bullet* bullet = new Bullet(&BulletObject);
         bullet->AddShoot();
         bullet->SetOwner(me);
+        bullet->m_speed = 0.0f;
         bullet->GetGameObject()->GetComponent<PhysicComponent>()->SetIsTrigger(true);
         self->m_WaitCooldown = 2.0f;
     }
