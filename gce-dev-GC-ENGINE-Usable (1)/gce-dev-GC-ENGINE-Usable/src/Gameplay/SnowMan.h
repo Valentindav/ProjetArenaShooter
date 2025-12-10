@@ -8,7 +8,7 @@ class SnowMan : public Ennemy
 private:
 	TileMap* m_tileMap = nullptr;
 	std::vector<Node<Tile>*> m_currentPath;
-	int m_currentNodeIndex = 0;
+	Vector2f32 m_currentNodeIndex = { 0.f, 0.f };
 	float m_repathTimer = 0.f;
 
 public: 
@@ -16,9 +16,10 @@ public:
 	void Die() override;
 	void Attack()override;
 	void AddScript();
-	void SetPath(const std::vector<Node<Tile>*>& path);
-	void FollowPath();
+	void GeneratePathToPlayer(GameObject* player);
 	TileMap* GetTileMap() const { return m_tileMap; }
 	std::vector<Node<Tile>*>& GetPath() { return m_currentPath; }
+	void SetCurrentTargetNodePosition() ;
+	void FollowPath();
 };
 

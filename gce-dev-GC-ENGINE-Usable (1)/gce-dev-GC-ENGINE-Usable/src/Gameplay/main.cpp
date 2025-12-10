@@ -20,7 +20,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-	TileMap tileMap(100, 100, .5f, scene, { .0f,0.0f,.0f });
+	TileMap tileMap(100, 100, .05f, scene, { -25.0f,-25.0f });
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
     params.width = 1920;
@@ -86,19 +86,19 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
     SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-    SnowMan* Snowman = new SnowMan(&SnowManObject);
+    SnowMan* Snowman = new SnowMan(&SnowManObject, &tileMap);
     RessourcesManager::AddEntities(Snowman);
 
     GameObject& SnowManObject2 = GameObject::Create(scene);
     SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
     SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-    SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
+    SnowMan* Snowman2 = new SnowMan(&SnowManObject2, &tileMap);
     RessourcesManager::AddEntities(Snowman2);
 
     GameObject& SnowManObject3 = GameObject::Create(scene);
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
     SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-    SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
+    SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
     RessourcesManager::AddEntities(Snowman3);
 
     Player* player = new Player(&PlayerObject);
