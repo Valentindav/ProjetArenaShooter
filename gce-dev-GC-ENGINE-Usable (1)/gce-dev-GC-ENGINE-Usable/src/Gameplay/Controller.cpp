@@ -11,64 +11,142 @@ using namespace gce;
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
             if (GetKey(Keyboard::LSHIFT) && player->m_energy>0.0f) {
-                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 10 * GameManager::DeltaTime());
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (player->GetSpeed()*5) * GameManager::DeltaTime());
 				player->m_energy -= 20 * GameManager::DeltaTime();
-				std::cout << "Energy: " << player->m_energy << std::endl;
             }
             else {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * player->GetSpeed() * GameManager::DeltaTime());
             }
         }
         if (GetKey(Keyboard::S))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
+            if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
+                player->m_energy -= 20 * GameManager::DeltaTime();
+            }
+            else {
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-player->GetSpeed()) * GameManager::DeltaTime());
+            }
         }
         if (GetKey(Keyboard::Q) || GetKey(Keyboard::A))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
+            if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
+                obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
+                player->m_energy -= 20 * GameManager::DeltaTime();
+            }
+            else {
+                obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-player->GetSpeed()) * GameManager::DeltaTime());
+            }
         }
         if (GetKey(Keyboard::D))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+            if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
+                obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
+                player->m_energy -= 20 * GameManager::DeltaTime();
+            }
+            else {
+                obj->transform.WorldTranslate(obj->transform.GetLocalRight() * player->GetSpeed() * GameManager::DeltaTime());
+            }
         }
         if (GetKey(Keyboard::ESC))
         {
             exit(0);
         }
-        if (GetKey(Keyboard::SPACE))
+        if (GetKeyDown(Keyboard::SPACE))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * player->GetSpeed() * GameManager::DeltaTime());
             if (obj->GetScript<Move>()->onGround)
             {
                 obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,obj->GetScript<Move>()->jumpForce,0.0f });
                 obj->GetScript<Move>()->onGround = false;
             }
         }
+        if (GetKey(Keyboard::R))
+        {
+            player->m_realoading = true;
+            if (player->ReloadCD <= 0.0f) {
+                player->ammo = 15;
+                player->m_realoading = false;
+            }
+        }
         if (GetKey(Keyboard::LCTRL))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -(player->GetSpeed()) * GameManager::DeltaTime());
+        }
+        if (GetKeyDown(Keyboard::_1)) {
+            player->m_speed = player->m_baseSpeed;
+            if (player->m_weaponLevel = 1) {
+                player->m_currentState = Player::GIFT_WEAPON;
+				player->m_weaponDamage = 1.0f;
+			}
+            else if (player->m_weaponLevel >= 2) {
+                player->m_currentState = Player::NERF_WEAPON;
+                player->m_weaponDamage = 2.0f;
+			}
+            else if (player->m_weaponLevel >= 3) {
+                player->m_currentState = Player::THOMPSON_WEAPON;
+                player->m_weaponDamage = 3.0f;
+            }
+			
+        }
+        if (GetKeyDown(Keyboard::_2)) {
+            player->m_speed = player->m_baseSpeed + 2;
+            if (player->m_weaponLevel = 1) {
+                player->m_currentState = Player::CANDY_CANE;
+				player->m_melleeDamage = 2.0f;
+            }
+            else if (player->m_weaponLevel >= 2) {
+                player->m_currentState = Player::BROKEN_CANDY_CANE;
+                player->m_melleeDamage = 3.0f;
+            }
+            else if (player->m_weaponLevel >= 3) {
+                player->m_currentState = Player::TESSON;
+                player->m_melleeDamage = 4.0f;
+            }
+        }
+        if (GetKeyDown(Keyboard::_3)) {
+            player->m_speed = player->m_baseSpeed - 1;
+			player->m_currentState = Player::BAZZOKA_WEAPON;
         }
         if (GetButtonDown(Mouse::LEFT))
         {
-            if (obj->GetScript<Move>()->m_shootTimer > 0.0f)
-            {
-                return;
-            }
-
-            for (auto weapon : obj->GetChildren())
-            {
-                if (weapon->GetName() == "Weapon_1")
+				if (player->m_currentState == Player::GIFT_WEAPON || player->m_currentState == Player::NERF_WEAPON || player->m_currentState == Player::THOMPSON_WEAPON)
                 {
-                    Scene* scene = const_cast<Scene*>(obj->GetScene());
-                    GameObject& BulletObject = GameObject::Create(*scene);
-                    BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
-                    BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-                    Bullet* bullet = new Bullet(&BulletObject);
-                    bullet->SetOwner(obj);
-                    obj->GetScript<Move>()->lastBullet = bullet;
-                    obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
+                    if (player->ammo > 0 && !player->m_realoading) {
+                        Scene* scene = const_cast<Scene*>(obj->GetScene());
+                        GameObject& BulletObject = GameObject::Create(*scene);
+                        BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+                        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+                        Bullet* bullet = new Bullet(&BulletObject);
+                        bullet->SetOwner(obj);
+                        obj->GetScript<Move>()->lastBullet = bullet;
+                        obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
+						player->ammo -= 1;
+                        player->ReloadCD = 1.0f;
+                    } else {
+                        player->m_realoading = true;
+                        if (player->ReloadCD <= 0.0f) {
+							player->ammo = 15;
+                            player->m_realoading = false;
+                        }
+                    }
                 }
-            }
+                else if (player->m_currentState == Player::CANDY_CANE || player->m_currentState == Player::BROKEN_CANDY_CANE || player->m_currentState == Player::TESSON) {
+                    if (player->meleeCD < 0.0f) {
+                        for (auto entity : RessourcesManager::getEntities()) {
+                            if (entity != nullptr && entity->GetGameObject() != nullptr && entity != entityPlayer && player != nullptr) {
+                                Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - entity->GetGameObject()->transform.GetWorldPosition();
+                                if (d.Norm() < 5.0f) {
+                                    entity->TakeDamage(1);
+									player->meleeCD = 1.0f;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (player->m_currentState == Player::BAZZOKA_WEAPON) {
+
+                }
         }
         if (GetButtonDown(Mouse::RIGHT))
         {
@@ -84,6 +162,7 @@ using namespace gce;
         if (!GetKey(Keyboard::LSHIFT) && player->m_energy < 100.0f) {
            
             player->m_energy += 10 * GameManager::DeltaTime();
-            std::cout << "Energy: " << player->m_energy << std::endl;
         }
+		player->ReloadCD -= GameManager::DeltaTime();
+		player->meleeCD -= GameManager::DeltaTime();
     }

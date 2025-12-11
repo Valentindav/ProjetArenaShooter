@@ -17,7 +17,13 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Player");
+	m_weaponLevel = 1;
+    m_baseSpeed = spd;
     AddMove();
+}
+
+void Player::UpdateWeapon() // change the weapno look according to the current state
+{
 }
 
 void Player::AddMove() // add move script to player

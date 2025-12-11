@@ -33,7 +33,7 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
         Vector3f32 d = playerPos - robotPos;
             self->lockedRotation = targetEuler;
             self->laserPhase = 1;
-            self->laserTimer = 1.5f; 
+            self->laserTimer = 5.0f; 
         return;
     }
 

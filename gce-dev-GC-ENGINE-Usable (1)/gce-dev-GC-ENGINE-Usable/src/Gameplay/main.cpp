@@ -7,14 +7,17 @@
 #include "TileMap.h"
 #include "MenuManager.h"
 #include "JsonImporter.hpp"
+#include "Elf.h"
+#include "Deer.h"
 
 /*TODO
-- Pathfinding A*
-- state Machine for ennemies
-- other enemies
-- other weapons
-
+- texturing 
+- UIX
+- sound effect
+- ennemies spawn 
+- scene
 */
+
 int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) 
 {	
     //----------------------------------INIT WORLD----------------------------------
@@ -108,12 +111,12 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pSceneLight->range = 20.0f;
     pSceneLight->UpdateLight();
 
-	tileMap.DebugMode(scene);
+	//tileMap.DebugMode(scene);
 
     //----------------------------------TestWorld----------------------------------
 
     // Importation de la sc�ne JSON et ajout des BoxCollider pour visualisation
-    auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");
+    //auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");
     //for (auto& [name, obj] : importedScene) if (obj) obj->AddComponent<BoxCollider>();
 
     //----------------------------------Run----------------------------------
@@ -122,11 +125,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
+    RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
     RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
     Robot* robot = new Robot(&RobotObject);
 
-    GameObject& SnowManObject = GameObject::Create(scene);
+    /*GameObject& SnowManObject = GameObject::Create(scene);
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
     SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject, &tileMap);
@@ -146,7 +149,20 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     //SnowManObject.transform.SetWorldPosition({ -10.0f,-9.0f,-5.0f });
     //SnowManObject.transform.SetWorldRotation({ 0.0f,0.0f,0.0f });
-    Player* player = new Player(&PlayerObject);
+
+    GameObject& ElfObject = GameObject::Create(scene);
+    ElfObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+    ElfObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f }); 
+    Elf* elf = new Elf(&ElfObject, &tileMap);
+    RessourcesManager::AddEntities(elf);
+
+    GameObject& DeerObject = GameObject::Create(scene);
+    DeerObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+    DeerObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+    Deer* deer = new Deer(&DeerObject, &tileMap);
+    RessourcesManager::AddEntities(deer);*/
+
+    Player* player = new Player(&PlayerObject,3);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
     RessourcesManager::SetPlayer(player);

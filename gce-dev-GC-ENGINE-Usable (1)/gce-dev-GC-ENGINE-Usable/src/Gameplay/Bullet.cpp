@@ -22,7 +22,7 @@ public:
 		Entity* entity = nullptr;
 		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 		Bullet* bullet = dynamic_cast<Bullet*>(entity);
-		if (!m_pOwner || !m_pOwner->IsActive() || !bullet->GetOwner() || !bullet->GetOwner()->IsActive())
+		if (!m_pOwner && !m_pOwner->IsActive() && !bullet->GetOwner() && !bullet->GetOwner()->IsActive())
 		{
 			s_pendingDestroy.PushBack(m_pOwner);
 			return;
@@ -89,7 +89,7 @@ public:
 		}
 		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 		{
-			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot")
+			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer")
 			{
 				bool alreadyOther = false;
 				for (GameObject* p : s_pendingDestroy)
@@ -152,18 +152,23 @@ public:
 
 	void Bullet::SetDamage(int dmg)
 	{
-	if (this == nullptr) return;
-	if (m_lifeTime <= 0.0f) return;
-	if (!GetGameObject()) return;
-	if (!GetGameObject()->GetComponent<BoxCollider>()) return;
-	if (!GetGameObject()->GetComponent<PhysicComponent>()) return;
-	m_damage = dmg;
-	if (m_damage == 0) {
-		 GetGameObject()->GetComponent<BoxCollider>()->SetActive(false);
-		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(false);
-	}
-	else {
-		GetGameObject()->GetComponent<BoxCollider>()->SetActive(true);
-		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(true);
-	}
+		if (this == nullptr) return;
+		GameObject* go = GetGameObject();
+		if (!go) return;
+		if (!go->HasComponent<BoxCollider>() || !go->HasComponent<PhysicComponent>()) {
+			m_damage = dmg;
+			return;
+		}
+		m_damage = dmg;
+		BoxCollider* bc = go->GetComponent<BoxCollider>();
+		PhysicComponent* pc = go->GetComponent<PhysicComponent>();
+		if (m_damage == 0) {
+			if (bc) bc->SetActive(false);
+			if (pc) pc->SetActive(false);
+		}
+		else {
+			if (bc) bc->SetActive(true);
+			if (pc) pc->SetActive(true);
+			std::cout << "Damage set to " << m_damage << std::endl;
+		}
 	}
