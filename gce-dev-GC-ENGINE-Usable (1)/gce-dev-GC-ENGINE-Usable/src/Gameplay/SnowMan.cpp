@@ -59,6 +59,18 @@ SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
             }
         );
         sm->AddTransition(conds, idle);
+        /*SnowMan* ownerEntity = nullptr;
+        for (Entity* p : RessourcesManager::getEntities())
+        {
+            if (m_pOwner == p->GetGameObject())
+            {
+                ownerEntity = dynamic_cast<SnowMan*>(p);
+                break;
+            }
+        }
+		ownerEntity->SetCurrentTargetNodePosition();
+		ownerEntity->GeneratePathToPlayer(player->GetGameObject());
+        ownerEntity->FollowPath();*/
     }
 }
 
@@ -70,4 +82,54 @@ void SnowMan::Die()
 void SnowMan::Attack()
 {
 
+}
+
+void SnowMan::SetCurrentTargetNodePosition()
+{
+    Node<Tile>* node = m_tileMap->GetNodeFromWorldPosition(m_gameObject->transform.GetWorldPosition());
+    if (node)
+    {
+        m_currentNodeIndex.x = static_cast<float>(node->data->gridX);
+        m_currentNodeIndex.y = static_cast<float>(node->data->gridY);
+    }
+}
+
+void SnowMan::GeneratePathToPlayer(GameObject* player) 
+{
+    if (!m_tileMap) return;
+
+    Node<Tile>* startNode = m_tileMap->GetNodeFromWorldPosition(m_gameObject->transform.GetWorldPosition());
+    Node<Tile>* targetNode = m_tileMap->GetNodeFromWorldPosition(player->transform.GetWorldPosition());
+
+    if (startNode && targetNode && startNode != targetNode)
+    {
+        m_currentPath = m_tileMap->GeneratePath(startNode, targetNode);
+    }
+}
+
+void SnowMan::FollowPath()
+{
+	if (m_currentPath.size() < 2) return;
+    
+    Vector3f32 nextPos = {
+        m_currentPath[1]->data->worldPosition.x,
+        m_gameObject->transform.GetWorldPosition().y,
+        m_currentPath[1]->data->worldPosition.y
+    };
+
+    Vector3f32 currentPos = m_gameObject->transform.GetWorldPosition();
+    Vector3f32 direction = nextPos - currentPos;
+
+    if (direction.SquareNorm() > 0.1f)
+    {
+        direction.SelfNormalize();
+        float speed = 5.0f;
+        m_gameObject->transform.SetWorldPosition(currentPos + direction * speed * GameManager::DeltaTime());
+    }
+}
+
+void SnowMan::AddScript()
+{
+    GameObject* obj = GetGameObject();
+    obj->AddScript<AttackScript>();
 }

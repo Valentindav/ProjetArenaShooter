@@ -206,14 +206,14 @@ struct Vector
     /// @param value Element value to insert
     /// @return Iterator pointing to the inserted 'value'.
     // ==================================================================
-    iterator Insert( const_iterator pos, const_reference value ) { return std.insert( pos, value ); }
+    iterator insert( const_iterator pos, const_reference value ) { return std.insert( pos, value ); }
     // ========================================================================
     /// @brief Inserts 'value' before 'pos', possibly using move semantics.
     /// @param pos Iterator before which the content will be inserted
     /// @param value Element value to insert
     /// @return Iterator pointing to the inserted 'value'.
     // ========================================================================
-    iterator Insert( const_iterator pos, rvalue value ) { return std.insert( pos, value ); }
+    iterator insert( const_iterator pos, rvalue value ) { return std.insert( pos, value ); }
     // =================================================================================================
     /// @brief Inserts 'count' copies of the 'value' before 'pos'.
     /// @param pos Iterator before which the content will be inserted
@@ -221,7 +221,7 @@ struct Vector
     /// @param value Element value to insert
     /// @return Iterator pointing to the first element inserted, or 'pos' if no element is inserted.
     // =================================================================================================
-    iterator Insert( const_iterator pos, size_type const count, const_reference value ) { return std.insert( pos, count, value ); }
+    iterator insert( const_iterator pos, size_type const count, const_reference value ) { return std.insert( pos, count, value ); }
 
     // =========================================================================
     /// @brief Constructs an element in-place directly before 'pos'.

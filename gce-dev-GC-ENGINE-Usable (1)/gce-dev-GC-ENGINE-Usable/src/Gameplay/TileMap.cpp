@@ -1,67 +1,218 @@
 #include "TileMap.h"
-#include <algorithm>
 #include <queue>
 #include <cmath>
+#include <algorithm>
 
-    TileMap* g_tileMapInstance = nullptr;
+TileMap::TileMap(int width, int length, float cellSize, gce::Scene& scene, Vector3f32 const& origin) 
+    : m_width(width), m_length(length), m_cellSize(cellSize), m_origin(origin)
+{
+	m_nodeVector = std::vector<std::vector<Node<Tile>*>>(width, std::vector<Node<Tile>*>(length, nullptr));
 
-    TileMap::TileMap(int width, int height, float cellSize, Vector3f32 const& origin): m_width(width), m_height(height), m_cellSize(cellSize), m_origin(origin)
+    // Calcul du coin supérieur gauche (Start) pour que 'origin' soit le CENTRE de la grille
+    float halfWidth = (width * cellSize) / 2.0f;
+    float halfLength = (length * cellSize) / 2.0f;
+    
+    // On assume que la grille est sur le plan XZ (Y est la hauteur)
+    float startX = origin.x - halfWidth;
+    float startZ = origin.z - halfLength;
+
+    for (int i = 0; i < width; ++i)
     {
-        m_walkable.Resize(width * height);
-        for (int i = 0; i < width * height; ++i) m_walkable[i] = 1;
+        for (int j = 0; j < length; ++j)
+        {
+            m_nodeVector[i][j] = new Node<Tile>();
+            m_nodeVector[i][j]->data = new Tile();
+            m_nodeVector[i][j]->data->gridX = i;
+            m_nodeVector[i][j]->data->gridY = j;
+            
+            // Position du CENTRE de la cellule
+            m_nodeVector[i][j]->data->worldPosition.x = startX + (i * cellSize) + (cellSize * 0.5f);
+            m_nodeVector[i][j]->data->worldPosition.y = startZ + (j * cellSize) + (cellSize * 0.5f); // .y stocke le Z monde
+        }
     }
 
-    void TileMap::CreateInstance(int width, int height, float cellSize, Vector3f32 const& origin)
+    int directions[8][2] =
     {
-        if (g_tileMapInstance == nullptr)
-            g_tileMapInstance = new TileMap(width, height, cellSize, origin);
-    }
+        {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+    };
 
-    TileMap* TileMap::Instance()
+    for (int i = 0; i < width; ++i)
     {
-        return g_tileMapInstance;
+        for (int j = 0; j < length; ++j)
+        {
+            m_nodeVector[i][j]->neighbors.clear();
+            for (int l = 0; l < 8; l++)
+            {
+                int dx = i + directions[l][0];
+                int dy = j + directions[l][1];
+                if (dx >= 0 && dx < width && dy >= 0 && dy < length)
+                {
+                    m_nodeVector[i][j]->neighbors.push_back(m_nodeVector[dx][dy]);
+                }
+            }
+        }
     }
+}
 
-
-    bool TileMap::IsInside(int x, int y) const
+TileMap::~TileMap()
+{
+    for (auto& row : m_nodeVector)
     {
-        return x >= 0 && y >= 0 && x < m_width && y < m_height;
+        for (auto& node : row)
+        {
+            delete node->data;
+            delete node;
+        }
     }
+}
 
-    bool TileMap::IsWalkable(int x, int y) const
+GameObject* TileMap::DebugMode(gce::Scene& scene)
+{
+    GameObject& zone = GameObject::Create(scene);
+    MeshRenderer* pZoneRenderer = zone.AddComponent<MeshRenderer>();
+    pZoneRenderer->SetGeometry(SHAPES.CUBE);
+
+    float widthReal = m_width * m_cellSize;
+    float lengthReal = m_length * m_cellSize;
+
+    zone.transform.LocalScale({ widthReal, m_cellSize, lengthReal });
+
+    zone.transform.SetWorldPosition({
+        m_origin.x,
+        m_origin.y - (m_cellSize * 0.5f) + 30, 
+        m_origin.z
+    });
+
+    zone.SetName("Floor");
+	return &zone;
+}
+
+Node<Tile>* TileMap::GetNodeFromWorldPosition(Vector3f32 const& worldPos)
+{
+    float halfWidth = (m_width * m_cellSize) / 2.0f;
+    float halfLength = (m_length * m_cellSize) / 2.0f;
+    float startX = m_origin.x - halfWidth;
+    float startZ = m_origin.z - halfLength;
+
+    float relX = worldPos.x - startX;
+    float relZ = worldPos.z - startZ;
+
+    int x = static_cast<int>(relX / m_cellSize);
+    int y = static_cast<int>(relZ / m_cellSize);
+
+    if (x >= 0 && x < m_width && y >= 0 && y < m_length)
     {
-        if (!IsInside(x, y)) return false;
-        return m_walkable[y * m_width + x] != 0;
+        return m_nodeVector[x][y];
     }
+    return nullptr;
+}
 
-    void TileMap::SetWalkable(int x, int y,bool walkable)
+vector<Node<Tile>*> TileMap::GeneratePath(Node<Tile>* start, Node<Tile>* target)
+{
+    if (FindPath(start, target))
     {
-        if (!IsInside(x, y)) return;
-        if (m_walkable[y * m_width + x]) walkable = 1;
-        else walkable = 0;
+        return ReconstructPath(start, target);
     }
+    return {};
+}
 
-    Vector2i32 TileMap::WorldToGrid(Vector3f32 const& world) const
+void TileMap::ClearPathData()
+{
+    for (auto& row : m_nodeVector)
     {
-        Vector3f32 rel = { world.x - m_origin.x, world.y - m_origin.y, world.z - m_origin.z };
-        int gx = static_cast<int>(std::floor(rel.x / m_cellSize));
-        int gy = static_cast<int>(std::floor(rel.y / m_cellSize));
-        return { gx, gy };
+        for (auto& node : row)
+        {
+            node->data->distanceToStart = 0.f;
+            node->data->distanceToEnd = 0.f;
+            node->data->totalCost = 0.f;
+            node->data->way = false;
+            node->visited = false;
+            node->cameFrom = nullptr;
+        }
+    }
+}
+
+vector<Node<Tile>*> TileMap::ReconstructPath(Node<Tile>* start, Node<Tile>* target) {
+    std::vector<Node<Tile>*> path;
+    Node<Tile>* current = target;
+
+    while (current != nullptr) {
+        path.push_back(current);
+        current->data->way = true;
+        if (current == start) break;
+        current = current->cameFrom;
     }
 
-    Vector3f32 TileMap::GridToWorld(int x, int y) const
+    std::reverse(path.begin(), path.end());
+
+    if (!path.empty() && path[0] == start) {
+        return path;
+    }
+    
+    return {};
+}
+
+bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
+{
+    if (!start || !target || !start->data->walkable || !target->data->walkable)
     {
-        float wx = m_origin.x + (x + 0.5f) * m_cellSize;
-        float wy = m_origin.y + (y + 0.5f) * m_cellSize;
-        return { wx, wy, m_origin.z };
+        return false;
     }
 
-    int TileMap::idx(int x, int y) const {
-        return y * m_width + x;
+    std::priority_queue<Node<Tile>*, std::vector<Node<Tile>*>, CompareTileAStar> priority;
+
+    const float D = 1.0f;
+    const float D2 = std::sqrt(2.0f);
+
+    for (auto& row : m_nodeVector) {
+        for (auto& node : row) {
+            node->data->distanceToStart = std::numeric_limits<float>::infinity();
+            node->data->totalCost = std::numeric_limits<float>::infinity();
+            node->cameFrom = nullptr;
+            node->visited = false;
+        }
     }
 
-    Vector<Vector3f32> TileMap::FindPath(Vector3f32 const& startWorld, Vector3f32 const& goalWorld) const
-    {
-		Vector<Vector3f32> emptyvector; 
-        return emptyvector;
+    start->data->distanceToStart = 0.0f;
+    int dx = std::abs(start->data->gridX - target->data->gridX);
+    int dy = std::abs(start->data->gridY - target->data->gridY);
+    start->data->distanceToEnd = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+    start->data->totalCost = start->data->distanceToEnd;
+        
+    priority.push(start);
+
+    while (!priority.empty()) {
+        Node<Tile>* current = priority.top();
+        priority.pop();
+
+        if (current == target) {
+            return true;
+        }
+
+        if (current->visited) continue;
+        current->visited = true;
+
+        for (Node<Tile>* neighbor : current->neighbors) {
+            if (neighbor == nullptr || !neighbor->data->walkable) continue;
+
+            float movementCost = (std::abs(current->data->gridX - neighbor->data->gridX) == 1 && std::abs(current->data->gridY - neighbor->data->gridY) == 1) ? D2 : D;
+            movementCost *= neighbor->data->cost;
+
+            float newDistToStart = current->data->distanceToStart + movementCost;
+
+            if (newDistToStart < neighbor->data->distanceToStart) {
+                neighbor->data->distanceToStart = newDistToStart;
+                dx = std::abs(neighbor->data->gridX - target->data->gridX);
+                dy = std::abs(neighbor->data->gridY - target->data->gridY);
+                neighbor->data->distanceToEnd = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+                neighbor->data->totalCost = newDistToStart + neighbor->data->distanceToEnd;
+                neighbor->cameFrom = current;
+                
+                priority.push(neighbor);
+            }
+        }
     }
+
+	return false;
+}

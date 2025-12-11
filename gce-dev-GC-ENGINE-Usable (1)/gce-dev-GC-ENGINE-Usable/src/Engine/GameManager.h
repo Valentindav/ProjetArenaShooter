@@ -44,6 +44,7 @@ public:
 	[[nodiscard]] static StatesSystem& GetStatesSystem();
 	[[nodiscard]] static UiSystem& GetUiSystem();
     [[nodiscard]] static Vector<Camera*>& GetMainCameras();
+    [[nodiscard]] static Vector<gce::Scene*>& GetScenes();
 
 	static D12PipelineObject const* GetDefaultPso();
 

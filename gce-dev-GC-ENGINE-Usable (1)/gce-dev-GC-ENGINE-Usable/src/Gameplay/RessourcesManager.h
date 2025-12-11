@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.h>
+#include "TileMap.h"
 
 class Entity;
 class Player;
@@ -20,6 +21,9 @@ private:
     gce::Vector<Entity*> m_entities;
     gce::Geometry* bulletGeo = gce::GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
     gce::Texture* m_bottleTexture = new gce::Texture("res/Exemple/TexturesTest.jpg");
-    inline static RessourcesManager* m_Instance = nullptr;
+    static TileMap* GetTileMap();
+	static void SetTileMap(TileMap* tileMap);
+    inline static RessourcesManager* m_instance = nullptr;
     Player* m_player = nullptr;
+    TileMap* m_tileMap;
 };

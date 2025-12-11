@@ -6,6 +6,7 @@
 #include "RessourcesManager.h"
 #include "TileMap.h"
 #include "MenuManager.h"
+#include "JsonImporter.hpp"
 
 /*TODO
 - Pathfinding A*
@@ -21,7 +22,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-    TileMap::CreateInstance(50, 50, 0.5f, { -12.5f, -12.5f, 0.0f });
+	TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
     params.width = 1920;
@@ -44,10 +45,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     //----------------------------------INIT GameObject----------------------------------
     GameObject& PlayerObject = GameObject::Create(scene);
     Light* light = PlayerObject.AddComponent<Light>();
+    // Correction : Enregistrement et d�sactivation propre de la lumi�re du joueur
+    gce::LightManager::AddLight(*light);
     light->DefaultDirectionLight();
-    light->intensity = 1.0f;
-
-    GameObject& SnowManObject = GameObject::Create(scene);
+    light->intensity = 0.0f; 
+    light->UpdateLight();
 
     GameObject& RobotObject = GameObject::Create(scene);
 
@@ -71,12 +73,47 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
     MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
     pFloorRenderer->SetGeometry(SHAPES.CUBE);
-    Floor.transform.LocalScale({ 20.f,1.f,20.f });
+    pFloorRenderer->SetAlbedoTexture(pNewTexture);
+    Floor.transform.LocalScale({ 200.f,1.f,200.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
 	Floor.SetName("Floor");
+    
     Light* light2 = Floor.AddComponent<Light>();
+    // Correction : Enregistrement et d�sactivation propre de la lumi�re du sol
+    gce::LightManager::AddLight(*light2);
     light2->DefaultDirectionLight();
-    light2->intensity = 1.0f;
+    light2->intensity = 0.0f;
+    light2->UpdateLight();
+
+    // Ajout d'une lumi�re directionnelle venant du haut pour �clairer toute la sc�ne
+    GameObject& LightAbove = GameObject::Create(scene);
+    Light* pLightAbove = LightAbove.AddComponent<Light>();
+    gce::LightManager::AddLight(*pLightAbove);
+    pLightAbove->DefaultDirectionLight();
+    pLightAbove->direction = { 0.0f, -1.0f, 0.0f }; // Pointe vers le bas
+    LightAbove.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f }); 
+    pLightAbove->intensity = 1.f; 
+    pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    pLightAbove->UpdateLight();
+
+    // Ajout d'une lumi�re ponctuelle sur un GameObject "Light" au-dessus de la sc�ne
+    GameObject& SceneLight = GameObject::Create(scene);
+    SceneLight.SetName("Light");
+    SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
+    Light* pSceneLight = SceneLight.AddComponent<Light>();
+    gce::LightManager::AddLight(*pSceneLight);
+    pSceneLight->DefaultPointLight();
+    pSceneLight->intensity = 1.0f;
+    pSceneLight->range = 20.0f;
+    pSceneLight->UpdateLight();
+
+	tileMap.DebugMode(scene);
+
+    //----------------------------------TestWorld----------------------------------
+
+    // Importation de la sc�ne JSON et ajout des BoxCollider pour visualisation
+    auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");
+    //for (auto& [name, obj] : importedScene) if (obj) obj->AddComponent<BoxCollider>();
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -92,6 +129,23 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
     RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
     Robot* robot = new Robot(&RobotObject);
+   /* GameObject& SnowManObject = GameObject::Create(scene);
+    SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+    SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+    SnowMan* Snowman = new SnowMan(&SnowManObject, &tileMap);
+    RessourcesManager::AddEntities(Snowman);
+
+    GameObject& SnowManObject2 = GameObject::Create(scene);
+    SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
+    SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+    SnowMan* Snowman2 = new SnowMan(&SnowManObject2, &tileMap);
+    RessourcesManager::AddEntities(Snowman2);
+
+    GameObject& SnowManObject3 = GameObject::Create(scene);
+    SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
+    SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+    SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
+    RessourcesManager::AddEntities(Snowman3);*/
 
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);

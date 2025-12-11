@@ -20,6 +20,7 @@ inline PhysicSystem& GameManager::GetPhysicSystem() { return s_pInstance->m_phys
 inline StatesSystem& GameManager::GetStatesSystem() { return s_pInstance->m_statesSystem; }
 inline UiSystem& GameManager::GetUiSystem() { return s_pInstance->m_uiSystem; }
 inline Vector<Camera*>& GameManager::GetMainCameras() { return s_pInstance->m_mainCameras; }
+inline Vector<gce::Scene*>& GameManager::GetScenes() { return s_pInstance->m_scenes; }
 
 }
 
