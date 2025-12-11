@@ -163,6 +163,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->walkable << std::endl;
 	std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridX << ", " << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridY << std::endl;
 
+	GameObject& crossHair = GameObject::Create(scene);
+    UiImage* crossHairImg = crossHair.AddComponent<UiImage>();
+	crossHairImg->InitializeImage({ 0.0f, 0.0f }, { 1.f, 1.f }, .0f);
+	crossHairImg->btmBrush = new BitMapBrush("res/Textures/crosshair.png");
+
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();
     gce::Console::UnInit();
