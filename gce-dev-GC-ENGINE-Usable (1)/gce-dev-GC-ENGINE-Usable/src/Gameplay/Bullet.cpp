@@ -152,18 +152,23 @@ public:
 
 	void Bullet::SetDamage(int dmg)
 	{
-	if (this == nullptr) return;
-	if (m_lifeTime <= 0.0f) return;
-	if (!GetGameObject()) return;
-	if (!GetGameObject()->GetComponent<BoxCollider>()) return;
-	if (!GetGameObject()->GetComponent<PhysicComponent>()) return;
-	m_damage = dmg;
-	if (m_damage == 0) {
-		 GetGameObject()->GetComponent<BoxCollider>()->SetActive(false);
-		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(false);
-	}
-	else {
-		GetGameObject()->GetComponent<BoxCollider>()->SetActive(true);
-		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(true);
-	}
+		if (this == nullptr) return;
+		if (m_lifeTime <= 0.0f) return;
+		GameObject* go = GetGameObject();
+		if (!go) return;
+		if (!go->HasComponent<BoxCollider>() || !go->HasComponent<PhysicComponent>()) {
+			m_damage = dmg;
+			return;
+		}
+		m_damage = dmg;
+		BoxCollider* bc = go->GetComponent<BoxCollider>();
+		PhysicComponent* pc = go->GetComponent<PhysicComponent>();
+		if (m_damage == 0) {
+			if (bc) bc->SetActive(false);
+			if (pc) pc->SetActive(false);
+		}
+		else {
+			if (bc) bc->SetActive(true);
+			if (pc) pc->SetActive(true);
+		}
 	}

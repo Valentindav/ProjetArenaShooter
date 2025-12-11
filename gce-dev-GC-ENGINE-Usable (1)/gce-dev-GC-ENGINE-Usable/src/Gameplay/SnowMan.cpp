@@ -108,7 +108,7 @@ void SnowMan::FollowPath()
     Vector3f32 currentPos = m_gameObject->transform.GetWorldPosition();
     Vector3f32 direction = nextPos - currentPos;
 
-    if (direction.SquareNorm() > 0.1f)
+    if (direction.SquareNorm() > 0.01f)
     {
         direction.SelfNormalize();
         float speed = 5.0f;

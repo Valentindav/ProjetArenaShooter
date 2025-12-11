@@ -22,7 +22,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-	TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
+	TileMap tileMap(50, 50, 1.5f, scene, { 0.f, 0.f, 0.f });
 
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
@@ -113,7 +113,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     //----------------------------------TestWorld----------------------------------
 
     // Importation de la sc�ne JSON et ajout des BoxCollider pour visualisation
-    auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");
+    /*auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");*/
     //for (auto& [name, obj] : importedScene) if (obj) obj->AddComponent<BoxCollider>();
 
     //----------------------------------Run----------------------------------
@@ -151,7 +151,17 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     player->GetGameObject()->AddChild(Weapon);
     RessourcesManager::SetPlayer(player);
 
-    MenuManager::Create(&scene);
+    MenuManager::Create(&scene);    
+
+    GameObject& testObject2 = GameObject::Create(scene);
+	testObject2.transform.SetWorldPosition({ .0f,-10.0f,0.0f });
+	MeshRenderer* pMeshRenderer2 = testObject2.AddComponent<MeshRenderer>();
+	pMeshRenderer2->SetGeometry(SHAPES.CUBE);
+	pMeshRenderer2->SetAlbedoTexture(pNewTexture);		
+    testObject2.AddComponent<BoxCollider>()->SetActive(true);
+    tileMap.SetWalkableWithCollider(*testObject2.GetComponent<BoxCollider>(), false);
+    std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->walkable << std::endl;
+	std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridX << ", " << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridY << std::endl;
 
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();

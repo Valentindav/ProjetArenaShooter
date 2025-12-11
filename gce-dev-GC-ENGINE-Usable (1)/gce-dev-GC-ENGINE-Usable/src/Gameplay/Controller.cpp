@@ -16,20 +16,20 @@ using namespace gce;
 				std::cout << "Energy: " << player->m_energy << std::endl;
             }
             else {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 5 * GameManager::DeltaTime());
             }
         }
         if (GetKey(Keyboard::S))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-2) * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-5) * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::Q) || GetKey(Keyboard::A))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-2) * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-5) * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::D))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalRight() * 5 * GameManager::DeltaTime());
         }
         if (GetKey(Keyboard::ESC))
         {
@@ -37,7 +37,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::SPACE))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 5 * GameManager::DeltaTime());
             if (obj->GetScript<Move>()->onGround)
             {
                 obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,obj->GetScript<Move>()->jumpForce,0.0f });
@@ -46,7 +46,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::LCTRL))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -2 * GameManager::DeltaTime());
+            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * -5 * GameManager::DeltaTime());
         }
         if (GetButtonDown(Mouse::LEFT))
         {
