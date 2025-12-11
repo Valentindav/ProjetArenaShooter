@@ -144,14 +144,30 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
     RessourcesManager::AddEntities(Snowman3);
 
-    //SnowManObject.transform.SetWorldPosition({ -10.0f,-9.0f,-5.0f });
-    //SnowManObject.transform.SetWorldRotation({ 0.0f,0.0f,0.0f });
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
     RessourcesManager::SetPlayer(player);
 
     MenuManager::Create(&scene);    
+
+    // Ajout du crosshair
+    gce::GameObject& crosshair = gce::GameObject::Create(scene);
+    gce::UiImage& uiImage = *crosshair.AddComponent<gce::UiImage>();
+    
+    gce::Vector2f32 center = { (float)params.width / 2.f, (float)params.height / 2.f };
+    gce::Vector2f32 size = { 64.f, 64.f };
+    gce::Vector2f32 posUi = center - size * 0.5f;
+    
+    uiImage.InitializeImage(posUi, size, 1.f);
+    uiImage.btmBrush = new gce::BitMapBrush("res/Textures/crosshair.png");
+
+    // Calcul de l'échelle : TailleCible / TailleImage
+    float scaleX = 64.f / 224.f;
+    float scaleY = 64.f / 221.f;
+    uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+    
+    uiImage.SetActive(true);
 
     GameObject& testObject2 = GameObject::Create(scene);
 	testObject2.transform.SetWorldPosition({ .0f,-10.0f,0.0f });
@@ -160,8 +176,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	pMeshRenderer2->SetAlbedoTexture(pNewTexture);		
     testObject2.AddComponent<BoxCollider>()->SetActive(true);
     tileMap.SetWalkableWithCollider(*testObject2.GetComponent<BoxCollider>(), false);
-    std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->walkable << std::endl;
-	std::cout << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridX << ", " << tileMap.GetNodeFromWorldPosition(testObject2.transform.GetWorldPosition())->data->gridY << std::endl;
+    
+
 
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();
