@@ -12,8 +12,8 @@ private:
 	 float m_shootTimer = SHOOT_TIMER_WAIT;
 	 bool onGround = false;
      float sensitivity = 0.0005f;
-	 float jumpForce = 40.0f;
-	 float moveSpeed = 5.0f;
+	 float jumpForce = 80.0f;
+	 float moveSpeed = 30.0f;
 
 public:
     void Update()

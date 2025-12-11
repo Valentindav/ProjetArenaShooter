@@ -5,6 +5,7 @@
 #include "RessourcesManager.h"
 #include "TileMap.h"
 #include "MenuManager.h"
+#include "JsonImporter.hpp"
 
 /*TODO
 - Pathfinding A*
@@ -42,10 +43,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& PlayerObject = GameObject::Create(scene);
     Light* light = PlayerObject.AddComponent<Light>();
+    // Correction : Enregistrement et désactivation propre de la lumière du joueur
+    gce::LightManager::AddLight(*light);
     light->DefaultDirectionLight();
-    light->intensity = 1.0f;
-
-    GameObject& SnowManObject = GameObject::Create(scene);
+    light->intensity = 0.0f; 
+    light->UpdateLight();
 
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
@@ -67,16 +69,47 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
     MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
     pFloorRenderer->SetGeometry(SHAPES.CUBE);
-    Floor.transform.LocalScale({ 20.f,1.f,20.f });
+    pFloorRenderer->SetAlbedoTexture(pNewTexture);
+    Floor.transform.LocalScale({ 200.f,1.f,200.f });
     Floor.AddComponent<BoxCollider>()->SetActive(true);
 	Floor.SetName("Floor");
+    
     Light* light2 = Floor.AddComponent<Light>();
+    // Correction : Enregistrement et désactivation propre de la lumière du sol
+    gce::LightManager::AddLight(*light2);
     light2->DefaultDirectionLight();
-    light2->intensity = 1.0f;
+    light2->intensity = 0.0f;
+    light2->UpdateLight();
+
+    // Ajout d'une lumière directionnelle venant du haut pour éclairer toute la scène
+    GameObject& LightAbove = GameObject::Create(scene);
+    Light* pLightAbove = LightAbove.AddComponent<Light>();
+    gce::LightManager::AddLight(*pLightAbove);
+    pLightAbove->DefaultDirectionLight();
+    pLightAbove->direction = { 0.0f, -1.0f, 0.0f }; // Pointe vers le bas
+    LightAbove.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f }); 
+    pLightAbove->intensity = 1.f; 
+    pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    pLightAbove->UpdateLight();
+
+    // Ajout d'une lumière ponctuelle sur un GameObject "Light" au-dessus de la scène
+    GameObject& SceneLight = GameObject::Create(scene);
+    SceneLight.SetName("Light");
+    SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
+    Light* pSceneLight = SceneLight.AddComponent<Light>();
+    gce::LightManager::AddLight(*pSceneLight);
+    pSceneLight->DefaultPointLight();
+    pSceneLight->intensity = 1.0f;
+    pSceneLight->range = 20.0f;
+    pSceneLight->UpdateLight();
 
 	tileMap.DebugMode(scene);
 
     //----------------------------------TestWorld----------------------------------
+
+    // Importation de la scène JSON et ajout des BoxCollider pour visualisation
+    auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");
+    //for (auto& [name, obj] : importedScene) if (obj) obj->AddComponent<BoxCollider>();
 
     //----------------------------------Run----------------------------------
     testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -84,6 +117,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
+   /* GameObject& SnowManObject = GameObject::Create(scene);
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
     SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
     SnowMan* Snowman = new SnowMan(&SnowManObject, &tileMap);
@@ -99,7 +133,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
     SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
-    RessourcesManager::AddEntities(Snowman3);
+    RessourcesManager::AddEntities(Snowman3);*/
 
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
