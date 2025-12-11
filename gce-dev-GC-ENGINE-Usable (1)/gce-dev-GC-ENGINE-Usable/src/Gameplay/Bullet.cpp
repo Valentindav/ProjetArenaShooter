@@ -152,9 +152,14 @@ public:
 
 	void Bullet::SetDamage(int dmg)
 	{
+	if (this == nullptr) return;
+	if (m_lifeTime <= 0.0f) return;
+	if (!GetGameObject()) return;
+	if (!GetGameObject()->GetComponent<BoxCollider>()) return;
+	if (!GetGameObject()->GetComponent<PhysicComponent>()) return;
 	m_damage = dmg;
 	if (m_damage == 0) {
-		GetGameObject()->GetComponent<BoxCollider>()->SetActive(false);
+		 GetGameObject()->GetComponent<BoxCollider>()->SetActive(false);
 		GetGameObject()->GetComponent<PhysicComponent>()->SetActive(false);
 	}
 	else {

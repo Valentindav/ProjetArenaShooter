@@ -28,26 +28,26 @@ Player* RessourcesManager::GetPlayer() // get player entity
 
 void RessourcesManager::SetPlayer(Player* player) // set player entity
 {
-    if (m_Instance == nullptr) Create();
-    m_Instance->m_player = player;
+    if (m_instance == nullptr) Create();
+    m_instance->m_player = player;
 }
 
 gce::Geometry* RessourcesManager::GetBottle() // get bottle obj
 {
-    if (m_Instance == nullptr) return nullptr;
-    return m_Instance->bulletGeo;
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->bulletGeo;
 }
 
 gce::Texture* RessourcesManager::GetTexture() // get wall texture -> need rename & thing
 {
-    if (m_Instance == nullptr) return nullptr;
-    return m_Instance->m_bottleTexture;
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_bottleTexture;
 }
 
  Entity* RessourcesManager::GetEntityFromGameObject(gce::GameObject* go) // use game object to get entity
  {
-     if (m_Instance == nullptr || go == nullptr) return nullptr;
-     for (Entity* e : m_Instance->m_entities)
+     if (m_instance == nullptr || go == nullptr) return nullptr;
+     for (Entity* e : m_instance->m_entities)
      {
          if (e->GetGameObject() == go) return e;
      }

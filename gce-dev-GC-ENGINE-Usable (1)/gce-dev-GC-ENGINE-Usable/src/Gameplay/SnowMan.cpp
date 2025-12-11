@@ -9,7 +9,7 @@
 
 using namespace gce;
 
-SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
+SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
@@ -18,7 +18,7 @@ SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("SnowMan");
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
@@ -59,18 +59,6 @@ SnowMan::SnowMan(GameObject* obj, float spd) : Ennemy(obj, spd)
             }
         );
         sm->AddTransition(conds, idle);
-        /*SnowMan* ownerEntity = nullptr;
-        for (Entity* p : RessourcesManager::getEntities())
-        {
-            if (m_pOwner == p->GetGameObject())
-            {
-                ownerEntity = dynamic_cast<SnowMan*>(p);
-                break;
-            }
-        }
-		ownerEntity->SetCurrentTargetNodePosition();
-		ownerEntity->GeneratePathToPlayer(player->GetGameObject());
-        ownerEntity->FollowPath();*/
     }
 }
 
@@ -126,10 +114,4 @@ void SnowMan::FollowPath()
         float speed = 5.0f;
         m_gameObject->transform.SetWorldPosition(currentPos + direction * speed * GameManager::DeltaTime());
     }
-}
-
-void SnowMan::AddScript()
-{
-    GameObject* obj = GetGameObject();
-    obj->AddScript<AttackScript>();
 }

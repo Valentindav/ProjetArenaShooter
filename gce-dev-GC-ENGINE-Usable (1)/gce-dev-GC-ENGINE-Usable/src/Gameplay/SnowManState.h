@@ -62,7 +62,25 @@ static void OnStartIdleSnowman(GameObject* me) {
 }
 
 static void OnUpdateIdleSnowman(GameObject* me) {
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    if (!self) return;
 
+    Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
+    Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+    Vector3f32 snowmanPos = me->transform.GetWorldPosition();
+
+    Vector3f32 direction = playerPos - snowmanPos;
+    direction.Normalize();
+
+    float yaw = atan2f(direction.x, direction.z);
+    float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
+
+    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
+    self->SetCurrentTargetNodePosition();
+    self->GeneratePathToPlayer(player->GetGameObject());
+    self->FollowPath();
 }
 
 
