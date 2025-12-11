@@ -5,6 +5,7 @@
 class Player :public Entity
 {
 public:
+	float m_energy = 100.0f;
 	Player(GameObject* obj, float spd = 150);
 	void AddMove();
 };

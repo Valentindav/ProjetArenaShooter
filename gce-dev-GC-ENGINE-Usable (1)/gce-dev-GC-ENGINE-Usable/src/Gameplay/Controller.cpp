@@ -2,13 +2,22 @@
 #include "Bullet.h"
 #include "Player.h"
 #include "MoveScript.h"
-
+#include "RessourcesManager.h"
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
     {
+        Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
+		Player* player = dynamic_cast<Player*>(entityPlayer);
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
+            if (GetKey(Keyboard::LSHIFT) && player->m_energy>0.0f) {
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 10 * GameManager::DeltaTime());
+				player->m_energy -= 20 * GameManager::DeltaTime();
+				std::cout << "Energy: " << player->m_energy << std::endl;
+            }
+            else {
             obj->transform.WorldTranslate(obj->transform.GetLocalForward() * 2 * GameManager::DeltaTime());
+            }
         }
         if (GetKey(Keyboard::S))
         {
@@ -71,5 +80,10 @@ using namespace gce;
             MeshRenderer* pWeaponRenderer = obj->GetScript<Move>()->lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
             pWeaponRenderer->SetGeometry(SHAPES.CUBE);
             obj->GetScript<Move>()->lastBullet->DeleteShoot();
+        }
+        if (!GetKey(Keyboard::LSHIFT) && player->m_energy < 100.0f) {
+           
+            player->m_energy += 10 * GameManager::DeltaTime();
+            std::cout << "Energy: " << player->m_energy << std::endl;
         }
     }
