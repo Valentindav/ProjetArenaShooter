@@ -17,15 +17,12 @@ private:
 public:
     void Update()
     {
-        // --- BLOC DE SECURITE MENU ---
         MenuManager* menuManager = MenuManager::GetInstance();
-        // Si on n'est pas en train de jouer (Pause, Menu, Game Over...)
         if (menuManager && menuManager->GetGameState() != GameState::Playing)
         {
             gce::UnlockMouseCursor();
-            return; // Blocage du mouvement et du tir
+            return;
         }
-        // -----------------------------
 
         // Si on joue, on verrouille la souris
         gce::LockMouseCursor();
@@ -138,7 +135,6 @@ public:
     }
     END_SCRIPT
 
-        // Le constructeur Player n'a pas changé, je le remets pour être complet
         Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     {
         MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
@@ -148,7 +144,7 @@ public:
         obj->AddComponent<BoxCollider>()->SetActive(true);
         obj->GetComponent<BoxCollider>()->isTrigger = false;
         obj->AddComponent<PhysicComponent>();
-        obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+        obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
         obj->SetName("Player");
         AddMove();
         AddLifeScript();

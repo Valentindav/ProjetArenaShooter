@@ -19,7 +19,6 @@ private:
     GameState m_currentState;
     Scene* m_scene;
 
-    // VARIABLE POUR LA CAMÉRA DE MENU
     GameObject* m_CameraObject;
     Camera* pCamera;
 
@@ -50,10 +49,18 @@ private:
 
 public:
     static void Create(Scene* scene);
-    static MenuManager* GetInstance() { return m_Instance; }
+    static MenuManager* GetInstance() 
+    {
+        return m_Instance; 
+    }
 
     void SetGameState(GameState state);
-    GameState GetGameState() const { return m_currentState; }
+    GameState GetGameState() const 
+    {
+        return m_currentState; 
+    }
+
+    GameObject* GetCamera() { return m_CameraObject; }
 
     void CreateMainMenu();
     void CreatePauseMenu();
