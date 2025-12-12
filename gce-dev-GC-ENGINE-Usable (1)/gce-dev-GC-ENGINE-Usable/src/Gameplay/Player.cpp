@@ -22,7 +22,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     AddMove();
 }
 
-void Player::UpdateWeapon() // change the weapno look according to the current state
+void Player::UpdateWeapon() // change the weapno look according to the current state -> TODO
 {
 }
 

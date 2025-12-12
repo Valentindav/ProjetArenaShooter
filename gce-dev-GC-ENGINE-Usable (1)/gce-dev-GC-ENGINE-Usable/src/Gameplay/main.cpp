@@ -9,6 +9,7 @@
 #include "JsonImporter.hpp"
 #include "Elf.h"
 #include "Deer.h"
+#include "Boss.h"
 
 /*TODO
 - texturing 
@@ -56,6 +57,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     light->UpdateLight();
 
     GameObject& RobotObject = GameObject::Create(scene);
+
+    GameObject& BossObject = GameObject::Create(scene);
 
     GameObject& testObject = GameObject::Create(scene);
     MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
@@ -125,9 +128,9 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
-    RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
-    Robot* robot = new Robot(&RobotObject);
+   // RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
+    //RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
+  //  Robot* robot = new Robot(&RobotObject);
 
     /*GameObject& SnowManObject = GameObject::Create(scene);
     SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
@@ -161,6 +164,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     DeerObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
     Deer* deer = new Deer(&DeerObject, &tileMap);
     RessourcesManager::AddEntities(deer);*/
+
+
+     BossObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
+     BossObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
+     Boss* boss = new Boss(&BossObject,&tileMap);
 
     Player* player = new Player(&PlayerObject,3);
     player->GetGameObject()->AddChild(CameraObject);

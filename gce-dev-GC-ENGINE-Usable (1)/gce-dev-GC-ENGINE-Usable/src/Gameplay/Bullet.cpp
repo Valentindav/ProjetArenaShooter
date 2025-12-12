@@ -89,7 +89,7 @@ public:
 		}
 		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 		{
-			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer")
+			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
 			{
 				bool alreadyOther = false;
 				for (GameObject* p : s_pendingDestroy)

@@ -87,7 +87,7 @@ using namespace gce;
                 player->m_currentState = Player::THOMPSON_WEAPON;
                 player->m_weaponDamage = 3.0f;
             }
-			
+            player->UpdateWeapon();
         }
         if (GetKeyDown(Keyboard::_2)) {
             player->m_speed = player->m_baseSpeed + 2;
@@ -103,10 +103,12 @@ using namespace gce;
                 player->m_currentState = Player::TESSON;
                 player->m_melleeDamage = 4.0f;
             }
+            player->UpdateWeapon();
         }
         if (GetKeyDown(Keyboard::_3)) {
             player->m_speed = player->m_baseSpeed - 1;
 			player->m_currentState = Player::BAZZOKA_WEAPON;
+            player->UpdateWeapon();
         }
         if (GetButtonDown(Mouse::LEFT))
         {
