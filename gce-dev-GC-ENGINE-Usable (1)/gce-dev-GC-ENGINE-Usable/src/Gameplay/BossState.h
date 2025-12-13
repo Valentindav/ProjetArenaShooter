@@ -3,7 +3,7 @@
 #include "RessourcesManager.h"
 #include "Engine/StateMachine.h"
 #include "Player.h"
-#include "Engine.h"
+#include <Engine.h>
 
 using namespace gce;
 
@@ -21,74 +21,197 @@ static void OnEndEmptyBoss(GameObject* me) {
 }
 
 static void OnUpdateShootBoss(GameObject* me) {
-   /* Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
+
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 BossPos = me->transform.GetWorldPosition();
+    Vector3f32 bossPos = me->transform.GetWorldPosition();
 
-    Vector3f32 direction = playerPos - BossPos;
-    direction.Normalize();
+    Vector3f32 dir = playerPos - bossPos;
+    dir.Normalize();
 
-    float yaw = atan2f(direction.x, direction.z);
-    float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
+    float yaw = atan2f(dir.x, dir.z);
+    float pitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+    me->transform.SetWorldRotation({ pitch, yaw, 0.f });
 
-    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
+    if (!self->IsReady("Shoot"))
+        return;
 
-    if (self->m_ShootCooldown <= 0.0f)
-    {
-        GameObject* obj = me;
-        Scene* scene = const_cast<Scene*>(obj->GetScene());
-        GameObject& BulletObject = GameObject::Create(*scene);
-        Vector3f32 position = obj->transform.GetWorldPosition();
-        Vector3f32 forward = obj->transform.GetWorldForward();
+    Scene* scene = const_cast<Scene*>(me->GetScene());
+    GameObject& bulletObj = GameObject::Create(*scene);
 
-        float spawnOffset = 1.0f;
+    Vector3f32 spawnPos = bossPos + me->transform.GetWorldForward() * 1.0f;
+    bulletObj.transform.SetWorldPosition(spawnPos);
+    bulletObj.transform.SetWorldRotation(me->transform.GetWorldRotation());
+    bulletObj.transform.WorldScale({ 0.25f,0.25f,0.25f });
 
-        Vector3f32 spawnPosition = position + forward * spawnOffset;
+    Bullet* bullet = new Bullet(&bulletObj);
+    bullet->SetOwner(me);
 
-        BulletObject.transform.SetWorldPosition(spawnPosition);
-        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-        BulletObject.transform.WorldScale({ 0.25,0.25,0.25 });
-
-        Bullet* bullet = new Bullet(&BulletObject);
-        bullet->SetOwner(me);
-        self->m_ShootCooldown = 2.0f;
-    }
-    self->m_ShootCooldown -= GameManager::DeltaTime();*/
+    self->Use("Shoot");
 }
 
 static void OnUpdateIdleBoss(GameObject* me) {
-  /*  Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
+
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 BossPos = me->transform.GetWorldPosition();
+    Vector3f32 bossPos = me->transform.GetWorldPosition();
 
-    Vector3f32 direction = playerPos - BossPos;
-    direction.Normalize();
+    Vector3f32 dir = playerPos - bossPos;
+    dir.Normalize();
 
-    float yaw = atan2f(direction.x, direction.z);
-    float pitch = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
+    float yaw = atan2f(dir.x, dir.z);
+    float pitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+    me->transform.SetWorldRotation({ pitch, yaw, 0.f });
 
-    me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
     self->SetCurrentTargetNodePosition();
     self->GeneratePathToPlayer(player->GetGameObject());
-    self->FollowPath();*/
+    self->FollowPath();
 }
 
 static void OnUpdateHeavyMeleeBoss(GameObject* me) {
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
 
+    Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
+
+    if (!self->IsReady("HeavyMelee"))
+        return;
+
+    Vector3f32 d =
+        player->GetGameObject()->transform.GetWorldPosition() -
+        me->transform.GetWorldPosition();
+
+    if (d.Norm() < 5.f)
+        player->TakeDamage(3);
+
+    self->Use("HeavyMelee");
 }
 
 static void OnUpdateGroundSlamBoss(GameObject* me) {
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
+    Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
+    float dt = GameManager::DeltaTime();
 
+    // FORCER la state machine à rester dans GroundSlam pendant le slam
+    StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
+    if (self->m_isSlamming && sm) {
+        sm->actualAction = "GroundSlam";
+    }
+
+    if (!self->m_isSlamming)
+    {
+        if (!self->IsReady("GroundSlam"))
+            return;
+
+        self->m_isSlamming = true;
+        self->m_slamTimer = 0.f;
+        self->m_slamRadius = 1.0f;
+        self->m_hasHitPlayer = false;
+        self->Use("GroundSlam");
+        std::cout << "Ground Slam Started!" << std::endl;
+
+        Scene* scene = const_cast<Scene*>(me->GetScene());
+
+        self->m_slamWave = &GameObject::Create(*scene);
+        self->m_slamWave->SetName("ShockwaveRing");
+        self->m_slamWave->transform.SetWorldPosition({
+            me->transform.GetWorldPosition().x,
+            -9.3f,
+            me->transform.GetWorldPosition().z
+            });
+
+        int numSegments = 128;
+        for (int i = 0; i < numSegments; i++)
+        {
+            float angle = (i / (float)numSegments) * 2.0f * 3.14159f;
+
+            GameObject* segment = &GameObject::Create(*scene);
+            segment->SetName("ShockwaveSegment");
+
+            float x = me->transform.GetWorldPosition().x + cosf(angle) * self->m_slamRadius;
+            float z = me->transform.GetWorldPosition().z + sinf(angle) * self->m_slamRadius;
+
+            segment->transform.SetWorldPosition({ x, -9.3f, z });
+            segment->transform.WorldScale({ 0.5f, 0.5f, 0.5f });
+
+            MeshRenderer* mr = segment->AddComponent<MeshRenderer>();
+            mr->SetGeometry(SHAPES.CUBE);
+
+            self->m_slamWaveSegments.push_back(segment);
+        }
+
+        return;
+    }
+
+    self->m_slamTimer += dt;
+
+    float t = self->m_slamTimer / self->m_slamDuration;
+    t = gce::Min(t, 1.f);
+
+    float previousRadius = self->m_slamRadius;
+    self->m_slamRadius = 1.0f + (t * (self->m_slamMaxRadius - 1.0f));
+
+    int numSegments = self->m_slamWaveSegments.size();
+    for (int i = 0; i < numSegments; i++)
+    {
+        float angle = (i / (float)numSegments) * 2.0f * 3.14159f;
+
+        float x = me->transform.GetWorldPosition().x + cosf(angle) * self->m_slamRadius;
+        float z = me->transform.GetWorldPosition().z + sinf(angle) * self->m_slamRadius;
+
+        self->m_slamWaveSegments[i]->transform.SetWorldPosition({ x, -9.3f, z });
+    }
+
+    if (!self->m_hasHitPlayer)
+    {
+        Vector3f32 bossPos = me->transform.GetWorldPosition();
+        Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+        float dist = (playerPos - bossPos).Norm();
+
+        float hitZoneThickness = 2.0f;
+        if (dist >= previousRadius - hitZoneThickness &&
+            dist <= self->m_slamRadius + hitZoneThickness)
+        {
+            player->TakeDamage(4);
+            self->m_hasHitPlayer = true;
+            std::cout << "Player hit by shockwave!" << std::endl;
+        }
+    }
+
+    if (t >= 1.f)
+    {
+        std::cout << "Ground Slam Finished!" << std::endl;
+        self->m_isSlamming = false;
+        self->m_hasHitPlayer = false;
+
+        for (GameObject* segment : self->m_slamWaveSegments)
+        {
+            if (segment)
+                segment->Destroy();
+        }
+        self->m_slamWaveSegments.clear();
+
+        if (self->m_slamWave)
+        {
+            self->m_slamWave->Destroy();
+            self->m_slamWave = nullptr;
+        }
+    }
 }
 
 static void OnUpdateTeleportBoss(GameObject* me) {
@@ -96,7 +219,35 @@ static void OnUpdateTeleportBoss(GameObject* me) {
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
+  /*  Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
 
+    Player* player = RessourcesManager::GetPlayer();
+    if (!player) return;
+
+	float now = GameManager::DeltaTime();
+
+    if (self->m_lastUse.find("Laser") == self->m_lastUse.end())
+        self->Use("Laser");
+
+    float elapsed = now - self->m_lastUse["Laser"];
+
+    if (elapsed > 1.0f)
+        return;
+
+    Vector3f32 dir =
+        player->GetGameObject()->transform.GetWorldPosition() -
+        me->transform.GetWorldPosition();
+    dir.Normalize();
+
+    float targetYaw = atan2f(dir.x, dir.z);
+    Vector3f32 rot = me->transform.GetWorldRotation();
+    rot.y += (targetYaw - rot.y) * 0.04f;
+    me->transform.SetWorldRotation(rot);
+
+    if (elapsed > 0.5f)
+        player->TakeDamage(1);*/
 }
 
 static void OnUpdateShieldBoss(GameObject* me) {

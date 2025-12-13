@@ -12,6 +12,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    m_life = 500000000000000;
     obj->AddComponent<BoxCollider>()->SetActive(true);
 	obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();

@@ -10,13 +10,25 @@ private:
 	std::vector<Node<Tile>*> m_currentPath;
 	Vector2f32 m_currentNodeIndex = { 0.f, 0.f };
 	float m_repathTimer = 0.f;
+public:
 	std::unordered_map<String, float> m_cooldown;
 	std::unordered_map<String, float> m_lastUse;
-public:
+
+	float m_time = 0.f;
 	//---------Shield----------
 	bool m_isShielded = false;
 	bool m_hasAlreadyShielded = false;
-
+	//---------Slam-----------
+	GameObject* m_slamWave = nullptr;
+	std::vector<GameObject*> m_slamWaveSegments;
+	bool m_isSlamming = false;
+	bool m_hasHitPlayer = false;
+	float m_slamRadius = 0.f;
+	float m_slamSpeed = 0.1f;
+	float m_slamMaxRadius = 20.f;
+	float m_slamTimer = 0.f;
+	float m_slamDuration = 3.f;
+	//------------------------
 
 	//-------------Functions--------------
 	Boss(GameObject* obj, TileMap* tileMap, float spd = 150);

@@ -9,6 +9,16 @@
 
 using namespace gce;
 
+DECLARE_SCRIPT(Time, ScriptFlag::Update)
+public : 
+    void Update()
+    {
+		Entity* ent = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		Boss* boss = dynamic_cast<Boss*>(ent);
+        boss->m_time += GameManager::DeltaTime();
+    }
+END_SCRIPT
+
 Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
@@ -16,6 +26,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
 	m_life = 100;
+	obj->AddScript<Time>();
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
@@ -24,7 +35,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
 	obj->transform.WorldScale({ 2.0f, 2.0f, 2.0f });
 
     m_cooldown["HeavyMelee"] = 3.f;
-    m_cooldown["GroundSlam"] = 5.f;
+    m_cooldown["GroundSlam"] = 10.f;
     m_cooldown["Shoot"] = 2.f;
     m_cooldown["Teleport"] = 6.f;
     m_cooldown["Laser"] = 7.f;
@@ -46,13 +57,14 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
             {
                 [](GameObject* me)->bool {
                 Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                if (!boss || boss->m_isShielded || boss->m_isSlamming) return false;
 
                 Player* p = RessourcesManager::GetPlayer();
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                 if (!smLocal || smLocal->actualAction == "Idle") return false;
+
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() > 15.0f;
                 }
@@ -60,6 +72,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, idle);
     }
+
     { // HeavyMelee STATE
         sm->AddAction(HeavyMelee, &OnStartEmptyBoss, &OnUpdateHeavyMeleeBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -67,13 +80,16 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
             {
                 [](GameObject* me)->bool {
                 Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                if (!boss || boss->m_isShielded || boss->m_isSlamming) return false;
 
                 Player* p = RessourcesManager::GetPlayer();
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                if (!smLocal || smLocal->actualAction == "HeavyMelee") return false;
+                if (!smLocal || smLocal->actualAction == "HeavyMelee") return false; // AJOUTÉ
+
+                if (!boss->IsReady("HeavyMelee")) return false; // AJOUTÉ
+
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() < 3.0f;
                 }
@@ -81,27 +97,34 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, HeavyMelee);
     }
+
     { // GroundSlam STATE
         sm->AddAction(GroundSlam, &OnStartEmptyBoss, &OnUpdateGroundSlamBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
         conds.PushBack(
             {
-                    [](GameObject* me)->bool {
-                Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                [](GameObject* me)->bool {
+                    Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
+                    if (!boss || boss->m_isShielded) return false;
 
-                Player* p = RessourcesManager::GetPlayer();
-                if (!p) return false;
+                    if (boss->m_isSlamming) return false;
 
-                StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                if (!smLocal || smLocal->actualAction == "GroundSlam") return false;
-                Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                return d.Norm() < 8.0f && d.Norm() > 3.0f;
+                    Player* p = RessourcesManager::GetPlayer();
+                    if (!p) return false;
+
+                    StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
+                    if (!smLocal || smLocal->actualAction == "GroundSlam") return false; // AJOUTÉ
+
+                    if (!boss->IsReady("GroundSlam")) return false;
+
+                    Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
+                    return d.Norm() < 8.0f && d.Norm() > 3.0f;
                 }
             }
         );
         sm->AddTransition(conds, GroundSlam);
     }
+
     { // Shoot STATE
         sm->AddAction(Shoot, &OnStartEmptyBoss, &OnUpdateShootBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -109,13 +132,14 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
             {
                 [](GameObject* me)->bool {
                 Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                if (!boss || boss->m_isShielded || boss->m_isSlamming) return false;
 
                 Player* p = RessourcesManager::GetPlayer();
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                if (!smLocal || smLocal->actualAction == "Shoot") return false;
+                if (!smLocal || smLocal->actualAction == "Shoot") return false; // AJOUTÉ
+
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() < 15.0f && d.Norm() > 8.0f;
                 }
@@ -123,23 +147,32 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, Shoot);
     }
-    { // Teleport STATE
-        sm->AddAction(Teleport, &OnStartEmptyBoss, &OnUpdateShootBoss, &OnEndEmptyBoss);
+
+    { // Teleport STATE (DISTANCE AUGMENTÉE)
+        sm->AddAction(Teleport, &OnStartEmptyBoss, &OnUpdateTeleportBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
         conds.PushBack(
             {
                 [](GameObject* me)->bool {
+                    Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
+                    if (!boss || boss->m_isSlamming) return false;
+
                     Player* p = RessourcesManager::GetPlayer();
                     if (!p) return false;
+
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                    if (smLocal && smLocal->actualAction == "Teleport") return false;
+                    if (!smLocal || smLocal->actualAction == "Teleport") return false; // AJOUTÉ
+
+                    if (!boss->IsReady("Teleport")) return false; // AJOUTÉ
+
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() < 2.0f;
+                    return d.Norm() < 5.0f; // CHANGÉ de 2.0f à 5.0f
                 }
             }
         );
         sm->AddTransition(conds, Teleport);
     }
+
     { // Laser STATE
         sm->AddAction(Laser, &OnStartEmptyBoss, &OnUpdateLaserBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -147,13 +180,16 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
             {
                 [](GameObject* me)->bool {
                 Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                if (!boss || boss->m_isShielded || boss->m_isSlamming) return false;
 
                 Player* p = RessourcesManager::GetPlayer();
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                 if (!smLocal || smLocal->actualAction == "Laser") return false;
+
+                if (!boss->IsReady("Laser")) return false; // AJOUTÉ
+
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() < 12.0f && d.Norm() > 2.0f && boss->m_life < 50;
                 }
@@ -161,6 +197,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, Laser);
     }
+
     { // Shield STATE
         sm->AddAction(Shield, &OnStartEmptyBoss, &OnUpdateShieldBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -168,7 +205,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
             {
                 [](GameObject* me)->bool {
                 Boss* boss = dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(me));
-                if (!boss || boss->m_isShielded) return false;
+                if (!boss || boss->m_isShielded || boss->m_isSlamming) return false;
 
                 Player* p = RessourcesManager::GetPlayer();
                 if (!p) return false;
@@ -176,7 +213,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                 if (!smLocal || smLocal->actualAction == "Shield") return false;
 
-                if (boss->m_life <= 50 &&!boss->m_hasAlreadyShielded &&boss->IsReady("Shield"))
+                if (boss->m_life <= 50 && !boss->m_hasAlreadyShielded && boss->IsReady("Shield"))
                 {
                     return true;
                 }
@@ -186,17 +223,22 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, Shield);
     }
+
+    sm->Transit(idle);
+        sm->Transit(idle);
 }
 
 bool Boss::IsReady(const String& atk)
 {
-    float now = GameManager::DeltaTime();
-    return now - m_lastUse[atk] >= m_cooldown[atk];
+    if (m_lastUse.find(atk) == m_lastUse.end())
+        return true;
+
+    return (m_time - m_lastUse[atk]) >= m_cooldown[atk];
 }
 
 void Boss::Use(const String& atk)
 {
-    m_lastUse[atk] = GameManager::DeltaTime();
+    m_lastUse[atk] = m_time;
 }
 
 void Boss::Die()
