@@ -1095,6 +1095,14 @@ namespace gce {
 		collisionDir.SelfNormalize();
 		Vector3f32 normal = collisionDir;
 
+		// --- FIX GHOST COLLISION (Pour Sphère) ---
+		// Si la normale est orientée vers le haut (sol), on l'aligne parfaitement
+		Vector3f32 boxUp = boxC.m_worldBox.axisY;
+		if (normal.DotProduct(boxUp) > 0.707f)
+		{
+			normal = boxUp;
+		}
+
 		bool p2IsDynamic = pPhysComp2 && !pPhysComp2->IsKinematic();
 
 		// --- LOGIC KINEMATIC & DYNAMIC (RÉSOLUTION DE LA VITESSE) ---
@@ -1158,6 +1166,55 @@ namespace gce {
 	// BOX BOX 
 	void PhysicSystem::Collide3DBoxBox(bool flag, BoxCollider& box1, BoxCollider& box2, Vector3f32 const& hitPoint, Vector3f32& overlapVect)
 	{
+		// --- FIX GHOST COLLISION (Pour Box) ---
+		// Detecter si on tape un mur bas (une marche ou une jointure de sol)
+
+		BoxCollider& dynamicBox = flag ? box2 : box1;
+		BoxCollider& staticBox = flag ? box1 : box2;
+
+		// On regarde la normale actuelle de collision
+		Vector3f32 approxNormal = overlapVect;
+		approxNormal.SelfNormalize();
+
+		// Si collision horizontale (on tape un coté)
+		if (Abs(approxNormal.y) < 0.1f)
+		{
+			float dynMinY = dynamicBox.m_worldBox.min.y;
+			float staMaxY = staticBox.m_worldBox.max.y;
+
+			// Si le bas du joueur est au-dessus (ou presque) du haut de l'obstacle
+			// Tolerance de 20cm (step height)
+			if (dynMinY >= staMaxY - 0.2f)
+			{
+				// On force la collision à être verticale (Sol)
+				float penetration = staMaxY - dynMinY + 0.005f; // On pousse un peu au dessus
+				if (penetration < 0.005f) penetration = 0.005f;
+
+				// On veut pousser l'objet dynamique vers le HAUT.
+				// Si flag=0, Dyn est 1. Overlap pointe 2->1. Donc UP.
+				// Si flag=1, Dyn est 2. Overlap pointe 1->2. Donc DOWN? 
+				// ATTENTION: La logique interne de overlapVect dépend de directionCenters (C1 - C2).
+				// C1(Dyn) est au dessus de C2(Static). C1-C2 est UP.
+				// Donc overlapVect est UP dans les deux cas si le dynamique est au dessus.
+				// Par sécurité on force la direction absolue.
+
+				if (!flag) // 1 is Dyn (on top). Push 1 UP.
+					overlapVect = { 0.f, 1.f, 0.f };
+				else       // 2 is Dyn (on top). Push 2 UP. 
+					overlapVect = { 0.f, -1.f, 0.f }; // (Overlap est relatif à 1->2 ?)
+
+				// Note: Dans le code existant overlapVect semble être la direction de répulsion.
+				// On l'assigne avec la magnitude de pénétration verticale.
+				overlapVect.x *= 0;
+				overlapVect.z *= 0;
+				overlapVect.y = (flag ? -1.f : 1.f) * penetration;
+
+				// On s'assure que overlapVect a bien une magnitude (le code plus bas normalise)
+				if (overlapVect.SquareNorm() < 0.0001f) overlapVect.y = (flag ? -0.01f : 0.01f);
+			}
+		}
+		// --- FIN FIX ---
+
 		PhysicComponent* pPhysComp1 = box1.GetOwner().GetComponent<PhysicComponent>();
 		PhysicComponent* pPhysComp2 = box2.GetOwner().GetComponent<PhysicComponent>();
 

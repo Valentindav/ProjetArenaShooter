@@ -43,10 +43,13 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
     pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
+	bool debugMode = true;
+    HideMouseCursor();
+
     //----------------------------------INIT GameObject----------------------------------
     GameObject& PlayerObject = GameObject::Create(scene);
     Light* light = PlayerObject.AddComponent<Light>();
-    // Correction : Enregistrement et d�sactivation propre de la lumi�re du joueur
+    // Correction : Enregistrement et dsactivation propre de la lumire du joueur
     gce::LightManager::AddLight(*light);
     light->DefaultDirectionLight();
     light->intensity = 0.0f; 
@@ -54,15 +57,16 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     GameObject& RobotObject = GameObject::Create(scene);
 
-    GameObject& testObject = GameObject::Create(scene);
-    MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
-    pMeshRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
+
+    /*GameObject& testObject = GameObject::Create(scene);
+    MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
+    pMeshRenderer->SetGeometry(SHAPES.CUBE);    
     pMeshRenderer->SetAlbedoTexture(pNewTexture);
     testObject.AddComponent<BoxCollider>()->SetActive(true);
     testObject.AddComponent<PhysicComponent>();
     testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-    testObject.SetName("TestObject");
+    testObject.SetName("TestObject");*/
 
     GameObject& Weapon = GameObject::Create(scene);
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
@@ -80,13 +84,13 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	Floor.SetName("Floor");
     
     Light* light2 = Floor.AddComponent<Light>();
-    // Correction : Enregistrement et d�sactivation propre de la lumi�re du sol
+    // Correction : Enregistrement et dsactivation propre de la lumire du sol
     gce::LightManager::AddLight(*light2);
     light2->DefaultDirectionLight();
     light2->intensity = 0.0f;
     light2->UpdateLight();
 
-    // Ajout d'une lumi�re directionnelle venant du haut pour �clairer toute la sc�ne
+    // Ajout d'une lumire directionnelle venant du haut pour clairer toute la scne
     GameObject& LightAbove = GameObject::Create(scene);
     Light* pLightAbove = LightAbove.AddComponent<Light>();
     gce::LightManager::AddLight(*pLightAbove);
@@ -97,7 +101,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
     pLightAbove->UpdateLight();
 
-    // Ajout d'une lumi�re ponctuelle sur un GameObject "Light" au-dessus de la sc�ne
+    // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
     GameObject& SceneLight = GameObject::Create(scene);
     SceneLight.SetName("Light");
     SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
@@ -106,23 +110,41 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pSceneLight->DefaultPointLight();
     pSceneLight->intensity = 1.0f;
     pSceneLight->range = 20.0f;
-    pSceneLight->UpdateLight();
-
-	tileMap.DebugMode(scene);
+    pSceneLight->UpdateLight();	
 
     //----------------------------------TestWorld----------------------------------
 
-    // Importation de la sc�ne JSON et ajout des BoxCollider pour visualisation
-    /*auto importedScene = importSceneFromJsonText("res/Scene/SceneTest6.json");*/
-    //for (auto& [name, obj] : importedScene) if (obj) obj->AddComponent<BoxCollider>();
+    // Importation de la scne JSON et ajout des BoxCollider pour visualisation
+    auto importedScene = importSceneFromJsonText("res/Scene/T_Shaped.json");
+
+    // --- AJOUT : Création d'un pivot pour déplacer la scène ---
+    gce::GameObject& sceneRoot = gce::GameObject::Create(scene);
+    sceneRoot.SetName("SceneAnchor");
+
+    //// On parcourt les objets importés et on attache les "racines" à notre pivot
+    for (auto& [name, pObj] : importedScene)
+    {
+        // Si l'objet est valide et n'a pas de parent (c'est une racine dans le JSON)
+        if (pObj && !pObj->HasParent())
+        {
+            pObj->SetParent(sceneRoot);
+        }
+    }
+
+    // Maintenant, vous pouvez déplacer/tourner/scaler toute la scène via sceneRoot
+    sceneRoot.transform.SetWorldPosition({ 0.0f, -5.0f, 0.0f });
+	sceneRoot.transform.SetLocalScale({ 3.0f, 3.0f, 3.0f });
+     sceneRoot.transform.SetWorldRotation({ 0.0f, 45.0f, 0.0f });
+    // ----------------------------------------------------------
+
 
     //----------------------------------Run----------------------------------
-    testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
+    //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
     PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
+    /*RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
     RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
     Robot* robot = new Robot(&RobotObject);
 
@@ -142,7 +164,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
     SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
-    RessourcesManager::AddEntities(Snowman3);
+    RessourcesManager::AddEntities(Snowman3);*/
 
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
@@ -176,13 +198,36 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	pMeshRenderer2->SetAlbedoTexture(pNewTexture);		
     testObject2.AddComponent<BoxCollider>()->SetActive(true);
     tileMap.SetWalkableWithCollider(*testObject2.GetComponent<BoxCollider>(), false);
-    
 
+    
 
 	GameObject& crossHair = GameObject::Create(scene);
     UiImage* crossHairImg = crossHair.AddComponent<UiImage>();
 	crossHairImg->InitializeImage({ 0.0f, 0.0f }, { 1.f, 1.f }, .0f);
 	crossHairImg->btmBrush = new BitMapBrush("res/Textures/crosshair.png");
+
+    if (debugMode)
+    {
+        gce::Console::Log("Debug Mode Activated", gce::Console::LogType::WARNING);
+        tileMap.DebugMode(scene);		
+		ShowMouseCursor();
+
+        // AJOUT : Visualisation des hitboxes invisibles (BoxCollider sans MeshRenderer actif)
+        for (auto& [name, pObj] : importedScene)
+        {
+            if (pObj && pObj->HasComponent<gce::BoxCollider>() && pObj->HasComponent<gce::MeshRenderer>())
+            {
+                // Si le MeshRenderer est inactif (ce qui est le cas pour nos BoxColliders importés), on l'active
+                gce::MeshRenderer* mr = pObj->GetComponent<gce::MeshRenderer>();
+                if (!mr->IsActive())
+                {
+                    mr->SetActive(true);
+                    // Optionnel : Assigner une texture de debug si nécessaire
+                    // mr->SetAlbedoTexture(pNewTexture); 
+                }
+            }
+        }
+	}
 
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();

@@ -37,11 +37,15 @@ using namespace gce;
         }
         if (GetKey(Keyboard::SPACE))
         {
-            obj->transform.WorldTranslate(obj->transform.GetLocalUp() * 5 * GameManager::DeltaTime());
-            if (obj->GetScript<Move>()->onGround)
+            // Ne plus translater directement ici : la physique doit gérer la position verticale.
+            Move* moveScript = obj->GetScript<Move>();
+            PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
+            if (moveScript && phys && moveScript->onGround)
             {
-                obj->GetComponent<PhysicComponent>()->SetVelocity({ 0.0f,obj->GetScript<Move>()->jumpForce,0.0f });
-                obj->GetScript<Move>()->onGround = false;
+                // Conserver la vitesse horizontale, appliquer l'impulsion verticale
+                Vector3f32 currentVel = phys->GetVelocity();
+                phys->SetVelocity({ currentVel.x, moveScript->jumpForce, currentVel.z });
+                moveScript->onGround = false;
             }
         }
         if (GetKey(Keyboard::LCTRL))
