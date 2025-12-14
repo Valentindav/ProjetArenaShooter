@@ -49,7 +49,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
     String Teleport = "Teleport";
     String Laser = "Laser";
     String Shield = "Shield";
-
+    
     { // IDLE STATE
         sm->AddAction(idle, &OnStartEmptyBoss, &OnUpdateIdleBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -66,7 +66,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                 if (!smLocal || smLocal->actualAction == "Idle") return false;
 
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                return d.Norm() > 15.0f;
+                return d.Norm() > 20.0f;
                 }
             }
         );
@@ -86,9 +86,9 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                if (!smLocal || smLocal->actualAction == "HeavyMelee") return false; // AJOUTÉ
+                if (!smLocal || smLocal->actualAction == "HeavyMelee") return false;
 
-                if (!boss->IsReady("HeavyMelee")) return false; // AJOUTÉ
+                if (!boss->IsReady("HeavyMelee")) return false;
 
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() < 3.0f;
@@ -113,7 +113,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                     if (!p) return false;
 
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                    if (!smLocal || smLocal->actualAction == "GroundSlam") return false; // AJOUTÉ
+                    if (!smLocal || smLocal->actualAction == "GroundSlam") return false;
 
                     if (!boss->IsReady("GroundSlam")) return false;
 
@@ -138,7 +138,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                 if (!p) return false;
 
                 StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                if (!smLocal || smLocal->actualAction == "Shoot") return false; // AJOUTÉ
+                if (!smLocal || smLocal->actualAction == "Shoot") return false;
 
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
                 return d.Norm() < 15.0f && d.Norm() > 8.0f;
@@ -161,12 +161,12 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                     if (!p) return false;
 
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
-                    if (!smLocal || smLocal->actualAction == "Teleport") return false; // AJOUTÉ
+                    if (!smLocal || smLocal->actualAction == "Teleport") return false;
 
-                    if (!boss->IsReady("Teleport")) return false; // AJOUTÉ
-
+                    if (!boss->IsReady("Teleport")) return false;
+                    if (boss->IsReady("HeavyMelee")) return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() < 5.0f; // CHANGÉ de 2.0f à 5.0f
+                    return d.Norm() < 5.0f; 
                 }
             }
         );
@@ -191,13 +191,13 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                 if (!boss->IsReady("Laser")) return false; // AJOUTÉ
 
                 Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                return d.Norm() < 12.0f && d.Norm() > 2.0f && boss->m_life < 50;
+                return d.Norm() > 15.0f && d.Norm() < 20.0f ;
                 }
             }
         );
         sm->AddTransition(conds, Laser);
     }
-
+    
     { // Shield STATE
         sm->AddAction(Shield, &OnStartEmptyBoss, &OnUpdateShieldBoss, &OnEndEmptyBoss);
         Vector<StateMachine::Condition> conds;
@@ -223,8 +223,6 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
         );
         sm->AddTransition(conds, Shield);
     }
-
-    sm->Transit(idle);
         sm->Transit(idle);
 }
 

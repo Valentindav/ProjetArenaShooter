@@ -28,8 +28,16 @@ public:
 	float m_slamMaxRadius = 20.f;
 	float m_slamTimer = 0.f;
 	float m_slamDuration = 3.f;
+	//---------Laser-----------
+	std::vector<GameObject*> m_laserBeamSegments;
+	bool m_isLasering = false;
+	float m_laserTimer = 0.f;
+	float m_laserDamageTimer = 0.f;
+	float m_laserDuration = 3.0f;
+	float m_laserCurrentYaw = 0.f; 
+	float m_laserCurrentPitch = 0.f;
 	//------------------------
-
+	// 
 	//-------------Functions--------------
 	Boss(GameObject* obj, TileMap* tileMap, float spd = 150);
 	void Die() override;

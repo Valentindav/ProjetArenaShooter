@@ -17,7 +17,43 @@ static void OnStartEmptyBoss(GameObject* me) {
 }
 
 static void OnEndEmptyBoss(GameObject* me) {
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
 
+    StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
+    if (!sm) return;
+
+    if (sm->actualAction == "GroundSlam" && self->m_isSlamming)
+    {
+        self->m_isSlamming = false;
+        self->m_hasHitPlayer = false;
+
+        for (GameObject* segment : self->m_slamWaveSegments)
+        {
+            if (segment)
+                segment->Destroy();
+        }
+        self->m_slamWaveSegments.clear();
+
+        if (self->m_slamWave)
+        {
+            self->m_slamWave->Destroy();
+            self->m_slamWave = nullptr;
+        }
+    }
+
+    if (sm->actualAction == "Laser" && self->m_isLasering)
+    {
+        self->m_isLasering = false;
+
+        for (GameObject* segment : self->m_laserBeamSegments)
+        {
+            if (segment)
+                segment->Destroy();
+        }
+        self->m_laserBeamSegments.clear();
+    }
 }
 
 static void OnUpdateShootBoss(GameObject* me) {
@@ -47,7 +83,7 @@ static void OnUpdateShootBoss(GameObject* me) {
     Vector3f32 spawnPos = bossPos + me->transform.GetWorldForward() * 1.0f;
     bulletObj.transform.SetWorldPosition(spawnPos);
     bulletObj.transform.SetWorldRotation(me->transform.GetWorldRotation());
-    bulletObj.transform.WorldScale({ 0.25f,0.25f,0.25f });
+    bulletObj.transform.WorldScale({ 0.8f,0.8f,0.8f });
 
     Bullet* bullet = new Bullet(&bulletObj);
     bullet->SetOwner(me);
@@ -107,7 +143,6 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
     if (!player) return;
     float dt = GameManager::DeltaTime();
 
-    // FORCER la state machine à rester dans GroundSlam pendant le slam
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
     if (self->m_isSlamming && sm) {
         sm->actualAction = "GroundSlam";
@@ -189,13 +224,11 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
         {
             player->TakeDamage(4);
             self->m_hasHitPlayer = true;
-            std::cout << "Player hit by shockwave!" << std::endl;
         }
     }
 
     if (t >= 1.f)
     {
-        std::cout << "Ground Slam Finished!" << std::endl;
         self->m_isSlamming = false;
         self->m_hasHitPlayer = false;
 
@@ -219,35 +252,135 @@ static void OnUpdateTeleportBoss(GameObject* me) {
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
-  /*  Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
 
-	float now = GameManager::DeltaTime();
+    float dt = GameManager::DeltaTime();
 
-    if (self->m_lastUse.find("Laser") == self->m_lastUse.end())
+    StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
+    if (self->m_isLasering && sm) {
+        sm->actualAction = "Laser";
+    }
+
+    if (!self->m_isLasering)
+    {
+        if (!self->IsReady("Laser"))
+            return;
+
+        self->m_isLasering = true;
+        self->m_laserTimer = 0.f;
+        self->m_laserDamageTimer = 0.f;
+        self->m_laserCurrentYaw = 0.f;
+        self->m_laserCurrentPitch = 0.f;
         self->Use("Laser");
 
-    float elapsed = now - self->m_lastUse["Laser"];
+        Scene* scene = const_cast<Scene*>(me->GetScene());
 
-    if (elapsed > 1.0f)
+  
+        float laserLength = 50.0f;
+        int numSegments = 25;
+
+        for (int i = 0; i < numSegments; i++)
+        {
+            GameObject* segment = &GameObject::Create(*scene);
+            segment->SetName("LaserSegment");
+
+            MeshRenderer* mr = segment->AddComponent<MeshRenderer>();
+            mr->SetGeometry(SHAPES.CUBE);
+            segment->transform.WorldScale({ 0.3f, 0.3f, 0.3f });
+
+            self->m_laserBeamSegments.push_back(segment);
+        }
+
+        Vector3f32 bossPos = me->transform.GetWorldPosition();
+        Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+        Vector3f32 dir = playerPos - bossPos;
+        dir.Normalize();
+        self->m_laserCurrentYaw = atan2f(dir.x, dir.z);
+        self->m_laserCurrentPitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+
         return;
+    }
+    self->m_laserTimer += dt;
+    self->m_laserDamageTimer += dt;
 
-    Vector3f32 dir =
-        player->GetGameObject()->transform.GetWorldPosition() -
-        me->transform.GetWorldPosition();
+    Vector3f32 bossPos = me->transform.GetWorldPosition();
+    Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
+    Vector3f32 dir = playerPos - bossPos;
     dir.Normalize();
-
     float targetYaw = atan2f(dir.x, dir.z);
-    Vector3f32 rot = me->transform.GetWorldRotation();
-    rot.y += (targetYaw - rot.y) * 0.04f;
-    me->transform.SetWorldRotation(rot);
+    float targetPitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
 
-    if (elapsed > 0.5f)
-        player->TakeDamage(1);*/
+    float Speed = 0.03f;
+    self->m_laserCurrentYaw += (targetYaw - self->m_laserCurrentYaw) * Speed;
+    self->m_laserCurrentPitch += (targetPitch - self->m_laserCurrentPitch) * Speed;
+
+    me->transform.SetWorldRotation({ self->m_laserCurrentPitch, self->m_laserCurrentYaw, 0.f });
+
+    float cosYaw = cosf(self->m_laserCurrentYaw);
+    float sinYaw = sinf(self->m_laserCurrentYaw);
+    float cosPitch = cosf(self->m_laserCurrentPitch);
+    float sinPitch = sinf(self->m_laserCurrentPitch);
+
+    Vector3f32 forward = {
+        sinYaw * cosPitch,
+        -sinPitch,
+        cosYaw * cosPitch
+    };
+    forward.Normalize();
+
+    float laserLength = 50.0f;
+    int numSegments = self->m_laserBeamSegments.size();
+
+    for (int i = 0; i < numSegments; i++)
+    {
+        float segmentDistance = (i / (float)numSegments) * laserLength;
+        Vector3f32 segmentPos = bossPos + forward * segmentDistance;
+
+        self->m_laserBeamSegments[i]->transform.SetWorldPosition(segmentPos);
+    }
+
+    Vector3f32 toPlayer = playerPos - bossPos;
+    float distToPlayer = toPlayer.Norm();
+
+    if (distToPlayer < laserLength)
+    {
+        float dotProduct = toPlayer.x * forward.x + toPlayer.y * forward.y + toPlayer.z * forward.z;
+
+        if (dotProduct > 0)
+        {
+            Vector3f32 closestPoint = bossPos + forward * dotProduct;
+            Vector3f32 distVec = playerPos - closestPoint;
+            float distFromLaser = distVec.Norm();
+
+            float laserRadius = 1.0f;
+
+            if (distFromLaser < laserRadius)
+            {
+                if (self->m_laserDamageTimer >= 0.2f)
+                {
+                    player->TakeDamage(1);
+                    self->m_laserDamageTimer = 0.f;
+                }
+            }
+        }
+    }
+
+    if (self->m_laserTimer >= self->m_laserDuration)
+    {
+        self->m_isLasering = false;
+
+        for (GameObject* segment : self->m_laserBeamSegments)
+        {
+            if (segment)
+                segment->Destroy();
+        }
+        self->m_laserBeamSegments.clear();
+    }
 }
 
 static void OnUpdateShieldBoss(GameObject* me) {
