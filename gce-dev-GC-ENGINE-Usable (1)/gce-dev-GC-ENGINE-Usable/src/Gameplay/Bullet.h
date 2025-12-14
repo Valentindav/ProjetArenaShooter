@@ -3,23 +3,24 @@
 
 class Player;
 
-class Bullet :public Entity
+class Bullet : public Entity
 {
-	GameObject* m_owner = nullptr;
-
+private:
+    GameObject* m_owner;
 
 public:
+    Bullet(GameObject* obj, float spd = 2000) : Entity(obj, spd), m_owner(nullptr) {}
 
-	Bullet(GameObject* obj, float spd = 2000) : Entity(obj, spd) { }
-	void AddShoot();
-	void DeleteShoot();
-	void SetOwner(GameObject* owner) 
-	{
-		m_owner = owner;
-	}
+    void AddShoot();
+    void DeleteShoot();
 
-	GameObject* GetOwner() 
-	{
-		if (this == nullptr) return 0; return m_owner;
-	}
+    void SetOwner(GameObject* owner)
+    {
+        m_owner = owner;
+    }
+
+    GameObject* GetOwner()
+    {
+        return m_owner;
+    }
 };
