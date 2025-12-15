@@ -65,3 +65,23 @@ void RessourcesManager::SetTileMap(TileMap* tileMap)
     if (m_instance == nullptr) Create();
     m_instance->m_tileMap = tileMap;
 }
+
+void RessourcesManager::AddLevelObject(GameObject* obj)
+{
+    if (obj)
+    {
+        m_levelObjects.PushBack(obj);
+    }
+}
+
+void RessourcesManager::ClearCurrentLevel()
+{
+    for (GameObject* obj : m_levelObjects)
+    {
+        if (obj != nullptr)
+        {
+			obj->Destroy();
+        }
+    }
+    m_levelObjects.Clear();
+}

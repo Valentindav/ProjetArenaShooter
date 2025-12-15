@@ -115,7 +115,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     //----------------------------------TestWorld----------------------------------
 
     // Importation de la scne JSON et ajout des BoxCollider pour visualisation
-    auto importedScene = importSceneFromJsonText("res/Scene/T_Shaped.json");
+    auto importedScene = importSceneFromJsonText("res/Scene/T_Shape with hitbox.json");
 
     // --- AJOUT : Création d'un pivot pour déplacer la scène ---
     gce::GameObject& sceneRoot = gce::GameObject::Create(scene);

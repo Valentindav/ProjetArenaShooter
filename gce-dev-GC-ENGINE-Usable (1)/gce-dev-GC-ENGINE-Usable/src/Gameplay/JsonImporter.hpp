@@ -177,7 +177,10 @@ inline UnorderedMap<String, gce::GameObject*> importSceneFromJsonText(const std:
             // Le BoxCollider utilisera la taille de la géométrie (qui est correcte) * 1.
             go->transform.SetLocalScale({ 1.f, 1.f, 1.f });
 
-            go->AddComponent<gce::BoxCollider>();
+            gce::BoxCollider* boxCollider = go->AddComponent<gce::BoxCollider>();
+
+            boxCollider->SetActive(true);
+            boxCollider->isTrigger = false;
         }
         else 
         {
