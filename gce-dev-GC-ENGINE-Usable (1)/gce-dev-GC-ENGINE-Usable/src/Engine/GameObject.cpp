@@ -47,7 +47,7 @@ GameObject& GameObject::Create( Scene& scene )
 
 void GameObject::Destroy()
 {
-    if ( m_destroyed ) return;
+    if (m_destroyed) return;
     m_destroyed = true;
 
     m_destroyEvent.Invoke();
@@ -56,23 +56,23 @@ void GameObject::Destroy()
         Script::s_deletionList.Push(scriptId);
     m_scripts.clear();
 
-    if ( HasComponent<Camera>() ) RemoveComponent<Camera>();
+    if (HasComponent<Camera>()) RemoveComponent<Camera>();
     if ((HasComponent<Light>())) RemoveComponent<Light>();
-    if ( HasComponent<SpriteRenderer>() ) RemoveComponent<SpriteRenderer>();
-    if ( HasComponent<MeshRenderer>() ) RemoveComponent<MeshRenderer>();
-    if ( HasComponent<Animator2D>() ) RemoveComponent<Animator2D>();
-    if ( HasComponent<BoxCollider2D>() ) RemoveComponent<BoxCollider2D>();
-    if ( HasComponent<CircleCollider2D>() ) RemoveComponent<CircleCollider2D>();
-    if ( HasComponent<SphereCollider>() ) RemoveComponent<SphereCollider>();
-    if ( HasComponent<BoxCollider>() ) RemoveComponent<BoxCollider>();
-    if ( HasComponent<PhysicComponent>() ) RemoveComponent<PhysicComponent>();
+    if (HasComponent<SpriteRenderer>()) RemoveComponent<SpriteRenderer>();
+    if (HasComponent<MeshRenderer>()) RemoveComponent<MeshRenderer>();
+    if (HasComponent<Animator2D>()) RemoveComponent<Animator2D>();
+    if (HasComponent<BoxCollider2D>()) RemoveComponent<BoxCollider2D>();
+    if (HasComponent<CircleCollider2D>()) RemoveComponent<CircleCollider2D>();
+    if (HasComponent<SphereCollider>()) RemoveComponent<SphereCollider>();
+    if (HasComponent<BoxCollider>()) RemoveComponent<BoxCollider>();
+    if (HasComponent<PhysicComponent>()) RemoveComponent<PhysicComponent>();
     if ((HasComponent<TextRenderer>())) RemoveComponent<TextRenderer>();
     if ((HasComponent<UiButton>())) RemoveComponent<UiButton>();
     if ((HasComponent<UiImage>())) RemoveComponent<UiImage>();
     if ((HasComponent<SkyBoxComponent>())) RemoveComponent<SkyBoxComponent>();
 
     GameManager::GetStatesSystem().DestroyStateMachine(this);
-    GameManager::GetLifespanSystem().m_toDelete.gameObjects.Push( this );
+    GameManager::GetLifespanSystem().m_toDelete.gameObjects.Push(this);
 
     for (GameObject* const pChild : m_children)
         pChild->Destroy();

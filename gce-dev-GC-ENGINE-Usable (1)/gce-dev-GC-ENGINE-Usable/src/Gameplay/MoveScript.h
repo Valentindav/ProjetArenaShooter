@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Controller.h"
+#include "MenuManager.h"
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 public:
@@ -12,8 +13,12 @@ public:
     float jumpForce = 50.0f;
     Controller* inputManager;
 
-    void Update() // allow player to move
+    void Update()
     {
+        MenuManager* mm = MenuManager::GetInstance();
+        if (mm && mm->GetGameState() != GameState::Playing)
+            return;
+
         gce::LockMouseCursor();
         GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();

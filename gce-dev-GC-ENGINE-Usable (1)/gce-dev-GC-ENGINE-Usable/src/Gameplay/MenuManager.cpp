@@ -45,20 +45,20 @@ public:
                 menuManager->ShowGameOverMenu();
             }
 
-            for (Entity* entity : RessourcesManager::getEntities())
+            gce::Vector<Entity*> entities = RessourcesManager::getEntities();
+            int enemyCount = 0;
+            for (Entity* entity : entities)
             {
-                if (entity == nullptr) return;
+                if (entity == nullptr) continue;
+                if (entity == player) continue;
 
-                GameObject* go = entity->GetGameObject();
-                if (go == nullptr) return;
-
-                if (entity && entity->GetGameObject() && entity->GetGameObject()->GetName() != "Player")
+                if (dynamic_cast<Ennemy*>(entity) != nullptr)
                 {
-                    aliveCount++;
+                    enemyCount++;
                 }
             }
 
-            if (aliveCount == 0)
+            if (enemyCount == 0)
             {
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
@@ -243,42 +243,27 @@ public:
         m_victoryPanel = &GameObject::Create(*m_scene);
         m_victoryPanel->SetName("VictoryPanel");
         m_victoryPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+        {
+            m_restartButtonVictory = &GameObject::Create(*m_scene);
+            m_restartButtonVictory->transform.LocalTranslate({ 600.0f, 50.0f, 0.0f });
+            m_restartButtonVictory->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
+            UiButton* button = m_restartButtonVictory->AddComponent<UiButton>();
+            button->AddListener(OnRestartButtonClick);
+            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            m_victoryPanel->AddChild(*m_restartButtonVictory);
+        }
 
-        m_victoryBackground = &GameObject::Create(*m_scene);
-        m_victoryBackground->SetName("VictoryBackground");
-        m_victoryBackground->transform.LocalTranslate({ 0.0f, 0.0f, 0.5f });
-        m_victoryBackground->transform.LocalScale({ 20.0f, 15.0f, 0.1f });
-        MeshRenderer* pBackgroundRenderer = m_victoryBackground->AddComponent<MeshRenderer>();
-        pBackgroundRenderer->SetGeometry(SHAPES.CUBE);
-        m_victoryPanel->AddChild(*m_victoryBackground);
-
-        m_victoryText = &GameObject::Create(*m_scene);
-        m_victoryText->SetName("VictoryText");
-        m_victoryText->transform.LocalTranslate({ 0.0f, 3.0f, 0.0f });
-        m_victoryText->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
-        MeshRenderer* pTextRenderer = m_victoryText->AddComponent<MeshRenderer>();
-        pTextRenderer->SetGeometry(SHAPES.CUBE);
-        pTextRenderer->SetAlbedoTexture(new Texture("res/Exemple/TexturesTest.jpg"));
-        m_victoryPanel->AddChild(*m_victoryText);
-
-        m_restartButtonVictory = &GameObject::Create(*m_scene);
-        m_restartButtonVictory->SetName("RestartButtonVictory");
-        m_victoryPanel->AddChild(*m_restartButtonVictory);
-        m_restartButtonVictory->transform.LocalTranslate({ 0.0f, 0.0f, 0.0f });
-        m_restartButtonVictory->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
-        UiButton* pRestartButton = m_restartButtonVictory->AddComponent<UiButton>();
-        pRestartButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        pRestartButton->AddListener(OnRestartButtonClick);
-
-        m_mainMenuButtonVictory = &GameObject::Create(*m_scene);
-        m_mainMenuButtonVictory->SetName("MainMenuButtonVictory");
-        m_victoryPanel->AddChild(*m_mainMenuButtonVictory);
-        m_mainMenuButtonVictory->transform.LocalTranslate({ 0.0f, -2.0f, 0.0f });
-        m_mainMenuButtonVictory->transform.LocalScale({ 4.0f, 1.0f, 0.1f });
-        UiButton* pMainMenuButton = m_mainMenuButtonVictory->AddComponent<UiButton>();
-        pMainMenuButton->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        pMainMenuButton->AddListener(OnMainMenuButtonClick);
-
+        {
+            m_mainMenuButtonVictory = &GameObject::Create(*m_scene);
+            m_mainMenuButtonVictory->transform.LocalTranslate({ 600.0f, 150.0f, 0.0f });
+            m_mainMenuButtonVictory->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
+            UiButton* button = m_mainMenuButtonVictory->AddComponent<UiButton>();
+            button->AddListener(OnMainMenuButtonClick);
+            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            m_victoryPanel->AddChild(*m_mainMenuButtonVictory);
+        }
         m_victoryPanel->SetActive(false);
     }
 
@@ -289,6 +274,7 @@ public:
         if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
         if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
         if (m_victoryPanel) m_victoryPanel->SetActive(false);
+
         gce::UnlockMouseCursor();
     }
 
@@ -370,6 +356,9 @@ public:
 		Weapon.SetName("Weapon");
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
+        m_CameraObject->transform.LocalTranslate({ 0,0,0 });
+        RessourcesManager::SetPlayer(player);
+
         GameObject& Floor = GameObject::Create(*m_scene);
         Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
         MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
@@ -430,6 +419,10 @@ public:
 
         GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        SnowManObject.transform.SetWorldPosition({ 1.0f,-5.0f,1.0f });
+
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
@@ -488,7 +481,10 @@ public:
         pMeshRenderer2->SetAlbedoTexture(pNewTexture);
         testObject2.AddComponent<BoxCollider>()->SetActive(true);
 
-
+        GameObject& SnowManObject3 = GameObject::Create(*m_scene);
+        SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
+        SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
     }
 
     void MenuManager::PauseGame()
@@ -505,17 +501,14 @@ public:
 
     void MenuManager::RecreateScene()
     {
-        exit(0);
     }
 
     void MenuManager::RestartGame()
     { 
-        RecreateScene(); 
     }
 
     void MenuManager::ReturnToMainMenu() 
     { 
-        RecreateScene(); 
     }
 
     void MenuManager::QuitGame() 
