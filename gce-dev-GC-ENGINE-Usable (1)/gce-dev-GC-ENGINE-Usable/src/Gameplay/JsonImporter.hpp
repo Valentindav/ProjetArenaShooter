@@ -11,9 +11,10 @@ using json = nlohmann::json;
 
 // 1. On ajoute le champ 'root' dans la structure
 struct ImportedLevelData {
-    gce::GameObject* root;                 // Le parent global
+    gce::GameObject* root;
     std::vector<gce::GameObject*> allObjects;
     std::vector<gce::BoxCollider*> allColliders;
+    std::vector<gce::GameObject*> spawnZones;
 };
 
 struct MeshData {
@@ -146,6 +147,32 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             col->SetActive(true);
             result.allColliders.push_back(col);
         }
+
+        if (obj.name.find("zone") == 0)
+        {
+            // On s'assure qu'il a un collider pour définir la zone
+            if (go->GetComponent<gce::BoxCollider>())
+            {
+                // On rend la zone invisible (optionnel mais conseillé)
+                if (auto* mr = go->GetComponent<gce::MeshRenderer>()) {
+                    mr->SetActive(false);
+                }
+
+                // On l'ajoute à la liste des zones
+                result.spawnZones.push_back(go);
+            }
+        }
+        else
+        {
+            // Si ce n'est pas une zone, on peut considérer que c'est un obstacle
+            // et l'ajouter aux colliders pour le Pathfinding/TileMap
+            if (auto* col = go->GetComponent<gce::BoxCollider>()) {
+                result.allColliders.push_back(col);
+            }
+        }
+
+        tempMap.emplace(obj.name, go);
+        result.allObjects.push_back(go);
 
         tempMap.emplace(obj.name, go);
         result.allObjects.push_back(go);
