@@ -19,7 +19,6 @@ DECLARE_SCRIPT(SelectEnemy, ScriptFlag::CollisionStay | ScriptFlag::CollisionExi
 
     void CollisionStay(GameObject* other)
     {
-		std::cout << "Collision with: " << other->GetName() << std::endl;
         if (m_pOwner && m_pOwner->IsActive())
         {         
 			if (!(other->GetName() == "SnowMan" || other->GetName() == "robot")) return;
@@ -39,6 +38,7 @@ DECLARE_SCRIPT(SelectEnemy, ScriptFlag::CollisionStay | ScriptFlag::CollisionExi
                 Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
                 Vector3f32 enemyPos = other->transform.GetWorldPosition();
                 float32 dist = (enemyPos - playerPos).Norm();
+                if (!selectedEnemy->GetGameObject()) return;
                 if (dist < (selectedEnemy->GetGameObject()->transform.GetWorldPosition() - playerPos).Norm())
                 {
                     Entity* entity = RessourcesManager::GetEntityFromGameObject(other);

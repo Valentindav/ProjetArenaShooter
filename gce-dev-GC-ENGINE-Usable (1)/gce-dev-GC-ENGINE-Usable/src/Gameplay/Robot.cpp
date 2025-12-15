@@ -18,9 +18,10 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
-    obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+    obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("robot");
-
+    obj->transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+    m_life = 10;
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";
 	String Chase = "Chase";

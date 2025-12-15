@@ -52,7 +52,6 @@ public:
                 if (entity == nullptr) return;
                 if (entity == player) return;
 
-				std::cout << "Checking entity: " << entity << std::endl;
                 if (dynamic_cast<Ennemy*>(entity))
                 {
                     enemyCount++;
@@ -404,7 +403,7 @@ public:
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
         PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
-        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+        Weapon.transform.SetWorldPosition({ 1.0f,-0.3f,-8.f });
         Weapon.SetName("Weapon_1");
 
         gce::WindowParam params;
@@ -419,7 +418,7 @@ public:
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
-        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
@@ -447,8 +446,7 @@ public:
 
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

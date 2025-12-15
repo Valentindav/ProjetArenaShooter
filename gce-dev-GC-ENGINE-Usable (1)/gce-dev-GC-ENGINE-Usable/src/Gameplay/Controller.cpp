@@ -153,7 +153,7 @@ using namespace gce;
                 else if (player->m_currentState == Player::CANDY_CANE || player->m_currentState == Player::BROKEN_CANDY_CANE || player->m_currentState == Player::TESSON) {
                     if (player->meleeCD < 0.0f) {
                         for (auto entity : RessourcesManager::getEntities()) {
-                            if (entity != nullptr && entity->GetGameObject() != nullptr && entity != entityPlayer && player != nullptr) {
+                            if (entity && entity->GetGameObject() && entity != entityPlayer && player && player->GetGameObject()) {
                                 Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - entity->GetGameObject()->transform.GetWorldPosition();
                                 if (d.Norm() < 5.0f) {
                                     entity->TakeDamage(player->m_damage);

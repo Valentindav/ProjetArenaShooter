@@ -401,7 +401,6 @@ static void OnUpdateShieldBoss(GameObject* me) {
         self->m_isShielded = false;
     }
 
-	std::cout << "Shield active, time left: " << self->m_maxShieldDuration << " seconds." << std::endl;
 	self->m_maxShieldDuration -= GameManager::DeltaTime();
     //teleport to a safe zone above
 	//Ennemies Spawn Logic Here 
