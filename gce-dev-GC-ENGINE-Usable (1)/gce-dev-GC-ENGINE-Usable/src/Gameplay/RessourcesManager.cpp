@@ -33,19 +33,6 @@ gce::Vector<Entity*> RessourcesManager::getEntities() // get entities vector
     return m_instance->m_entities;
 }
 
-void RessourcesManager::RemoveEntities(Entity* entity) // supprime l'entity du vecteur sans la delete
-{
-    if (entity == nullptr || m_instance == nullptr) return;
-    for (auto it = m_instance->m_entities.begin(); it != m_instance->m_entities.end(); ++it)
-    {
-        if (*it == entity)
-        {
-            m_instance->m_entities.Erase(it);
-            return;
-        }
-    }
-}
-
 Player* RessourcesManager::GetPlayer() // get player entity
 {
     if (m_instance == nullptr) return nullptr;

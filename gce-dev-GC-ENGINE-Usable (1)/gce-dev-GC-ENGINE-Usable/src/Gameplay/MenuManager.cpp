@@ -5,8 +5,6 @@
 #include "SnowMan.h"
 #include "Robot.h"
 #include "RessourcesManager.h"
-#include "Player.h"
-#include "MenuManager.h"
 #include "JsonImporter.hpp"
 #include "Elf.h"
 #include "Deer.h"
@@ -49,10 +47,12 @@ public:
             int enemyCount = 0;
             for (Entity* entity : entities)
             {
-                if (entity == nullptr) continue;
-                if (entity == player) continue;
+                if (entity->GetGameObject()->GetName() == "Bullet") return;
+                if (entity == nullptr) return;
+                if (entity == player) return;
 
-                if (dynamic_cast<Ennemy*>(entity) != nullptr)
+				std::cout << "Checking entity: " << entity << std::endl;
+                if (dynamic_cast<Ennemy*>(entity))
                 {
                     enemyCount++;
                 }
@@ -357,7 +357,6 @@ public:
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
         m_CameraObject->transform.LocalTranslate({ 0,0,0 });
-        RessourcesManager::SetPlayer(player);
 
         GameObject& Floor = GameObject::Create(*m_scene);
         Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
@@ -417,12 +416,8 @@ public:
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
-        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-
-        GameObject& SnowManObject = GameObject::Create(*m_scene);
-        SnowManObject.transform.SetWorldPosition({ 1.0f,-5.0f,1.0f });
-
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
@@ -446,12 +441,13 @@ public:
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         EldObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
+
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
-        Player* player = new Player(&PlayerObject,5);
+        Player* player = new Player(&PlayerObject,2);
         player->GetGameObject()->AddChild(*m_CameraObject);
         player->GetGameObject()->AddChild(Weapon);
         RessourcesManager::SetPlayer(player);
@@ -481,10 +477,6 @@ public:
         pMeshRenderer2->SetAlbedoTexture(pNewTexture);
         testObject2.AddComponent<BoxCollider>()->SetActive(true);
 
-        GameObject& SnowManObject3 = GameObject::Create(*m_scene);
-        SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
-        SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-        SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
     }
 
     void MenuManager::PauseGame()

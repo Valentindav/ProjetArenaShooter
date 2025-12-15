@@ -33,6 +33,7 @@ public:
 		{
 			for (GameObject* pObj : s_pendingDestroy)
 			{
+				std::cout << m_pOwner << std::endl;
 				pObj->Destroy();
 			}
 			s_pendingDestroy.Clear();
