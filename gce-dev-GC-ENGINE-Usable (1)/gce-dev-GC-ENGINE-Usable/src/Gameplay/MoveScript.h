@@ -46,7 +46,12 @@ public:
     {
         if (m_pOwner && m_pOwner->IsActive())
         {
-            if (other->GetName() == "Floor")
+            // On récupère le nom de l'objet touché
+            String name = other->GetName();
+
+            // On considère qu'on est au sol SEULEMENT si ce n'est PAS un ennemi ou une balle
+            // Note: "robot" a une minuscule dans votre Robot.cpp, "Bullet" a une majuscule dans AddShoot()
+            if (name != "SnowMan" && name != "robot" && name != "Bullet" && name != "bullet")
             {
                 onGround = true;
             }

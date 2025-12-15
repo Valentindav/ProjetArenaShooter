@@ -26,7 +26,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-
     TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
 
 	RessourcesManager::SetTileMap(&tileMap);
@@ -40,6 +39,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
     MenuManager::Create(&scene);
+
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();
     gce::Console::UnInit();

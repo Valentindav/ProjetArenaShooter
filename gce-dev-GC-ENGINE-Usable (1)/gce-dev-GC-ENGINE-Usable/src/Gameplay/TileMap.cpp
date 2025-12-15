@@ -155,7 +155,7 @@ vector<Node<Tile>*> TileMap::ReconstructPath(Node<Tile>* start, Node<Tile>* targ
 
 bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
 {
-    if (!start || !target || !start->data->walkable || !target->data->walkable)
+    if (!start || !target )
     {
         return false;
     }
@@ -213,6 +213,25 @@ bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
             }
         }
     }
-
 	return false;
+}
+
+void TileMap::SetWalkableWithCollider(BoxCollider box, bool walkable)
+{
+    Vector3f32 boxMin = box.GetWorldBox().min;
+    Vector3f32 boxMax = box.GetWorldBox().max;
+    Node<Tile>* topLeftNode = GetNodeFromWorldPosition({ boxMin.x, 0.f, boxMin.z });
+    Node<Tile>* bottomRightNode = GetNodeFromWorldPosition({ boxMax.x, 0.f, boxMax.z });
+    if (!topLeftNode || !bottomRightNode) return;
+    for (int i = topLeftNode->data->gridX; i <= bottomRightNode->data->gridX; ++i)
+    {
+        for (int j = topLeftNode->data->gridY; j <= bottomRightNode->data->gridY; ++j)
+        {
+            if (i >= 0 && i < m_width && j >= 0 && j < m_length)
+            {
+                m_nodeVector[i][j]->data->walkable = walkable;
+				std::cout << m_nodeVector[i][j]->data->gridX << ", " << m_nodeVector[i][j]->data->gridY << " walkable: " << m_nodeVector[i][j]->data->walkable << std::endl;
+            }
+        }
+	}
 }

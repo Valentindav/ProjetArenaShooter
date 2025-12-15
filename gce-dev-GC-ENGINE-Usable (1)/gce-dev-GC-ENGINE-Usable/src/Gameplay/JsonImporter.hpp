@@ -5,6 +5,8 @@
 #include "nlohmann.hpp"
 #include "Maths/Quaternion.h"
 #include <fstream>
+#include "Components/BoxCollider.h"
+#include <cmath>
 
 using json = nlohmann::json;
 
@@ -16,6 +18,7 @@ struct MeshData {
 
 struct SceneObject {
     String name;
+    String type;
     String parent;
     gce::Vector<float> position;
     gce::Vector<float> rotation;
@@ -40,6 +43,7 @@ inline void from_json(const json& _j, SceneObject& _o)
 {
     if (!_j.is_object()) return;
     if (_j.contains("name")     && !_j.at("name").is_null())     _j.at("name").get_to(_o.name);
+    if (_j.contains("type")     && !_j.at("type").is_null())     _j.at("type").get_to(_o.type);
     if (_j.contains("parent")   && !_j.at("parent").is_null())   _j.at("parent").get_to(_o.parent);
 
     if (_j.contains("position") && !_j.at("position").is_null()) _j.at("position").get_to(_o.position);
@@ -95,7 +99,7 @@ inline UnorderedMap<String, gce::GameObject*> importSceneFromJsonText(const std:
     }
     
     for (const auto& obj : root.objects) 
-{
+    {
         if (obj.name.empty())
         {
             std::cerr << "[ImportScene] Skipping object with empty name\n";
@@ -103,6 +107,7 @@ inline UnorderedMap<String, gce::GameObject*> importSceneFromJsonText(const std:
         }
 
         gce::GameObject* go = &gce::GameObject::Create(*(gce::GameManager::GetScenes()[0]));
+        go->SetName(obj.name.c_str());
 
         // Transform
         if (obj.position.Size() >= 3)
@@ -118,56 +123,116 @@ inline UnorderedMap<String, gce::GameObject*> importSceneFromJsonText(const std:
             go->transform.SetLocalScale(gce::Vector3f32(obj.scale[0], obj.scale[1], obj.scale[2]));
         }
 
-        // Mesh
-        bool hasVerts = !obj.mesh.vertices.Empty();
-        bool hasTris  = !obj.mesh.indices.Empty();
-        if (hasVerts && hasTris) {
-            gce::Vector<gce::Vector3f32> verts;
-            gce::Vector<gce::Vector2f32> uvs;
-            gce::Vector<uint32> indices;
+        // --- GESTION DES TYPES ---
+        
+        if (obj.type == "BoxCollider")
+        {
+            // CORRECTION : On crée une géométrie sur mesure à la bonne taille.
+            // On force le scale du GameObject à 1 pour éviter le bug de double-scaling du moteur.
             
-            const size_t vertCount = obj.mesh.vertices.Size() / 3;
-            if (vertCount == 0)
+            gce::Vector3f32 targetScale = { 1.f, 1.f, 1.f };
+            if (obj.scale.Size() >= 3)
             {
-                std::cerr << "[ImportScene] Object '" << obj.name << "' has vertices size not multiple of 3\n";
-            }
-            else
-            {
-                verts.Reserve(vertCount);
-                for (size_t i = 0; i < vertCount; ++i)
-                {
-                    float x = obj.mesh.vertices[i*3 + 0];
-                    float y = obj.mesh.vertices[i*3 + 1];
-                    float z = obj.mesh.vertices[i*3 + 2];
-                    verts.PushBack({x,y,z});
-                }
-            }
-            
-           indices = obj.mesh.indices;
-            
-            if (!obj.mesh.uvs.Empty()) {
-                if (obj.mesh.uvs.Size() == vertCount * 2)
-                {
-                    uvs.Reserve(vertCount);
-                    for (size_t i = 0; i < vertCount; ++i)
-                    {
-                        float u = obj.mesh.uvs[i*2 + 0];
-                        float v = obj.mesh.uvs[i*2 + 1];
-                        uvs.PushBack({u,v});
-                    }
-                }
-                else
-                    std::cerr << "[ImportScene] UV array size mismatch on object '" << obj.name << "'\n";
+                targetScale = { obj.scale[0], obj.scale[1], obj.scale[2] };
             }
 
-            gce::Vector<gce::Vertex> vertexs;
-            for (int i = 0; i < vertCount; ++i)
-                vertexs.PushBack(gce::Vertex(verts[i], { 0.f,0.f,0.f }, { 0.f , 0.f, 0.f }, uvs[i]));
-            
+            // AJOUT : Facteur de réduction (0.99) pour éviter le chevauchement parfait des colliders
+            // qui cause des instabilités physiques (forces de répulsion).
+            float shrinkFactor = 0.99f;
+
+            // Création manuelle d'un cube aux dimensions targetScale * shrinkFactor
+            gce::Vector<gce::Vertex> vertices;
+            vertices.Resize(8);
+            float x = std::abs(targetScale.x) * 0.5f * shrinkFactor;
+            float y = std::abs(targetScale.y) * 0.5f * shrinkFactor;
+            float z = std::abs(targetScale.z) * 0.5f * shrinkFactor;
+
+            // 8 sommets du cube
+            vertices[0] = gce::Vertex({ -x, -y, -z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[1] = gce::Vertex({  x, -y, -z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[2] = gce::Vertex({  x,  y, -z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[3] = gce::Vertex({ -x,  y, -z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[4] = gce::Vertex({ -x, -y,  z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[5] = gce::Vertex({  x, -y,  z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[6] = gce::Vertex({  x,  y,  z }, {0,0,0}, {0,0,0}, {0,0});
+            vertices[7] = gce::Vertex({ -x,  y,  z }, {0,0,0}, {0,0,0}, {0,0});
+
+            // CORRECTION : Utilisation de l'initialisation directe {} au lieu de l'affectation = {}
+            gce::Vector<uint32> indices {
+                0, 1, 2, 0, 2, 3, // Front
+                1, 5, 6, 1, 6, 2, // Right
+                5, 4, 7, 5, 7, 6, // Back
+                4, 0, 3, 4, 3, 7, // Left
+                3, 2, 6, 3, 6, 7, // Top
+                4, 5, 1, 4, 1, 0  // Bottom
+            };
+
+            gce::Geometry* geo = new gce::Geometry(vertices.Data(), vertices.Size(), indices.Data(), indices.Size());
+
+            // Ajout du MeshRenderer pour le debug (visible)
             gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
-            // Changer cette ligne car la géométrie se retrouve un peu perdu sinon
-            gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
             mr->SetGeometry(geo);
+
+            // IMPORTANT : On remet l'échelle locale à 1.
+            // Le BoxCollider utilisera la taille de la géométrie (qui est correcte) * 1.
+            go->transform.SetLocalScale({ 1.f, 1.f, 1.f });
+
+            gce::BoxCollider* boxCollider = go->AddComponent<gce::BoxCollider>();
+
+            boxCollider->SetActive(true);
+            boxCollider->isTrigger = false;
+        }
+        else 
+        {
+            bool hasVerts = !obj.mesh.vertices.Empty();
+            bool hasTris  = !obj.mesh.indices.Empty();
+            if (hasVerts && hasTris) {
+                gce::Vector<gce::Vector3f32> verts;
+                gce::Vector<gce::Vector2f32> uvs;
+                gce::Vector<uint32> indices;
+                
+                const size_t vertCount = obj.mesh.vertices.Size() / 3;
+                if (vertCount == 0)
+                {
+                    std::cerr << "[ImportScene] Object '" << obj.name << "' has vertices size not multiple of 3\n";
+                }
+                else
+                {
+                    verts.Reserve(vertCount);
+                    for (size_t i = 0; i < vertCount; ++i)
+                    {
+                        float x = obj.mesh.vertices[i*3 + 0];
+                        float y = obj.mesh.vertices[i*3 + 1];
+                        float z = obj.mesh.vertices[i*3 + 2];
+                        verts.PushBack({x,y,z});
+                    }
+                }
+                
+               indices = obj.mesh.indices;
+                
+                if (!obj.mesh.uvs.Empty()) {
+                    if (obj.mesh.uvs.Size() == vertCount * 2)
+                    {
+                        uvs.Reserve(vertCount);
+                        for (size_t i = 0; i < vertCount; ++i)
+                        {
+                            float u = obj.mesh.uvs[i*2 + 0];
+                            float v = obj.mesh.uvs[i*2 + 1];
+                            uvs.PushBack({u,v});
+                        }
+                    }
+                    else
+                        std::cerr << "[ImportScene] UV array size mismatch on object '" << obj.name << "'\n";
+                }
+
+                gce::Vector<gce::Vertex> vertexs;
+                for (int i = 0; i < vertCount; ++i)
+                    vertexs.PushBack(gce::Vertex(verts[i], { 0.f,0.f,0.f }, { 0.f , 0.f, 0.f }, uvs[i]));
+                
+                gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
+                gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
+                mr->SetGeometry(geo);
+            }
         }
         created.emplace(obj.name, go);
     }

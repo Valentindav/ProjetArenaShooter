@@ -179,6 +179,5 @@ public:
 		else {
 			if (bc) bc->SetActive(true);
 			if (pc) pc->SetActive(true);
-			std::cout << "Damage set to " << m_damage << std::endl;
 		}
 	}

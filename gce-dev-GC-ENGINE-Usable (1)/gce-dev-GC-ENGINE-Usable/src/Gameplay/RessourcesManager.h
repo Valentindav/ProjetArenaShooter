@@ -12,6 +12,8 @@ public:
     static gce::Vector<Entity*> getEntities();
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
+    static void AddLevelObject(GameObject* obj);
+    static void ClearCurrentLevel();
     
     static gce::Geometry* GetBottle();
     static gce::Texture* GetTexture();
@@ -26,4 +28,5 @@ private:
     inline static RessourcesManager* m_instance = nullptr;
     Player* m_player = nullptr;
     TileMap* m_tileMap;
+    inline static gce::Vector<GameObject*> m_levelObjects;
 };
