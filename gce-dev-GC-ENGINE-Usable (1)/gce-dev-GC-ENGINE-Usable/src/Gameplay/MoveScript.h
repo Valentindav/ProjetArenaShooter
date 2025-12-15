@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Controller.h"
+#include "MenuManager.h"
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 public:
@@ -11,9 +12,15 @@ public:
     float sensitivity = 0.0005f;
     float jumpForce = 50.0f;
     Controller* inputManager;
+	bool b_menu = true;
 
     void Update() // allow player to move
     {
+        // Si un MenuManager existe et qu'on n'est pas en état Playing, ne pas exécuter Update
+        MenuManager* mm = MenuManager::GetInstance();
+        if (mm && mm->GetGameState() != GameState::Playing)
+            return;
+
         gce::LockMouseCursor();
         GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();

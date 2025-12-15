@@ -33,7 +33,7 @@ public:
                 menuManager->ShowGameOverMenu();
             }
 
-          /*  gce::Vector<Entity*> entities = RessourcesManager::getEntities();
+            gce::Vector<Entity*> entities = RessourcesManager::getEntities();
             int aliveCount = 0;
             for (Entity* entity : entities)
             {
@@ -51,7 +51,7 @@ public:
             {
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
-            }*/
+            }
         }
     }
     END_SCRIPT
@@ -278,6 +278,7 @@ public:
         if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
         if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
         if (m_victoryPanel) m_victoryPanel->SetActive(false);
+
         gce::UnlockMouseCursor();
     }
 
@@ -403,17 +404,14 @@ public:
 
     void MenuManager::RecreateScene()
     {
-        exit(0);
     }
 
     void MenuManager::RestartGame()
     { 
-        RecreateScene(); 
     }
 
     void MenuManager::ReturnToMainMenu() 
     { 
-        RecreateScene(); 
     }
 
     void MenuManager::QuitGame() 

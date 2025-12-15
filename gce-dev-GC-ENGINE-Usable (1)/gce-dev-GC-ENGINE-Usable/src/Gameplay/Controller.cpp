@@ -48,10 +48,6 @@ using namespace gce;
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * player->GetSpeed() * GameManager::DeltaTime());
             }
         }
-        if (GetKey(Keyboard::ESC))
-        {
-            exit(0);
-        }
         if (GetKeyDown(Keyboard::SPACE))
         {
             obj->transform.WorldTranslate(obj->transform.GetLocalUp() * player->GetSpeed() * GameManager::DeltaTime());

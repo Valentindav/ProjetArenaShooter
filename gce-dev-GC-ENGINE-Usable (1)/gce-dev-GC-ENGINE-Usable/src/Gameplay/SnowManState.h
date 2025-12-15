@@ -4,6 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
+#include "MenuManager.h" // ajouté
 
 using namespace gce;
 
@@ -12,6 +13,11 @@ static void OnStartShootSnowman(GameObject* me) {
 }
 
 static void OnUpdateShootSnowman(GameObject* me) {
+    // Ne pas tirer si l'on est dans un menu
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
+
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     SnowMan* self = dynamic_cast<SnowMan*>(ent);
     if (!self) return;
