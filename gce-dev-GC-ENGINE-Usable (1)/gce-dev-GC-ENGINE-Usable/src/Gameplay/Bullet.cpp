@@ -3,6 +3,7 @@
 #include "SnowMan.h"
 #include "Robot.h"
 #include "RessourcesManager.h"
+
 using namespace gce;
 
 DECLARE_SCRIPT(Shoot_Update, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
@@ -124,18 +125,25 @@ public:
 		obj->GetComponent<PhysicComponent>()->SetIsTrigger(true);
 	}
 
-	void Bullet::AddShoot() // add shoot script
-	{
-		GameObject* obj = GetGameObject();
-		obj->SetName("Bullet");
-		obj->AddScript<Shoot_Update>();
-	}
+	
+    void Bullet::AddShoot() // add shoot script
+    {
+        GameObject* obj = GetGameObject();
+        if (obj)
+        {
+            obj->SetName("Bullet");
+            obj->AddScript<Shoot_Update>();
+        }
+    }
 
-	void Bullet::DeleteShoot()// delete shoot script
-	{
-		GameObject* obj = GetGameObject();
-		obj->RemoveScript<Shoot_Update>();
-	}
+    void Bullet::DeleteShoot() // delete shoot script
+    {
+        GameObject* obj = GetGameObject();
+        if (obj)
+        {
+            obj->RemoveScript<Shoot_Update>();
+        }
+    }
 
 	void Bullet::SetTexture(std::string_view path) // set bullet texture
 	{

@@ -33,7 +33,7 @@ void GameObject::RemoveChild(GameObject& child)
     child.m_pParent = nullptr;
 }
 
-GameObject& GameObject::Create( Scene& scene ) // ask & or *
+GameObject& GameObject::Create( Scene& scene ) 
 {
     GameObject* const pNew = new GameObject();
     pNew->m_pScene = &scene;

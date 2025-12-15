@@ -23,4 +23,3 @@ public:
 	void SetCurrentTargetNodePosition() ;
 	void FollowPath();
 };
-
