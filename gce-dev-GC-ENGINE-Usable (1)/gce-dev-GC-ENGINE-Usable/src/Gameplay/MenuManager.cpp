@@ -33,7 +33,7 @@ public:
                 menuManager->ShowGameOverMenu();
             }
 
-            gce::Vector<Entity*> entities = RessourcesManager::getEntities();
+          /*  gce::Vector<Entity*> entities = RessourcesManager::getEntities();
             int aliveCount = 0;
             for (Entity* entity : entities)
             {
@@ -51,7 +51,7 @@ public:
             {
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
-            }
+            }*/
         }
     }
     END_SCRIPT
@@ -96,7 +96,7 @@ public:
         m_Instance->ShowMainMenu();
     }
 
-    void MenuManager::OnStartButtonClick() // start button behavior
+    void MenuManager::OnPlayButtonClick() // start button behavior
     {
         if (m_Instance) m_Instance->StartGame();
     }
@@ -345,13 +345,12 @@ public:
         Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
         Weapon.SetName("Weapon_1");
 
-        Player* player = new Player(&PlayerObject);
+        Player* player = new Player(&PlayerObject,2);
         player->GetGameObject()->AddChild(*m_CameraObject);
         player->GetGameObject()->AddChild(Weapon);
 
         m_CameraObject->transform.LocalTranslate({ 0,0,0 });
         RessourcesManager::SetPlayer(player);
-        RessourcesManager::AddEntities(player);
 
         GameObject& SnowManObject = GameObject::Create(*m_scene);
         GameObject& testObject = GameObject::Create(*m_scene);
@@ -373,8 +372,7 @@ public:
 
         SnowManObject.transform.SetWorldPosition({ 1.0f,-5.0f,1.0f });
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-        SnowMan* Snowman = new SnowMan(&SnowManObject);
-        RessourcesManager::AddEntities(Snowman);
+        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
         //GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         //SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });

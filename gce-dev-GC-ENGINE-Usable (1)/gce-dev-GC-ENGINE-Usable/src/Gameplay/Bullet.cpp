@@ -97,9 +97,11 @@ public:
 				{
 					if (p == other)
 					{
-						alreadyOther = true; break;
+						alreadyOther = true;
+						break;
 					}
 				}
+
 				Entity* Otherentity = nullptr;
 				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
 				if (!alreadyOther)

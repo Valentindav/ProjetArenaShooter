@@ -26,7 +26,11 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
-	TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
+
+    TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
+
+	RessourcesManager::SetTileMap(&tileMap);
+
     gce::WindowParam params;
     params.title = L"GCE Engine Window";
     params.width = 1920;
