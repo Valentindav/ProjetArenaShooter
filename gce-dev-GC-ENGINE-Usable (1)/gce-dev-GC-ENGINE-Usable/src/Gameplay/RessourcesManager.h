@@ -28,5 +28,5 @@ private:
     inline static RessourcesManager* m_instance = nullptr;
     Player* m_player = nullptr;
     TileMap* m_tileMap;
-    static gce::Vector<GameObject*> m_levelObjects;
+    inline static gce::Vector<GameObject*> m_levelObjects;
 };
