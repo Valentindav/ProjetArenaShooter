@@ -12,11 +12,9 @@ public:
     float sensitivity = 0.0005f;
     float jumpForce = 50.0f;
     Controller* inputManager;
-	bool b_menu = true;
 
-    void Update() // allow player to move
+    void Update()
     {
-        // Si un MenuManager existe et qu'on n'est pas en état Playing, ne pas exécuter Update
         MenuManager* mm = MenuManager::GetInstance();
         if (mm && mm->GetGameState() != GameState::Playing)
             return;

@@ -9,6 +9,7 @@ class RessourcesManager
 public:
     static void Create();
     static void AddEntities(Entity* entity);
+    static void RemoveEntities(Entity* entity);
     static gce::Vector<Entity*> getEntities();
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
