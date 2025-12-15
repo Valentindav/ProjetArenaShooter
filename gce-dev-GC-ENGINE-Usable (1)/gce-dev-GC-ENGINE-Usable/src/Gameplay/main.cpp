@@ -7,6 +7,7 @@
 #include "TileMap.h"
 #include "MenuManager.h"
 #include "JsonImporter.hpp"
+#include "RayCast.h"
 
 /*TODO
 - Pathfinding A*
@@ -43,7 +44,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
     pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
-	bool debugMode = true;
+	bool debugMode = false;
     HideMouseCursor();
 
     //----------------------------------INIT GameObject----------------------------------
@@ -54,6 +55,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     light->DefaultDirectionLight();
     light->intensity = 0.0f; 
     light->UpdateLight();
+
+	GameObject& rayCastObj = GameObject::Create(scene);
 
     GameObject& RobotObject = GameObject::Create(scene);
 
@@ -72,7 +75,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
     MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
     pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
-    Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
+    Weapon.transform.LocalScale({ 0.03,0.03,0.03 });	
 
     GameObject& Floor = GameObject::Create(scene);
     Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
@@ -144,7 +147,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
 	Weapon.SetName("Weapon_1");
 
-    /*RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
+    RobotObject.transform.SetWorldPosition({ 10.0f,-9.0f,3.0f });
     RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
     Robot* robot = new Robot(&RobotObject);
 
@@ -164,11 +167,13 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
     SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
     SnowMan* Snowman3 = new SnowMan(&SnowManObject3, &tileMap);
-    RessourcesManager::AddEntities(Snowman3);*/
+    RessourcesManager::AddEntities(Snowman3);
 
+	RayCast* rayCast = new RayCast(&rayCastObj, CameraObject.transform.GetLocalPosition().z);
     Player* player = new Player(&PlayerObject);
     player->GetGameObject()->AddChild(CameraObject);
     player->GetGameObject()->AddChild(Weapon);
+	CameraObject.AddChild(rayCastObj);
     RessourcesManager::SetPlayer(player);
 
     MenuManager::Create(&scene);    

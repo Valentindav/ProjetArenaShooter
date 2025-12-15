@@ -32,6 +32,12 @@ void RessourcesManager::SetPlayer(Player* player) // set player entity
     m_instance->m_player = player;
 }
 
+void RessourcesManager::SetEnemySelected(Entity* enemy) // set selected enemy
+{
+    if (m_instance == nullptr) Create();
+	m_instance->m_enemySelected = enemy;
+}
+
 gce::Geometry* RessourcesManager::GetBottle() // get bottle obj
 {
     if (m_instance == nullptr) return nullptr;
@@ -42,6 +48,12 @@ gce::Texture* RessourcesManager::GetTexture() // get wall texture -> need rename
 {
     if (m_instance == nullptr) return nullptr;
     return m_instance->m_bottleTexture;
+}
+
+Entity* RessourcesManager::GetSelectedEnemy() // get selected enemy
+{
+    if (m_instance == nullptr) return nullptr;
+	return m_instance->m_enemySelected;
 }
 
  Entity* RessourcesManager::GetEntityFromGameObject(gce::GameObject* go) // use game object to get entity

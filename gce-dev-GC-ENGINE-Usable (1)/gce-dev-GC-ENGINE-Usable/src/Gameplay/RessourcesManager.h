@@ -4,6 +4,7 @@
 
 class Entity;
 class Player;
+class Ennemy;
 class RessourcesManager
 {
 public:
@@ -12,12 +13,14 @@ public:
     static gce::Vector<Entity*> getEntities();
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
+	static void SetEnemySelected(Entity* enemy);
     static void AddLevelObject(GameObject* obj);
     static void ClearCurrentLevel();
     
     static gce::Geometry* GetBottle();
     static gce::Texture* GetTexture();
-    static Entity* GetEntityFromGameObject(gce::GameObject* go);
+    static Entity* GetSelectedEnemy();
+    static Entity* GetEntityFromGameObject(gce::GameObject* go);	
 
 private:
     gce::Vector<Entity*> m_entities;
@@ -27,6 +30,7 @@ private:
 	static void SetTileMap(TileMap* tileMap);
     inline static RessourcesManager* m_instance = nullptr;
     Player* m_player = nullptr;
-    TileMap* m_tileMap;
+    TileMap* m_tileMap = nullptr;
+	Entity* m_enemySelected = nullptr;
     inline static gce::Vector<GameObject*> m_levelObjects;
 };

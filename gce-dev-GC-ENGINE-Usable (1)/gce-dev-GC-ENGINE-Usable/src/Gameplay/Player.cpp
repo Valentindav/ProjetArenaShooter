@@ -16,7 +16,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
 	obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
-    obj->SetName("Player");
+    obj->SetName("Player");	
     AddMove();
 }
 
