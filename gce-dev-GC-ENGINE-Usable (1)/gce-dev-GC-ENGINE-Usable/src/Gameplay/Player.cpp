@@ -38,13 +38,13 @@ void Player::UpdateWeapon() // change the weapno look according to the current s
         pChildRenderer->SetGeometry(SHAPES.CUBE);
 		break;
     case NERF_WEAPON:
-        pChildRenderer->SetGeometry(SHAPES.CAPSULE);
+        pChildRenderer->SetGeometry(RessourcesManager::GetNerf());
         break;
 	case THOMPSON_WEAPON:
-        pChildRenderer->SetGeometry(SHAPES.CYLINDER);
+        pChildRenderer->SetGeometry(RessourcesManager::GetThomson());
         break;
     case CANDY_CANE:
-        pChildRenderer->SetGeometry(SHAPES.DONUT);
+        pChildRenderer->SetGeometry(RessourcesManager::GetsurgarCane());
         break;
     case BROKEN_CANDY_CANE:
         pChildRenderer->SetGeometry(SHAPES.HALF_SPHERE);

@@ -12,7 +12,7 @@ using namespace gce;
 Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+    pPlayerRenderer->SetGeometry(RessourcesManager::GetElf());
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
 

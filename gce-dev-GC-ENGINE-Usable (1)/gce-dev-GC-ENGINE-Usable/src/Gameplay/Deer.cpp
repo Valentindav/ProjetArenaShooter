@@ -13,7 +13,7 @@ using namespace gce;
 Deer::Deer(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+    pPlayerRenderer->SetGeometry(RessourcesManager::GetDeer());
     Texture* pPlayerTexture = new Texture("res/Textures/crosshair.png");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
 

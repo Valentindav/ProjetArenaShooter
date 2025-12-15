@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "SnowMan.h"
 #include "Robot.h"
+#include "Boss.h"
 #include "RessourcesManager.h"
 
 using namespace gce;
@@ -92,6 +93,7 @@ public:
 		{
 			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
 			{
+				if (other->GetName() == "Boss" && dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(other))->m_isShielded) return;
 				bool alreadyOther = false;
 				for (GameObject* p : s_pendingDestroy)
 				{

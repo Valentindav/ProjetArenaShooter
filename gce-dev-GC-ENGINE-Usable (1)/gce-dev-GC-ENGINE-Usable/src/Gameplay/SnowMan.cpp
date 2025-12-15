@@ -12,7 +12,7 @@ using namespace gce;
 SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
+    pPlayerRenderer->SetGeometry(RessourcesManager::GetSnowMan());
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     obj->AddComponent<BoxCollider>()->SetActive(true);

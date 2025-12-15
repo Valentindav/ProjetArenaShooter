@@ -48,7 +48,7 @@ using namespace gce;
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * player->GetSpeed() * GameManager::DeltaTime());
             }
         }
-        if (GetKey(Keyboard::ESC))
+        if (GetKey(Keyboard::P))
         {
             exit(0);
         }
@@ -156,7 +156,7 @@ using namespace gce;
                             if (entity != nullptr && entity->GetGameObject() != nullptr && entity != entityPlayer && player != nullptr) {
                                 Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - entity->GetGameObject()->transform.GetWorldPosition();
                                 if (d.Norm() < 5.0f) {
-                                    entity->TakeDamage(1);
+                                    entity->TakeDamage(player->m_damage);
 									player->meleeCD = 1.0f;
                                 }
                             }
@@ -164,7 +164,7 @@ using namespace gce;
                     }
                 }
                 else if (player->m_currentState == Player::BAZZOKA_WEAPON) {
-
+                    /*RAYCAST CODE + following bullet*/
                 }
         }
         if (GetButtonDown(Mouse::RIGHT))

@@ -16,6 +16,9 @@ Entity::Entity(GameObject* obj, float spd) : m_gameObject(obj), m_speed(spd)
             }
             this->GetGameObject()->SetActive(false);
             this->GetGameObject()->Destroy();
+
+            RessourcesManager::RemoveEntities(this);
+
             delete this;
         }
         else

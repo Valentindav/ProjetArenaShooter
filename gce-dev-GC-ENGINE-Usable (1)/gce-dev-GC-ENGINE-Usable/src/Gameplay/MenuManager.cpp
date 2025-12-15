@@ -14,7 +14,9 @@
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
-DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update) 
+DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update)
+private :
+    int aliveCount = 0;
 public:
     void Update()
     {
@@ -36,23 +38,23 @@ public:
         if (menuManager->GetGameState() == GameState::Playing)
         {
             Player* player = RessourcesManager::GetPlayer();
-            if (player && player->GetGameObject() && !player->GetGameObject()->IsActive())
+
+            if (player == nullptr || player->GetGameObject() == nullptr)
             {
                 menuManager->SetGameState(GameState::GameOver);
                 menuManager->ShowGameOverMenu();
             }
 
-          /*  gce::Vector<Entity*> entities = RessourcesManager::getEntities();
-            int aliveCount = 0;
-            for (Entity* entity : entities)
+            for (Entity* entity : RessourcesManager::getEntities())
             {
-                if (entity && entity->GetGameObject() && entity->GetGameObject()->IsActive())
+                if (entity == nullptr) return;
+
+                GameObject* go = entity->GetGameObject();
+                if (go == nullptr) return;
+
+                if (entity && entity->GetGameObject() && entity->GetGameObject()->GetName() != "Player")
                 {
-                    Player* playerCheck = dynamic_cast<Player*>(entity);
-                    if (playerCheck == nullptr)
-                    {
-                        aliveCount++;
-                    }
+                    aliveCount++;
                 }
             }
 
@@ -60,7 +62,7 @@ public:
             {
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
-            }*/
+            }
         }
     }
     END_SCRIPT
@@ -441,10 +443,6 @@ public:
         SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
 
-        GameObject& BossObject = GameObject::Create(*m_scene);
-        BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
 
         GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
@@ -455,6 +453,10 @@ public:
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         EldObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
+        GameObject& BossObject = GameObject::Create(*m_scene);
+        BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
 
         Player* player = new Player(&PlayerObject,5);
         player->GetGameObject()->AddChild(*m_CameraObject);

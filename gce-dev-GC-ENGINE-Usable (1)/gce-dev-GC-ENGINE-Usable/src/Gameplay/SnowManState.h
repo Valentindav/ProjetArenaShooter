@@ -83,7 +83,6 @@ static void OnUpdateIdleSnowman(GameObject* me) {
     self->FollowPath();
 
 	if (self->GetCurrentPath().size() < 2) return;
-	std::cout << self->GetCurrentPath()[0]->data->walkable << std::endl;
 }
 
 
