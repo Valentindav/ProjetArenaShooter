@@ -389,7 +389,7 @@ public:
         pLightAbove->UpdateLight();
 
         // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
-        GameObject& SceneLight = GameObject::Create(*m_scene);
+        /*GameObject& SceneLight = GameObject::Create(*m_scene);
         SceneLight.SetName("Light");
         SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
         Light* pSceneLight = SceneLight.AddComponent<Light>();
@@ -397,9 +397,22 @@ public:
         pSceneLight->DefaultPointLight();
         pSceneLight->intensity = 1.0f;
         pSceneLight->range = 20.0f;
-        pSceneLight->UpdateLight();
+        pSceneLight->UpdateLight();*/
 
         //----------------------------------TestWorld----------------------------------
+
+		GameObject& TestWorld = GameObject::Create(*m_scene);
+		MeshRenderer* pTestWorldRenderer = TestWorld.AddComponent<MeshRenderer>();
+		pTestWorldRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Obj/Test_I_Shaped.obj"));
+		pTestWorldRenderer->SetAlbedoTexture(new Texture("res/Textures/openPBR_shader2_BaseColor.png"));
+
+		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");
+
+        for (auto& [name, obj] : testObj) 
+        {
+			Texture* pAlbedoTexture = new Texture("res/Textures/openPBR_shader2_BaseColor.png");
+			obj->GetComponent<MeshRenderer>()->SetAlbedoTexture(pAlbedoTexture);
+		}*/
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });

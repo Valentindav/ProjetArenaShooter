@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.h>
 #include "TileMap.h"
+#include "JsonImporter.hpp"
 
 class Entity;
 class Player;
