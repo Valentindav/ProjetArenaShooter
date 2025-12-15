@@ -2,7 +2,9 @@
 #include "Player.h"
 #include "SnowMan.h"
 #include "Robot.h"
+#include "Boss.h"
 #include "RessourcesManager.h"
+
 using namespace gce;
 
 DECLARE_SCRIPT(Shoot_Update, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
@@ -22,7 +24,7 @@ public:
 		Entity* entity = nullptr;
 		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 		Bullet* bullet = dynamic_cast<Bullet*>(entity);
-		if (!m_pOwner || !m_pOwner->IsActive() || !bullet->GetOwner() || !bullet->GetOwner()->IsActive())
+		if (!m_pOwner && !m_pOwner->IsActive() && !bullet->GetOwner() && !bullet->GetOwner()->IsActive())
 		{
 			s_pendingDestroy.PushBack(m_pOwner);
 			return;
@@ -31,6 +33,7 @@ public:
 		{
 			for (GameObject* pObj : s_pendingDestroy)
 			{
+				std::cout << m_pOwner << std::endl;
 				pObj->Destroy();
 			}
 			s_pendingDestroy.Clear();
@@ -89,21 +92,29 @@ public:
 		}
 		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
 		{
-			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot")
+			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
 			{
+				if (other->GetName() == "Boss" && dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(other))->m_isShielded) return;
 				bool alreadyOther = false;
 				for (GameObject* p : s_pendingDestroy)
 				{
 					if (p == other)
 					{
-						alreadyOther = true; break;
+						alreadyOther = true;
+						break;
 					}
 				}
+
 				Entity* Otherentity = nullptr;
 				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
 				if (!alreadyOther)
 				{
+					if (dynamic_cast<Bullet*>(ownerEntity)->GetOwner()->GetName() != "Player") {
 						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
+					}
+					else {
+						Otherentity->TakeDamage(RessourcesManager::GetPlayer()->m_damage);
+					}
 				}
 			}
 		}
@@ -124,18 +135,25 @@ public:
 		obj->GetComponent<PhysicComponent>()->SetIsTrigger(true);
 	}
 
-	void Bullet::AddShoot() // add shoot script
-	{
-		GameObject* obj = GetGameObject();
-		obj->SetName("Bullet");
-		obj->AddScript<Shoot_Update>();
-	}
+	
+    void Bullet::AddShoot() // add shoot script
+    {
+        GameObject* obj = GetGameObject();
+        if (obj)
+        {
+            obj->SetName("Bullet");
+            obj->AddScript<Shoot_Update>();
+        }
+    }
 
-	void Bullet::DeleteShoot()// delete shoot script
-	{
-		GameObject* obj = GetGameObject();
-		obj->RemoveScript<Shoot_Update>();
-	}
+    void Bullet::DeleteShoot() // delete shoot script
+    {
+        GameObject* obj = GetGameObject();
+        if (obj)
+        {
+            obj->RemoveScript<Shoot_Update>();
+        }
+    }
 
 	void Bullet::SetTexture(std::string_view path) // set bullet texture
 	{
@@ -153,7 +171,6 @@ public:
 	void Bullet::SetDamage(int dmg)
 	{
 		if (this == nullptr) return;
-		if (m_lifeTime <= 0.0f) return;
 		GameObject* go = GetGameObject();
 		if (!go) return;
 		if (!go->HasComponent<BoxCollider>() || !go->HasComponent<PhysicComponent>()) {

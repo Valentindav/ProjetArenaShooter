@@ -4,22 +4,16 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
-#include "MenuManager.h" // ajouté
 
 using namespace gce;
 
-static void OnStartShootSnowman(GameObject* me) {
+static void OnStartShootElf(GameObject* me) {
 
 }
 
-static void OnUpdateShootSnowman(GameObject* me) {
-    // Ne pas tirer si l'on est dans un menu
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
-
+static void OnUpdateShootElf(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    Elf* self = dynamic_cast<Elf*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
@@ -35,47 +29,37 @@ static void OnUpdateShootSnowman(GameObject* me) {
 
     me->transform.SetWorldRotation(Vector3f32(pitch, yaw, 0.0f));
 
-    if (self->m_ShootCooldown <= 0.0f)
+    if (self->m_ShootCooldown <= 0.0f )
     {
-        GameObject* obj = me;
-        Scene* scene = const_cast<Scene*>(obj->GetScene());
-        GameObject& BulletObject = GameObject::Create(*scene);
-        Vector3f32 position = obj->transform.GetWorldPosition();
-        Vector3f32 forward = obj->transform.GetWorldForward();
-
-        float spawnOffset = 1.0f;
-
-        Vector3f32 spawnPosition = position + forward * spawnOffset;
-
-        BulletObject.transform.SetWorldPosition(spawnPosition);
-        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-        BulletObject.transform.WorldScale({ 0.25,0.25,0.25 });
-
-        Bullet* bullet = new Bullet(&BulletObject);
-        bullet->SetOwner(me);
-        self->m_ShootCooldown = 2.0f;
+        me->transform.WorldTranslate(me->transform.GetLocalUp() * 50 * GameManager::DeltaTime());
+        me->transform.WorldTranslate(me->transform.GetLocalForward() * 200 * GameManager::DeltaTime());
+        Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
+        if (d.Norm() < 6.0f) {
+            player->TakeDamage(2);
+        }
+        self->m_ShootCooldown = 4.0f;
     }
     self->m_ShootCooldown -= GameManager::DeltaTime();
 }
 
 
-static void OnEndShootSnowman(GameObject* me) {
+static void OnEndShootElf(GameObject* me) {
 
 }
 
-static void OnStartIdleSnowman(GameObject* me) {
+static void OnStartIdleElf(GameObject* me) {
 
 }
 
-static void OnUpdateIdleSnowman(GameObject* me) {
+static void OnUpdateIdleElf(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    Elf* self = dynamic_cast<Elf*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 snowmanPos = me->transform.GetWorldPosition();    
+    Vector3f32 snowmanPos = me->transform.GetWorldPosition();
 
     Vector3f32 direction = playerPos - snowmanPos;
     direction.Normalize();
@@ -87,11 +71,9 @@ static void OnUpdateIdleSnowman(GameObject* me) {
     self->SetCurrentTargetNodePosition();
     self->GeneratePathToPlayer(player->GetGameObject());
     self->FollowPath();
-
-	if (self->GetCurrentPath().size() < 2) return;
 }
 
 
-static void OnEndIdleSnowman(GameObject* me) {
+static void OnEndIdleElf(GameObject* me) {
 
 }

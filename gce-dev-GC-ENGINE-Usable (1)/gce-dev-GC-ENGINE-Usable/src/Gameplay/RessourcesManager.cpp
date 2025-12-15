@@ -14,6 +14,19 @@ void RessourcesManager::AddEntities(Entity* entity) // add entities to entity ve
     m_instance->m_entities.PushBack(entity);
 }
 
+void RessourcesManager::RemoveEntities(Entity* entity) // supprime l'entity du vecteur sans la delete
+{
+    if (entity == nullptr || m_instance == nullptr) return;
+    for (auto it = m_instance->m_entities.begin(); it != m_instance->m_entities.end(); ++it)
+    {
+        if (*it == entity)
+        {
+            m_instance->m_entities.Erase(it);
+            return;
+        }
+    }
+}
+
 gce::Vector<Entity*> RessourcesManager::getEntities() // get entities vector
 {
     if (m_instance == nullptr) return {};
@@ -42,6 +55,49 @@ gce::Geometry* RessourcesManager::GetBottle() // get bottle obj
 {
     if (m_instance == nullptr) return nullptr;
     return m_instance->bulletGeo;
+}
+
+gce::Geometry* RessourcesManager::GetThomson()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_thomsonGeo;
+}
+
+gce::Geometry* RessourcesManager::GetsurgarCane()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_surgarCaneGeo;
+}
+
+gce::Geometry* RessourcesManager::GetNerf()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_nerfGeo;
+}
+
+gce::Geometry* RessourcesManager::GetElf() {
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_elfGeo;
+}
+
+gce::Geometry* RessourcesManager::GetSnowMan() {
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_snowManGeo;
+}
+
+gce::Geometry* RessourcesManager::GetRobot() {
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_robotGeo;
+}
+
+gce::Geometry* RessourcesManager::GetDeer(){
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_deerGeo;
+}
+
+gce::Geometry* RessourcesManager::GetSanta() {
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_SantaGeo;
 }
 
 gce::Texture* RessourcesManager::GetTexture() // get wall texture -> need rename & thing

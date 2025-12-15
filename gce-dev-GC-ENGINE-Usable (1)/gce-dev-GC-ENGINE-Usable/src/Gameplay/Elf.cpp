@@ -1,25 +1,28 @@
-#include "SnowMan.h"
+#include "Elf.h"
 #include "Bullet.h"
 #include "RessourcesManager.h"
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
 #include "Entity.h"
-#include "SnowManState.h"
+#include "ElfState.h"
 
 using namespace gce;
 
-SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
+Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(RessourcesManager::GetSnowMan());
+    pPlayerRenderer->SetGeometry(RessourcesManager::GetElf());
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+
+    obj->transform.LocalScale({ 0.15,0.15,0.15 });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
-    obj->SetName("SnowMan");
+    obj->SetName("Elf");
+    m_life = 5.f;
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";
@@ -27,7 +30,7 @@ SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd
     String attack = "Attack";
 
     { // ATTACK STATE
-        sm->AddAction(attack, &OnStartShootSnowman, &OnUpdateShootSnowman, &OnEndShootSnowman);
+        sm->AddAction(attack, &OnStartShootElf, &OnUpdateShootElf, &OnEndShootElf);
         Vector<StateMachine::Condition> conds;
         conds.PushBack(
             {
@@ -37,14 +40,14 @@ SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Attack") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() < 12.0f;
+                    return d.Norm() <= 5.0f;
                 }
             }
         );
         sm->AddTransition(conds, attack);
     }
     { // IDLE STATE
-        sm->AddAction(idle, &OnStartIdleSnowman, &OnUpdateIdleSnowman, &OnEndIdleSnowman);
+        sm->AddAction(idle, &OnStartIdleElf, &OnUpdateIdleElf, &OnEndIdleElf);
         Vector<StateMachine::Condition> conds;
         conds.PushBack(
             {
@@ -54,26 +57,25 @@ SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Idle") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() > 12.0f;
+                    return d.Norm() > 5.0f;
                 }
             }
         );
         sm->AddTransition(conds, idle);
-
     }
 }
 
-void SnowMan::Die()
+void Elf::Die()
 {
 
 }
 
-void SnowMan::Attack()
+void Elf::Attack()
 {
 
 }
 
-void SnowMan::SetCurrentTargetNodePosition()
+void Elf::SetCurrentTargetNodePosition()
 {
     Node<Tile>* node = m_tileMap->GetNodeFromWorldPosition(m_gameObject->transform.GetWorldPosition());
     if (node)
@@ -83,7 +85,7 @@ void SnowMan::SetCurrentTargetNodePosition()
     }
 }
 
-void SnowMan::GeneratePathToPlayer(GameObject* player) 
+void Elf::GeneratePathToPlayer(GameObject* player)
 {
     if (!m_tileMap) return;
 
@@ -96,10 +98,10 @@ void SnowMan::GeneratePathToPlayer(GameObject* player)
     }
 }
 
-void SnowMan::FollowPath()
+void Elf::FollowPath()
 {
-	if (m_currentPath.size() < 2) return;
-    
+    if (m_currentPath.size() < 2) return;
+
     Vector3f32 nextPos = {
         m_currentPath[1]->data->worldPosition.x,
         m_gameObject->transform.GetWorldPosition().y,

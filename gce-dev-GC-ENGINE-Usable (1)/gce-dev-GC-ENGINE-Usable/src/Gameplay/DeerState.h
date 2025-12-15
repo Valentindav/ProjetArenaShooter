@@ -4,22 +4,16 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
-#include "MenuManager.h" // ajouté
 
 using namespace gce;
 
-static void OnStartShootSnowman(GameObject* me) {
+static void OnStartShootDeer(GameObject* me) {
 
 }
 
-static void OnUpdateShootSnowman(GameObject* me) {
-    // Ne pas tirer si l'on est dans un menu
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
-
+static void OnUpdateShootDeer(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    Deer* self = dynamic_cast<Deer*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
@@ -37,45 +31,33 @@ static void OnUpdateShootSnowman(GameObject* me) {
 
     if (self->m_ShootCooldown <= 0.0f)
     {
-        GameObject* obj = me;
-        Scene* scene = const_cast<Scene*>(obj->GetScene());
-        GameObject& BulletObject = GameObject::Create(*scene);
-        Vector3f32 position = obj->transform.GetWorldPosition();
-        Vector3f32 forward = obj->transform.GetWorldForward();
-
-        float spawnOffset = 1.0f;
-
-        Vector3f32 spawnPosition = position + forward * spawnOffset;
-
-        BulletObject.transform.SetWorldPosition(spawnPosition);
-        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-        BulletObject.transform.WorldScale({ 0.25,0.25,0.25 });
-
-        Bullet* bullet = new Bullet(&BulletObject);
-        bullet->SetOwner(me);
-        self->m_ShootCooldown = 2.0f;
+        Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
+        if (d.Norm() < 2.0f) {
+            player->TakeDamage(1);
+        }
+        self->m_ShootCooldown = 4.0f;
     }
     self->m_ShootCooldown -= GameManager::DeltaTime();
 }
 
 
-static void OnEndShootSnowman(GameObject* me) {
+static void OnEndShootDeer(GameObject* me) {
 
 }
 
-static void OnStartIdleSnowman(GameObject* me) {
+static void OnStartIdleDeer(GameObject* me) {
 
 }
 
-static void OnUpdateIdleSnowman(GameObject* me) {
+static void OnUpdateIdleDeer(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-    SnowMan* self = dynamic_cast<SnowMan*>(ent);
+    Deer* self = dynamic_cast<Deer*>(ent);
     if (!self) return;
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 snowmanPos = me->transform.GetWorldPosition();    
+    Vector3f32 snowmanPos = me->transform.GetWorldPosition();
 
     Vector3f32 direction = playerPos - snowmanPos;
     direction.Normalize();
@@ -87,11 +69,9 @@ static void OnUpdateIdleSnowman(GameObject* me) {
     self->SetCurrentTargetNodePosition();
     self->GeneratePathToPlayer(player->GetGameObject());
     self->FollowPath();
-
-	if (self->GetCurrentPath().size() < 2) return;
 }
 
 
-static void OnEndIdleSnowman(GameObject* me) {
+static void OnEndIdleDeer(GameObject* me) {
 
 }

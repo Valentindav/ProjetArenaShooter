@@ -10,7 +10,7 @@ protected:
 public:
     float m_speed;
 
-    float m_life = 10;
+    float m_life = 1;
     Entity(GameObject* obj, float spd = 1.0f);
     virtual ~Entity() = default;
 

@@ -12,12 +12,50 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    m_life = 500000000000000;
     obj->AddComponent<BoxCollider>()->SetActive(true);
 	obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
-    obj->SetName("Player");	
+    obj->SetName("Player");
+	m_weaponLevel = 1;
+    m_baseSpeed = spd;
     AddMove();
+}
+
+void Player::UpdateWeapon() // change the weapno look according to the current state -> TODO
+{
+    GameObject* obj = nullptr;
+    for (auto child : GetGameObject()->GetChildren()) {
+        if (child->GetName() == "Weapon_1") {
+			obj = child;
+        }
+	}
+    if (obj == nullptr) return;
+    MeshRenderer* pChildRenderer = obj->GetComponent<MeshRenderer>();
+    switch (m_currentState) {
+    case GIFT_WEAPON:
+        pChildRenderer->SetGeometry(SHAPES.CUBE);
+		break;
+    case NERF_WEAPON:
+        pChildRenderer->SetGeometry(RessourcesManager::GetNerf());
+        break;
+	case THOMPSON_WEAPON:
+        pChildRenderer->SetGeometry(RessourcesManager::GetThomson());
+        break;
+    case CANDY_CANE:
+        pChildRenderer->SetGeometry(RessourcesManager::GetsurgarCane());
+        break;
+    case BROKEN_CANDY_CANE:
+        pChildRenderer->SetGeometry(SHAPES.HALF_SPHERE);
+        break;
+    case TESSON:
+        pChildRenderer->SetGeometry(SHAPES.SPHERE);
+        break;
+    case BAZZOKA_WEAPON:
+        pChildRenderer->SetGeometry(RessourcesManager::GetBottle());
+    }
+	std::cout << "Weapon updated to state: " << m_currentState << std::endl;
 }
 
 void Player::AddMove() // add move script to player

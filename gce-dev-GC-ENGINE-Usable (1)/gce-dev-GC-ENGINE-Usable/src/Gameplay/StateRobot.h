@@ -33,7 +33,7 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
         Vector3f32 d = playerPos - robotPos;
             self->lockedRotation = targetEuler;
             self->laserPhase = 1;
-            self->laserTimer = 1.5f; 
+            self->laserTimer = 5.0f; 
         return;
     }
 
@@ -54,8 +54,8 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
             self->laser = new Bullet(&objLaser);
             self->laser->SetOwner(me);
             self->laser->m_speed = 0.0f;
-            self->laser->SetDamage(0);
-            self->laser->SetLifeTime(5.f);
+           // self->laser->SetDamage(0);
+            //self->laser->SetLifeTime(5.f);
         }
 
         self->laserTimer -= GameManager::DeltaTime();
@@ -69,7 +69,7 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
         me->transform.SetWorldRotation(self->lockedRotation);
 
         if (self->laser) {
-            self->laser->SetDamage(5);
+           // self->laser->SetDamage(5);
         }
 
         self->laserTimer -= GameManager::DeltaTime();
