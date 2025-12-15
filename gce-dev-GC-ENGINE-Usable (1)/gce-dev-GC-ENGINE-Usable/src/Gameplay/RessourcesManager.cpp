@@ -134,22 +134,24 @@ void RessourcesManager::SetTileMap(TileMap* tileMap)
     m_instance->m_tileMap = tileMap;
 }
 
-void RessourcesManager::AddLevelObject(GameObject* obj)
+void RessourcesManager::AddLevel(ImportedLevelData level)
 {
-    if (obj)
+    if (m_instance == nullptr) Create();
+    if (m_instance->m_importedLevelData != nullptr)
     {
-        m_levelObjects.PushBack(obj);
+        delete m_instance->m_importedLevelData;
+        m_instance->m_importedLevelData = nullptr;
     }
+    m_instance->m_importedLevelData = new ImportedLevelData(level);
 }
 
 void RessourcesManager::ClearCurrentLevel()
 {
-    for (GameObject* obj : m_levelObjects)
+    if (m_instance == nullptr || m_instance->m_importedLevelData == nullptr)
+        return;
+
+    if (m_instance->m_importedLevelData->root)
     {
-        if (obj != nullptr)
-        {
-			obj->Destroy();
-        }
+		m_instance->m_importedLevelData->root->Destroy();
     }
-    m_levelObjects.Clear();
 }

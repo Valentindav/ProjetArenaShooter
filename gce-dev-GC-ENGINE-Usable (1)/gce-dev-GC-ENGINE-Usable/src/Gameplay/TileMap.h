@@ -32,5 +32,5 @@ public:
     Vector3f32 GetOrigin() const { return m_origin; }
     float GetCellSize() const { return m_cellSize; }
     Node<Tile>* GetNodeFromWorldPosition(Vector3f32 const& worldPos);
-	void SetWalkableWithCollider(BoxCollider box, bool walkable);
+	void SetWalkableWithCollider(const BoxCollider& box, bool walkable);
 };

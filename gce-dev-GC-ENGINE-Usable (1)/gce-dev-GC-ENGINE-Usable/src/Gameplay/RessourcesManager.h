@@ -16,7 +16,7 @@ public:
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
 	static void SetEnemySelected(Entity* enemy);
-    static void AddLevelObject(GameObject* obj);
+    static void AddLevel(ImportedLevelData level);
     static void ClearCurrentLevel();
     
     static gce::Geometry* GetBottle();
@@ -55,5 +55,5 @@ private:
     Player* m_player = nullptr;
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
-    inline static gce::Vector<GameObject*> m_levelObjects;
+	ImportedLevelData* m_importedLevelData = nullptr;
 };

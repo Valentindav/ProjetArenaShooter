@@ -10,6 +10,7 @@
 #include "Deer.h"
 #include "Boss.h"
 #include "RayCast.h"
+#include "TileMap.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -329,6 +330,9 @@ public:
             m_CameraObject->SetActive(true);
         }
 
+		TileMap* tileMap = new TileMap(50, 50, 1.0f, *m_scene, { -25.f,0.f,-25.f });
+		RessourcesManager::SetTileMap(tileMap);
+
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();
         // Correction : Enregistrement et dsactivation propre de la lumire du joueur
@@ -414,24 +418,13 @@ public:
 		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
 		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
 
-        for (auto& [name, obj] : testObj) 
-        {			
-			obj->GetComponent<MeshRenderer>()->SetAlbedoTexture(pAlbedoTexture);
-			obj->GetComponent<MeshRenderer>()->SetNormalTexture(pNormalTexture);
-			obj->GetComponent<MeshRenderer>()->SetRoughnessTexture(pRoughnessTexture);
-			obj->GetComponent<MeshRenderer>()->SetMetalnessTexture(pMetalnessTexture);
-			obj->GetComponent<MeshRenderer>()->SetDisplacementTexture(pDisplacementTexture);
-		}
+        auto levelData = importSceneFromJsonText("res/Scene/SceneTest6.json");
 
-		GameObject& root = GameObject::Create(*m_scene);
-		root.SetName("TestWorldRoot");
-		for (auto& [name, obj] : testObj)
-		{
-			root.AddChild(*obj);
-		}
-		root.transform.SetWorldPosition({ .0f, -9.0f, .0f });
+        for (auto* col : levelData.allColliders) {
+            tileMap->SetWalkableWithCollider(*col, false);
+        }
       
-        Vector3f32 targetPos = root.transform.GetWorldPosition();
+        Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
         Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 
         // 1. Créer le GameObject pour la lumière

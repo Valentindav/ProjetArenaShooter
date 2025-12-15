@@ -35,10 +35,7 @@ namespace gce {
 
         auto importedScene = importSceneFromJsonText("res/Scene/T_Shape with hitbox.json");
 
-        for (auto& [name, pObj] : importedScene)
-        {
-            RessourcesManager::AddLevelObject(pObj);
-		}
+		RessourcesManager::AddLevel(importedScene);
 
         //Player* p = RessourcesManager::GetPlayer();
         //if (p && p->GetGameObject())
