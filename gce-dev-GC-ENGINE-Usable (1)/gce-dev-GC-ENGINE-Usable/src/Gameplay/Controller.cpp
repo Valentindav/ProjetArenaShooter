@@ -54,12 +54,10 @@ using namespace gce;
         }
         if (GetKeyDown(Keyboard::SPACE))
         {
-            // Ne plus translater directement ici : la physique doit g�rer la position verticale.
             Move* moveScript = obj->GetScript<Move>();
             PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
             if (moveScript && phys && moveScript->onGround)
             {
-                // Conserver la vitesse horizontale, appliquer l'impulsion verticale
                 Vector3f32 currentVel = phys->GetVelocity();
                 phys->SetVelocity({ currentVel.x, moveScript->jumpForce, currentVel.z });
                 moveScript->onGround = false;
@@ -79,40 +77,55 @@ using namespace gce;
         }
         if (GetKeyDown(Keyboard::_1)) {
             player->m_speed = player->m_baseSpeed;
-            if (player->m_weaponLevel = 1) {
+            if (player->m_weaponLevel == 1) {
                 player->m_currentState = Player::GIFT_WEAPON;
-				player->m_weaponDamage = 1.0f;
+				player->m_damage = 1.0f;
 			}
-            else if (player->m_weaponLevel >= 2) {
+            else if (player->m_weaponLevel == 2) {
                 player->m_currentState = Player::NERF_WEAPON;
-                player->m_weaponDamage = 2.0f;
+                player->m_damage = 2.0f;
 			}
-            else if (player->m_weaponLevel >= 3) {
+            else if (player->m_weaponLevel == 3) {
                 player->m_currentState = Player::THOMPSON_WEAPON;
-                player->m_weaponDamage = 3.0f;
+                player->m_damage = 3.0f;
             }
             player->UpdateWeapon();
         }
         if (GetKeyDown(Keyboard::_2)) {
             player->m_speed = player->m_baseSpeed + 2;
-            if (player->m_weaponLevel = 1) {
+            if (player->m_weaponLevel == 1) {
                 player->m_currentState = Player::CANDY_CANE;
-				player->m_melleeDamage = 2.0f;
+				player->m_damage = 2.0f;
             }
-            else if (player->m_weaponLevel >= 2) {
+            else if (player->m_weaponLevel == 2) {
                 player->m_currentState = Player::BROKEN_CANDY_CANE;
-                player->m_melleeDamage = 3.0f;
+                player->m_damage = 3.0f;
             }
-            else if (player->m_weaponLevel >= 3) {
+            else if (player->m_weaponLevel == 3) {
                 player->m_currentState = Player::TESSON;
-                player->m_melleeDamage = 4.0f;
+                player->m_damage = 4.0f;
             }
             player->UpdateWeapon();
         }
         if (GetKeyDown(Keyboard::_3)) {
             player->m_speed = player->m_baseSpeed - 1;
 			player->m_currentState = Player::BAZZOKA_WEAPON;
+			player->m_damage = 5.0f;
             player->UpdateWeapon();
+        }
+        if (GetKeyDown(Keyboard::_4)) {
+            if (player->m_weaponLevel < 3) {
+                player->m_weaponLevel++;
+                std::cout << "Weapon level increased to: " << player->m_weaponLevel << std::endl;
+                player->UpdateWeapon();
+            }
+        }
+        if (GetKeyDown(Keyboard::_5)) {
+            if (player->m_weaponLevel > 1) {
+                player->m_weaponLevel--;
+                std::cout << "Weapon level increased to: " << player->m_weaponLevel << std::endl;
+                player->UpdateWeapon();
+            }
         }
         if (GetButtonDown(Mouse::LEFT))
         {

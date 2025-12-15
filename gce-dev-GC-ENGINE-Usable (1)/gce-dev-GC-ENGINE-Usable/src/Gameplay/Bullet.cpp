@@ -106,7 +106,12 @@ public:
 				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
 				if (!alreadyOther)
 				{
+					if (dynamic_cast<Bullet*>(ownerEntity)->GetOwner()->GetName() != "Player") {
 						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
+					}
+					else {
+						Otherentity->TakeDamage(RessourcesManager::GetPlayer()->m_damage);
+					}
 				}
 			}
 		}

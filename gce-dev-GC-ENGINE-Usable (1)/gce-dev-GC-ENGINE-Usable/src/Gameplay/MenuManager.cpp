@@ -365,6 +365,7 @@ public:
         Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
         MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
         pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
+		Weapon.SetName("Weapon");
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
         GameObject& Floor = GameObject::Create(*m_scene);
@@ -421,7 +422,7 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-      /*  RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
+        RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
@@ -429,24 +430,31 @@ public:
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
-        RessourcesManager::AddEntities(Snowman);
 
         GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
-        RessourcesManager::AddEntities(Snowman2);
 
         GameObject& SnowManObject3 = GameObject::Create(*m_scene);
         SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
         SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
-        RessourcesManager::AddEntities(Snowman3);*/
 
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
-        Boss* Snowman = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+
+        GameObject& DeerObject = GameObject::Create(*m_scene);
+        DeerObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        DeerObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
+
+        GameObject& EldObject = GameObject::Create(*m_scene);
+        EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        EldObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
 
         Player* player = new Player(&PlayerObject,5);
         player->GetGameObject()->AddChild(*m_CameraObject);
@@ -477,11 +485,6 @@ public:
         pMeshRenderer2->SetGeometry(SHAPES.CUBE);
         pMeshRenderer2->SetAlbedoTexture(pNewTexture);
         testObject2.AddComponent<BoxCollider>()->SetActive(true);
-
-        GameObject& crossHair = GameObject::Create(*m_scene);
-        UiImage* crossHairImg = crossHair.AddComponent<UiImage>();
-        crossHairImg->InitializeImage({ 0.0f, 0.0f }, { 1.f, 1.f }, .0f);
-        crossHairImg->btmBrush = new BitMapBrush("res/Textures/crosshair.png");
 
 
     }

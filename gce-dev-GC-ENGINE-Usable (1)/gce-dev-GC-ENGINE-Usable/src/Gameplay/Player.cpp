@@ -25,6 +25,37 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
 
 void Player::UpdateWeapon() // change the weapno look according to the current state -> TODO
 {
+    GameObject* obj = nullptr;
+    for (auto child : GetGameObject()->GetChildren()) {
+        if (child->GetName() == "Weapon_1") {
+			obj = child;
+        }
+	}
+    if (obj == nullptr) return;
+    MeshRenderer* pChildRenderer = obj->GetComponent<MeshRenderer>();
+    switch (m_currentState) {
+    case GIFT_WEAPON:
+        pChildRenderer->SetGeometry(SHAPES.CUBE);
+		break;
+    case NERF_WEAPON:
+        pChildRenderer->SetGeometry(SHAPES.CAPSULE);
+        break;
+	case THOMPSON_WEAPON:
+        pChildRenderer->SetGeometry(SHAPES.CYLINDER);
+        break;
+    case CANDY_CANE:
+        pChildRenderer->SetGeometry(SHAPES.DONUT);
+        break;
+    case BROKEN_CANDY_CANE:
+        pChildRenderer->SetGeometry(SHAPES.HALF_SPHERE);
+        break;
+    case TESSON:
+        pChildRenderer->SetGeometry(SHAPES.SPHERE);
+        break;
+    case BAZZOKA_WEAPON:
+        pChildRenderer->SetGeometry(RessourcesManager::GetBottle());
+    }
+	std::cout << "Weapon updated to state: " << m_currentState << std::endl;
 }
 
 void Player::AddMove() // add move script to player

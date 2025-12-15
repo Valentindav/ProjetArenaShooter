@@ -25,8 +25,7 @@ public:
 	float m_baseSpeed;
 	bool m_realoading = false;
 
-	float m_weaponDamage = 1;
-	float m_melleeDamage = 1;
+	float m_damage = 1;
 
 	Player(GameObject* obj, float spd = 5);
 	void UpdateWeapon();
