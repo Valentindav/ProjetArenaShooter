@@ -354,9 +354,17 @@ float3 CalculateAdvancedPointLightTexture(float3 worldPosition, float3 basenorma
     
     
     // === EFFETS ADDITIONNELS === //
-    float3 rimLight = CalculateRimLighting(normal, viewDir, light.rimLightColor, light.rimLightIntensity, 0.8, lightDir) * lightContribution;
-    float3 subsurface = SubsurfaceScattering(normal, lightDir, viewDir, light.color.rgb, material.subsurface) * lightContribution;
-    float3 volumetric = VolumetricLighting(worldPosition, light.position, light.color.rgb, 0.3) * lightContribution;
+    // CORRECTION Point Light
+
+// On utilise une puissance de 4.0 pour un contour net (au lieu de 0.3 qui faisait tout briller)
+// On multiplie l'intensité du rim par l'intensité de la lumière
+    float3 rimLight = CalculateRimLighting(normal, viewDir, light.rimLightColor, 4.0, light.rimLightIntensity * light.intensity, lightDir) * lightContribution;
+
+// On multiplie la couleur par l'intensité de la lumière
+    float3 subsurface = SubsurfaceScattering(normal, lightDir, viewDir, light.color.rgb * light.intensity, material.subsurface) * lightContribution;
+
+// On multiplie le facteur 0.3 par l'intensité de la lumière
+    float3 volumetric = VolumetricLighting(worldPosition, light.position, light.color.rgb, 0.3 * light.intensity) * lightContribution;
     
     // === AMBIENT === //
     // float ao = sampleAmbient.r;
@@ -430,9 +438,13 @@ float3 CalculateAdvancedSpotLightTexture(float3 worldPosition, float3 basenormal
     float3 F = SchlickFresnelAdvanced(F0, halfwayDir, viewDir);
     
       // === EFFETS ADDITIONNELS === //
-    float3 rimLight = CalculateRimLighting(normal, viewDir, light.rimLightColor, light.rimLightIntensity, 0.8, lightDir) * lightContribution;
-    float3 subsurface = SubsurfaceScattering(normal, lightDir, viewDir, light.color.rgb, material.subsurface) * lightContribution;
-    float3 volumetric = VolumetricLighting(worldPosition, light.position, light.color.rgb, 0.3) * lightContribution;
+    // CORRECTION Spot Light
+
+    float3 rimLight = CalculateRimLighting(normal, viewDir, light.rimLightColor, 4.0, light.rimLightIntensity * light.intensity, lightDir) * lightContribution;
+
+    float3 subsurface = SubsurfaceScattering(normal, lightDir, viewDir, light.color.rgb * light.intensity, material.subsurface) * lightContribution;
+
+    float3 volumetric = VolumetricLighting(worldPosition, light.position, light.color.rgb, 0.3 * light.intensity) * lightContribution;
     
     float3 kS = F;
     float3 kD = (1.0 - kS) * (1.0 - sampleMetallic);

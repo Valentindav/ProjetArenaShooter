@@ -217,7 +217,7 @@ inline UnorderedMap<String, gce::GameObject*> importSceneFromJsonText(const std:
                         for (size_t i = 0; i < vertCount; ++i)
                         {
                             float u = obj.mesh.uvs[i*2 + 0];
-                            float v = obj.mesh.uvs[i*2 + 1];
+                            float v = 1.f - obj.mesh.uvs[i*2 + 1];
                             uvs.PushBack({u,v});
                         }
                     }
