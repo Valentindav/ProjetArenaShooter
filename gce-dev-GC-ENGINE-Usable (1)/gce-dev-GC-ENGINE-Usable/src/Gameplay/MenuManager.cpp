@@ -1,7 +1,16 @@
 ﻿#include "MenuManager.h"
-#include "RessourcesManager.h"
+#include <windows.h>
+#include <Engine.h>
 #include "Player.h"
 #include "SnowMan.h"
+#include "Robot.h"
+#include "RessourcesManager.h"
+#include "Player.h"
+#include "MenuManager.h"
+#include "JsonImporter.hpp"
+#include "Elf.h"
+#include "Deer.h"
+#include "Boss.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -331,60 +340,148 @@ public:
             m_CameraObject->SetActive(true);
         }
 
-        // Creation du Joueur et du monde
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();
+        // Correction : Enregistrement et dsactivation propre de la lumire du joueur
+        gce::LightManager::AddLight(*light);
         light->DefaultDirectionLight();
-        light->intensity = 1.0f;
-        PlayerObject.transform.SetWorldPosition({ 0.0f,0.0f,-10.0f });
+        light->intensity = 0.0f;
+        light->UpdateLight();
+
+        GameObject& RobotObject = GameObject::Create(*m_scene);
+
+        Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
+
+        /*GameObject& testObject = GameObject::Create(scene);
+        MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
+        pMeshRenderer->SetGeometry(SHAPES.CUBE);
+        pMeshRenderer->SetAlbedoTexture(pNewTexture);
+        testObject.AddComponent<BoxCollider>()->SetActive(true);
+        testObject.AddComponent<PhysicComponent>();
+        testObject.GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
+        testObject.SetName("TestObject");*/
 
         GameObject& Weapon = GameObject::Create(*m_scene);
+        Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
         MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
         pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
-        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
-        Weapon.SetName("Weapon_1");
-
-        Player* player = new Player(&PlayerObject,2);
-        player->GetGameObject()->AddChild(*m_CameraObject);
-        player->GetGameObject()->AddChild(Weapon);
-
-        m_CameraObject->transform.LocalTranslate({ 0,0,0 });
-        RessourcesManager::SetPlayer(player);
-
-        GameObject& SnowManObject = GameObject::Create(*m_scene);
-        GameObject& testObject = GameObject::Create(*m_scene);
-        MeshRenderer* pMeshRenderer = testObject.AddComponent<MeshRenderer>();
-        pMeshRenderer->SetGeometry(SHAPES.CUBE);
-        pMeshRenderer->SetAlbedoTexture(new Texture("res/Exemple/TexturesTest.jpg"));
-        testObject.AddComponent<BoxCollider>()->SetActive(true);
-        testObject.AddComponent<PhysicComponent>()->SetGravityScale(0.0f);
-        testObject.SetName("TestObject");
-        testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
 
         GameObject& Floor = GameObject::Create(*m_scene);
         Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
         MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
         pFloorRenderer->SetGeometry(SHAPES.CUBE);
-        Floor.transform.LocalScale({ 20.f,1.f,20.f });
+        pFloorRenderer->SetAlbedoTexture(pNewTexture);
+        Floor.transform.LocalScale({ 200.f,1.f,200.f });
         Floor.AddComponent<BoxCollider>()->SetActive(true);
         Floor.SetName("Floor");
 
-        SnowManObject.transform.SetWorldPosition({ 1.0f,-5.0f,1.0f });
+        Light* light2 = Floor.AddComponent<Light>();
+        // Correction : Enregistrement et dsactivation propre de la lumire du sol
+        gce::LightManager::AddLight(*light2);
+        light2->DefaultDirectionLight();
+        light2->intensity = 0.0f;
+        light2->UpdateLight();
+
+        // Ajout d'une lumire directionnelle venant du haut pour clairer toute la scne
+        GameObject& LightAbove = GameObject::Create(*m_scene);
+        Light* pLightAbove = LightAbove.AddComponent<Light>();
+        gce::LightManager::AddLight(*pLightAbove);
+        pLightAbove->DefaultDirectionLight();
+        pLightAbove->direction = { 0.0f, -1.0f, 0.0f }; // Pointe vers le bas
+        LightAbove.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        pLightAbove->intensity = 1.f;
+        pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        pLightAbove->UpdateLight();
+
+        // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
+        GameObject& SceneLight = GameObject::Create(*m_scene);
+        SceneLight.SetName("Light");
+        SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
+        Light* pSceneLight = SceneLight.AddComponent<Light>();
+        gce::LightManager::AddLight(*pSceneLight);
+        pSceneLight->DefaultPointLight();
+        pSceneLight->intensity = 1.0f;
+        pSceneLight->range = 20.0f;
+        pSceneLight->UpdateLight();
+
+        //----------------------------------TestWorld----------------------------------
+
+        //----------------------------------Run----------------------------------
+        //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
+        PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
+        Weapon.transform.SetWorldPosition({ 1.0f,0.0f,-8.0f });
+        Weapon.SetName("Weapon_1");
+
+        gce::WindowParam params;
+        params.title = L"GCE Engine Window";
+        params.width = 1920;
+        params.height = 1080;
+        params.isFullScreen = true;
+        params.isSplitScreen = false;
+        params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
+
+      /*  RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
+        RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
+        Robot* robot = new Robot(&RobotObject);
+
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
+        RessourcesManager::AddEntities(Snowman);
 
-        //GameObject& SnowManObject2 = GameObject::Create(*m_scene);
-        //SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
-        //SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-        //SnowMan* Snowman2 = new SnowMan(&SnowManObject2);
-        //RessourcesManager::AddEntities(Snowman2);
+        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
+        SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
+        RessourcesManager::AddEntities(Snowman2);
 
-        //GameObject& SnowManObject3 = GameObject::Create(*m_scene);
-        //SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
-        //SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-        //SnowMan* Snowman3 = new SnowMan(&SnowManObject3);
-        //RessourcesManager::AddEntities(Snowman3);
+        GameObject& SnowManObject3 = GameObject::Create(*m_scene);
+        SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
+        SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+        SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
+        RessourcesManager::AddEntities(Snowman3);*/
+
+        GameObject& BossObject = GameObject::Create(*m_scene);
+        BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        Boss* Snowman = new Boss(&BossObject, RessourcesManager::GetTileMap());
+
+        Player* player = new Player(&PlayerObject,5);
+        player->GetGameObject()->AddChild(*m_CameraObject);
+        player->GetGameObject()->AddChild(Weapon);
+        RessourcesManager::SetPlayer(player);
+
+        // Ajout du crosshair
+        gce::GameObject& crosshair = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiImage = *crosshair.AddComponent<gce::UiImage>();
+
+        gce::Vector2f32 center = { (float)params.width / 2.f, (float)params.height / 2.f };
+        gce::Vector2f32 size = { 64.f, 64.f };
+        gce::Vector2f32 posUi = center - size * 0.5f;
+
+        uiImage.InitializeImage(posUi, size, 1.f);
+        uiImage.btmBrush = new gce::BitMapBrush("res/Textures/crosshair.png");
+
+        // Calcul de l'échelle : TailleCible / TailleImage
+        float scaleX = 64.f / 224.f;
+        float scaleY = 64.f / 221.f;
+        uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+
+        uiImage.SetActive(true);
+
+        GameObject& testObject2 = GameObject::Create(*m_scene);
+        testObject2.transform.SetWorldPosition({ .0f,-10.0f,0.0f });
+        MeshRenderer* pMeshRenderer2 = testObject2.AddComponent<MeshRenderer>();
+        pMeshRenderer2->SetGeometry(SHAPES.CUBE);
+        pMeshRenderer2->SetAlbedoTexture(pNewTexture);
+        testObject2.AddComponent<BoxCollider>()->SetActive(true);
+
+        GameObject& crossHair = GameObject::Create(*m_scene);
+        UiImage* crossHairImg = crossHair.AddComponent<UiImage>();
+        crossHairImg->InitializeImage({ 0.0f, 0.0f }, { 1.f, 1.f }, .0f);
+        crossHairImg->btmBrush = new BitMapBrush("res/Textures/crosshair.png");
 
 
     }
