@@ -39,7 +39,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     params.isSplitScreen = false;
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-
     MenuManager::Create(&scene);
 
     gce::GameManager::Run(params);

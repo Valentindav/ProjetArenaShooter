@@ -9,6 +9,7 @@
 #include "Elf.h"
 #include "Deer.h"
 #include "Boss.h"
+#include "RayCast.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -358,6 +359,8 @@ public:
 
         m_CameraObject->transform.LocalTranslate({ 0,0,0 });
 
+		GameObject& RayCastObj = GameObject::Create(*m_scene);
+
         GameObject& Floor = GameObject::Create(*m_scene);
         Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
         MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
@@ -447,9 +450,12 @@ public:
         BossObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
+		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
+
         Player* player = new Player(&PlayerObject,2);
         player->GetGameObject()->AddChild(*m_CameraObject);
         player->GetGameObject()->AddChild(Weapon);
+		m_CameraObject->AddChild(RayCastObj);
         RessourcesManager::SetPlayer(player);
 
         // Ajout du crosshair
