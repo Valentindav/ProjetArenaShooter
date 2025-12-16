@@ -1,17 +1,7 @@
 #include <windows.h>
 #include <Engine.h>
-#include "Player.h"
-#include "SnowMan.h"
-#include "Robot.h"
 #include "RessourcesManager.h"
-#include "Player.h"
 #include "MenuManager.h"
-#include "JsonImporter.hpp"
-#include "RayCast.h"
-#include "Elf.h"
-#include "Deer.h"
-#include "Boss.h"
-
 /*TODO
 - UIX
 - sound effect
@@ -26,6 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Create();
     RessourcesManager::Create();
     gce::Scene& scene = gce::Scene::Create();
+
     TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
 
 	RessourcesManager::SetTileMap(&tileMap);

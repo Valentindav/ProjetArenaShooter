@@ -84,7 +84,7 @@ public:
         m_Instance->m_scene = scene;
 
         m_Instance->m_CameraObject = &GameObject::Create(*scene);
-        m_Instance->m_CameraObject->SetName("MenuCamera");
+        m_Instance->m_CameraObject->SetName("Camera");
         m_Instance->m_CameraObject->transform.LocalTranslate({ 0, 0, -10 });
 
         m_Instance->pCamera = m_Instance->m_CameraObject->AddComponent<Camera>();
@@ -329,8 +329,6 @@ public:
             m_CameraObject->SetActive(true);
         }
 
-		TileMap* tileMap = new TileMap(50, 50, 1.0f, *m_scene, { -25.f,0.f,-25.f });
-		RessourcesManager::SetTileMap(tileMap);
 
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();

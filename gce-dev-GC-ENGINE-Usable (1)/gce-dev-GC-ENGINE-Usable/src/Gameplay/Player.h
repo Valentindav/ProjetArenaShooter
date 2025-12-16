@@ -30,4 +30,5 @@ public:
 	Player(GameObject* obj, float spd = 5);
 	void UpdateWeapon();
 	void AddMove();
+	void TakeDamage(int damage) override;
 };

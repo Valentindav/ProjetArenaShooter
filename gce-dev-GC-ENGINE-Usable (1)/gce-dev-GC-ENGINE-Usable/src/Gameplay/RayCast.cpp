@@ -4,8 +4,8 @@
 
 RayCast::RayCast(GameObject* obj, float32 offset) : m_rayCastObject(obj), m_offsetFromPlayer(offset)
 {  
-    MeshRenderer* pRayCastRenderer = obj->AddComponent<MeshRenderer>();
-    pRayCastRenderer->SetGeometry(SHAPES.CUBE);
+    //MeshRenderer* pRayCastRenderer = obj->AddComponent<MeshRenderer>();
+    //pRayCastRenderer->SetGeometry(SHAPES.CUBE);
     obj->transform.LocalScale({ 0.1f,0.1f,m_distanceToEnemy });
     obj->transform.LocalTranslate({ 0.f, 0.f, m_distanceToEnemy / 2.f + m_offsetFromPlayer + 1.f });
     BoxCollider* rayCastCollider = obj->AddComponent<BoxCollider>();

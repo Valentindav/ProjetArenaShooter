@@ -63,3 +63,27 @@ void Player::AddMove() // add move script to player
     GameObject* obj = GetGameObject();
     obj->AddScript<Move>();
 }
+
+void Player::TakeDamage(int damage)
+{
+    if (this->m_life <= 0)
+    {
+        RessourcesManager::SetPlayer(nullptr);
+        this->GetGameObject()->SetActive(false);
+        this->GetGameObject()->Destroy();
+
+        RessourcesManager::RemoveEntities(this);
+        delete this;
+    }
+    else
+    {
+        this->m_life = this->m_life - damage;
+        for (GameObject* child : GetGameObject()->GetChildren()) 
+        {
+            if (child->GetName() == "Camera") 
+            {
+                child->transform.LocalRotate({ child->transform.GetWorldRotation().GetX(),child->transform.GetWorldRotation().GetY(),child->transform.GetWorldRotation().GetZ() });
+            }
+        }
+    }
+}
