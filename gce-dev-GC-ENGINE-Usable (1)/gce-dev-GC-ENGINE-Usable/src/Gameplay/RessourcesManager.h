@@ -37,6 +37,9 @@ public:
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
 	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
+	static void AddEnnemy(Ennemy* ennemy);
+	static gce::Vector<Ennemy*> GetEnnemies();
+	static void SpawnEnnemies(int indice, float32 minDistance);
 
 private:
     //----------Weapon---------
@@ -58,4 +61,5 @@ private:
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
 	ImportedLevelData* m_importedLevelData = nullptr;
+	gce::Vector<Ennemy*> m_ennemies;
 };

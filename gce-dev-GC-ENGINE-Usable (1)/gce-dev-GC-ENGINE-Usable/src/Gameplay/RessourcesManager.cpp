@@ -1,6 +1,7 @@
 #include "RessourcesManager.h"
 #include "Entity.h"
 #include "Player.h"
+#include "Ennemy.h" // Ajout de l'inclusion du header Ennemy.h
 
 void RessourcesManager::Create()
 {
@@ -170,4 +171,22 @@ Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
         spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
 	}
 	return spawnZone;
+}
+
+void RessourcesManager::AddEnnemy(Ennemy* ennemy)
+{
+    if (m_instance == nullptr) Create();
+    m_instance->m_ennemies.PushBack(ennemy);
+}
+
+gce::Vector<Ennemy*> RessourcesManager::GetEnnemies()
+{
+    if (m_instance == nullptr) return {};
+    return m_instance->m_ennemies;
+}
+
+void RessourcesManager::SpawnEnnemies(int indice, float32 minDistance)
+{
+    if (m_instance == nullptr || m_instance->m_ennemies.Size() < indice) return;
+	m_instance->m_ennemies[indice]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
 }

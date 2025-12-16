@@ -415,10 +415,10 @@ public:
 		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
 		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
 
-        /*auto levelData = importSceneFromJsonText("res/Scene/test.json");
+        auto levelData = importSceneFromJsonText("res/Scene/test.json");
 
         for (auto* col : levelData.allColliders) {
-            tileMap->SetWalkableWithCollider(*col, false);
+            RessourcesManager::GetTileMap()->SetWalkableWithCollider(*col, false);
         }
       
         levelData.root->transform.WorldTranslate({ 0,-5,0 });
@@ -446,7 +446,7 @@ public:
         pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
 
         // 6. Enregistrer la lumière dans le manager
-        LightManager::AddLight(*pLight);*/
+        LightManager::AddLight(*pLight);
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -462,7 +462,7 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-        /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
+        RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
@@ -471,12 +471,13 @@ public:
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-        /GameObject& SnowManObject = GameObject::Create(*m_scene);
+		RessourcesManager::AddEnnemy(Snowman);
 
+        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
+        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());*/
 
-        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
@@ -487,17 +488,17 @@ public:
         SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());*/
 
 
-        GameObject& DeerObject = GameObject::Create(*m_scene);
+        /*GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
-        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
+        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());*/
 
        /* GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());*/
 
-        GameObject& BossObject = GameObject::Create(*m_scene);
+       /* GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

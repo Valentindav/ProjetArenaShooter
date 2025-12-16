@@ -184,7 +184,7 @@ using namespace gce;
         }
         if (GetKeyDown(Keyboard::N))
         {
-
+			RessourcesManager::SpawnEnnemies(0, 0.0f);
         }
 
 		player->m_reloadCD -= GameManager::DeltaTime();
