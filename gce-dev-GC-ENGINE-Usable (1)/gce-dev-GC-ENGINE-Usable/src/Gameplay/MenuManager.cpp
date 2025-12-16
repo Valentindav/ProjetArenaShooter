@@ -410,7 +410,7 @@ public:
 		pTestWorldRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Obj/Test_I_Shaped.obj"));
 		pTestWorldRenderer->SetAlbedoTexture(new Texture("res/Textures/openPBR_shader2_BaseColor.png"));*/
 
-		auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");
+		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
         Texture* pAlbedoTexture = new Texture("res/Textures/openPBR_shader2_BaseColor.png");
 		Texture* pNormalTexture = new Texture("res/Textures/openPBR_shader2_Normal.png");
@@ -418,12 +418,14 @@ public:
 		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
 		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
 
-        auto levelData = importSceneFromJsonText("res/Scene/SceneTest6.json");
+        auto levelData = importSceneFromJsonText("res/Scene/test.json");
 
         for (auto* col : levelData.allColliders) {
             tileMap->SetWalkableWithCollider(*col, false);
         }
       
+        levelData.root->transform.WorldTranslate({ 0,-5,0 });
+
         Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
         Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 

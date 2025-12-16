@@ -152,7 +152,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             // --- LOGIQUE DE TRI ---
 
             // Cas 1 : C'est une Zone de Spawn (Commence par "zone")
-            if (obj.name.find("zone") == 0)
+            if (obj.name.find("Zone") == 0)
             {
                 // Ajout d'un collider trigger pour la zone
                 gce::BoxCollider* col = go->AddComponent<gce::BoxCollider>();
