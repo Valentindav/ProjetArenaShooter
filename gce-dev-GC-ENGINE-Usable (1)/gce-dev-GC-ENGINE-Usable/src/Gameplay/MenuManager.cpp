@@ -417,7 +417,7 @@ public:
 		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
 		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
 
-        auto levelData = importSceneFromJsonText("res/Scene/test.json");
+        /*auto levelData = importSceneFromJsonText("res/Scene/test.json");
 
         for (auto* col : levelData.allColliders) {
             tileMap->SetWalkableWithCollider(*col, false);
@@ -448,7 +448,7 @@ public:
         pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
 
         // 6. Enregistrer la lumière dans le manager
-        LightManager::AddLight(*pLight);
+        LightManager::AddLight(*pLight);*/
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -473,7 +473,7 @@ public:
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
+        /GameObject& SnowManObject = GameObject::Create(*m_scene);
 
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
@@ -490,16 +490,16 @@ public:
 
 
         GameObject& DeerObject = GameObject::Create(*m_scene);
-        DeerObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
         Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
 
        /* GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
+        Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());*/
 
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 
@@ -527,12 +527,7 @@ public:
 
         uiImage.SetActive(true);
 
-        GameObject& testObject2 = GameObject::Create(*m_scene);
-        testObject2.transform.SetWorldPosition({ .0f,-10.0f,0.0f });
-        MeshRenderer* pMeshRenderer2 = testObject2.AddComponent<MeshRenderer>();
-        pMeshRenderer2->SetGeometry(SHAPES.CUBE);
-        pMeshRenderer2->SetAlbedoTexture(pNewTexture);
-        testObject2.AddComponent<BoxCollider>()->SetActive(true);
+
 
     }
 
