@@ -414,13 +414,12 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-        RobotObject.transform.SetWorldPosition({10.0f,-9.0f,3.0f});
+        /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
-        Robot* robot = new Robot(&RobotObject);
-
-        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        Robot* robot = new Robot(&RobotObject);*/
+         
+       /* GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
         GameObject& SnowManObject2 = GameObject::Create(*m_scene);
@@ -431,22 +430,20 @@ public:
         GameObject& SnowManObject3 = GameObject::Create(*m_scene);
         SnowManObject3.transform.SetWorldPosition({ 3.0f, 0.0f, 3.0f });
         SnowManObject3.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-        SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());
+        SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());*/
 
 
         GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        DeerObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
 
-        GameObject& EldObject = GameObject::Create(*m_scene);
+       /* GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        EldObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
 
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

@@ -11,16 +11,25 @@ using namespace gce;
 
 Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
 {
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(RessourcesManager::GetRobot());
-    Texture* pPlayerTexture = new Texture("res/Textures/crosshair.png");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+
+    GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
+    MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetRobot());
+    boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y-0.5f,obj->transform.GetWorldPosition().z });
+
+    obj->transform.SetLocalScale({ 1.f, 2.f, 1.f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
+
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("robot");
+	obj->AddChild(*boxColliderObj);
     obj->transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
+
+    obj->transform.SetLocalScale({ 0.7f, 0.7f, 0.7f });
+
+
     m_life = 10;
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";

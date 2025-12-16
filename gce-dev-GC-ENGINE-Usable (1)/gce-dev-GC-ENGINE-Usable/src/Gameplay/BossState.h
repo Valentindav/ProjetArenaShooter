@@ -99,6 +99,8 @@ static void OnUpdateIdleBoss(GameObject* me) {
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
 
+	std::cout << "boss world pos x: " << me->transform.GetWorldPosition().x << " y: " << me->transform.GetWorldPosition().y << " z: " << me->transform.GetWorldPosition().z << std::endl;
+
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
     Vector3f32 bossPos = me->transform.GetWorldPosition();
 
@@ -402,6 +404,7 @@ static void OnUpdateShieldBoss(GameObject* me) {
     }
 
 	self->m_maxShieldDuration -= GameManager::DeltaTime();
+
     //teleport to a safe zone above
 	//Ennemies Spawn Logic Here 
 	// when all enemies are dead desactvate shield

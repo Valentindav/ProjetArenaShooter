@@ -21,19 +21,24 @@ END_SCRIPT
 
 Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(RessourcesManager::GetSanta());
-    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-	m_life = 10;
-    m_baseLife = m_life;
-	obj->AddScript<Time>();
+    GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
+    MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetSanta());
+    boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y-2.f,obj->transform.GetWorldPosition().z });
+
+    obj->transform.SetLocalScale({ 2.f, 4.5f,2.f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Boss");
-	obj->transform.WorldScale({ 2.0f, 2.0f, 2.0f });
+    //MeshRenderer* pBoxColliderRnderer = obj->AddComponent<MeshRenderer>();
+    //pBoxColliderRnderer->SetGeometry(SHAPES.CUBE);
+    obj->AddChild(*boxColliderObj);
+    obj->transform.SetLocalScale({ 1.0f, 1.5f, 1.0f });
+
+	m_life = 10;
+    m_baseLife = m_life;
 
     m_cooldown["HeavyMelee"] = 3.f;
     m_cooldown["GroundSlam"] = 10.f;

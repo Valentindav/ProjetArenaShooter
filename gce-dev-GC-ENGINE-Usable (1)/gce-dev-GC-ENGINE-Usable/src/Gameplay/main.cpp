@@ -13,7 +13,6 @@
 #include "Boss.h"
 
 /*TODO
-- texturing 
 - UIX
 - sound effect
 - ennemies spawn 

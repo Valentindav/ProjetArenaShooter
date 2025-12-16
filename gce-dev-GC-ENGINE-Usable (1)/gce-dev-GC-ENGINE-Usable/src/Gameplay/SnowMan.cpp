@@ -11,15 +11,19 @@ using namespace gce;
 
 SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(RessourcesManager::GetSnowMan());
-    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
+    MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetSnowMan());
+    boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y - 0.5f,obj->transform.GetWorldPosition().z });
+
+    obj->transform.SetLocalScale({ 1.f, 3.f, 1.f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("SnowMan");
+    obj->AddChild(*boxColliderObj);
+    obj->transform.SetLocalScale({ 0.6f, 0.6f, 0.6f });
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";
