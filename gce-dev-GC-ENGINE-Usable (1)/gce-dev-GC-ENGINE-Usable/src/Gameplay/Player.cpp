@@ -13,6 +13,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
     m_life = 500000000000000;
+	obj->transform.SetLocalScale({ 2.0f,2.0f, 2.0f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
 	obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
@@ -21,6 +22,16 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
 	m_weaponLevel = 1;
     m_baseSpeed = spd;
     AddMove();
+
+    m_weaponOriginalPos = Vector3f32(0.0f, 0.0f, 0.0f);
+}
+
+void Player::SetCamera(GameObject* camera)
+{
+    m_cameraObject = camera;
+    if (m_cameraFeedback)
+        delete m_cameraFeedback;
+    m_cameraFeedback = new CameraFeedback(camera);
 }
 
 void Player::UpdateWeapon() // change the weapno look according to the current state -> TODO
@@ -78,12 +89,108 @@ void Player::TakeDamage(int damage)
     else
     {
         this->m_life = this->m_life - damage;
-        for (GameObject* child : GetGameObject()->GetChildren()) 
-        {
-            if (child->GetName() == "Camera") 
-            {
-                child->transform.LocalRotate({ child->transform.GetWorldRotation().GetX(),child->transform.GetWorldRotation().GetY(),child->transform.GetWorldRotation().GetZ() });
-            }
+        if (m_cameraFeedback)
+            m_cameraFeedback->TriggerDamageShake();
+    }
+}
+
+void Player::TriggerShootAnimation()
+{
+    m_isWeaponAnimating = true;
+    m_weaponAnimTimer = 0.0f;
+    m_weaponAnimPhase = 1;
+}
+
+void Player::TriggerReloadAnimation()
+{
+    m_isWeaponAnimating = true;
+    m_weaponAnimTimer = 0.0f;
+    m_weaponAnimPhase = 2;
+}
+
+void Player::UpdateWeaponAnimation(float deltaTime)
+{
+    if (!m_isWeaponAnimating)
+    {
+        return;
+    }
+
+    GameObject* weaponObj = nullptr;
+    for (auto child : GetGameObject()->GetChildren()) {
+        if (child->GetName() == "Weapon_1") {
+            weaponObj = child;
+            break;
         }
+    }
+
+    if (!weaponObj)
+    {
+        return;
+    }
+
+    if (m_weaponAnimTimer == 0.0f && (m_weaponOriginalPos.x == 0.0f && m_weaponOriginalPos.y == 0.0f && m_weaponOriginalPos.z == 0.0f))
+    {
+        m_weaponOriginalPos = weaponObj->transform.GetLocalPosition();
+    }
+
+    m_weaponAnimTimer += deltaTime;
+
+    if (m_weaponAnimPhase == 1) 
+    {
+        float shootDuration = 0.3f;
+
+        if (m_weaponAnimTimer >= shootDuration)
+        {
+            m_isWeaponAnimating = false;
+            weaponObj->transform.SetLocalPosition(m_weaponOriginalPos);
+            return;
+        }
+
+        float progress = m_weaponAnimTimer / shootDuration;
+
+        float offset;
+        if (progress < 0.4f)
+        {
+            offset = -(progress / 0.4f) * 0.3f;
+        }
+        else
+        {
+            float returnProgress = (progress - 0.4f) / 0.6f;
+            offset = -0.3f * (1.0f - returnProgress);
+        }
+
+        Vector3f32 newPos = m_weaponOriginalPos;
+        newPos.z += offset;
+
+        weaponObj->transform.SetLocalPosition(newPos);
+    }
+    else if (m_weaponAnimPhase == 2)
+    {
+        float reloadDuration = 1.5f;
+
+        if (m_weaponAnimTimer >= reloadDuration)
+        {
+            m_isWeaponAnimating = false;
+            weaponObj->transform.SetLocalPosition(m_weaponOriginalPos);
+            return;
+        }
+
+        float progress = m_weaponAnimTimer / reloadDuration;
+
+        Vector3f32 newPos = m_weaponOriginalPos;
+
+        if (progress < 0.3f)
+        {
+            float dropProgress = progress / 0.3f;
+            newPos.y -= dropProgress * 0.8f;
+        }
+        else if (progress < 0.7f)
+        {
+            float sideProgress = (progress - 0.3f) / 0.4f;
+            newPos.y -= 0.8f;
+            newPos.y += sideProgress * 1.2f;
+        }
+   
+        weaponObj->transform.SetLocalPosition(newPos);
     }
 }

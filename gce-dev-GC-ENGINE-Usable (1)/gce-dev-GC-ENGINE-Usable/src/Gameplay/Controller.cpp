@@ -62,10 +62,14 @@ using namespace gce;
                 phys->SetVelocity({ currentVel.x, moveScript->jumpForce, currentVel.z });
                 moveScript->onGround = false;
             }
+            if (player->GetCameraFeedback())
+                player->GetCameraFeedback()->TriggerJumpBounce();
         }
         if (GetKey(Keyboard::R))
         {
             player->m_realoading = true;
+            if (!player->m_isWeaponAnimating)
+                player->TriggerReloadAnimation();
             if (player->m_reloadCD <= 0.0f) {
                 player->m_ammo = 15;
                 player->m_realoading = false;
@@ -142,8 +146,15 @@ using namespace gce;
                         obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
 						player->m_ammo -= 1;
                         player->m_reloadCD = 1.0f;
+                        if (player->GetCameraFeedback())
+                            player->GetCameraFeedback()->TriggerShootRecoil();
+                        player->TriggerShootAnimation();
                     } else {
                         player->m_realoading = true;
+
+                        if (!player->m_isWeaponAnimating)
+                            player->TriggerReloadAnimation();
+
                         if (player->m_reloadCD <= 0.0f) {
 							player->m_ammo = 15;
                             player->m_realoading = false;
@@ -186,7 +197,6 @@ using namespace gce;
         {
 
         }
-
 		player->m_reloadCD -= GameManager::DeltaTime();
 		player->m_meleeCD -= GameManager::DeltaTime();
     }

@@ -505,7 +505,9 @@ public:
         player->GetGameObject()->AddChild(*m_CameraObject);
         player->GetGameObject()->AddChild(Weapon);
 		m_CameraObject->AddChild(RayCastObj);
+        player->m_weaponOriginalPos = Weapon.transform.GetLocalPosition();
         RessourcesManager::SetPlayer(player);
+        player->SetCamera(m_CameraObject);
 
         // Ajout du crosshair
         gce::GameObject& crosshair = gce::GameObject::Create(*m_scene);

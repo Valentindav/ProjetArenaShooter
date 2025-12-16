@@ -3,6 +3,7 @@
 #include "Bullet.h"
 #include "Controller.h"
 #include "MenuManager.h"
+#include "RessourcesManager.h"
 
 DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
 public:
@@ -23,6 +24,16 @@ public:
         GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();
         obj->GetComponent<PhysicComponent>()->SetBounciness(-1.0f);
+
+        Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
+        Player* player = dynamic_cast<Player*>(entityPlayer);
+        if (player)
+        {
+            if (player->GetCameraFeedback())
+                player->GetCameraFeedback()->Update(GameManager::DeltaTime());
+            player->UpdateWeaponAnimation(GameManager::DeltaTime());
+        }
+
 
         inputManager->HandleInput(obj);
         gce::WindowParam windowParam = GameManager::GetWindowParam();
@@ -56,7 +67,7 @@ public:
 
             // On considère qu'on est au sol SEULEMENT si ce n'est PAS un ennemi ou une balle
             // Note: "robot" a une minuscule dans votre Robot.cpp, "Bullet" a une majuscule dans AddShoot()
-            if (name != "SnowMan" && name != "robot" && name != "Bullet" && name != "bullet")
+            if (name != "SnowMan" && name != "robot" && name != "Bullet" && name != "bullet" && name != "Elf" && name != "Boss" && name != "Deer")
             {
                 onGround = true;
             }
