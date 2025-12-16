@@ -409,19 +409,17 @@ public:
 
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
-        Texture* pAlbedoTexture = new Texture("res/Textures/openPBR_shader2_BaseColor.png");
-		Texture* pNormalTexture = new Texture("res/Textures/openPBR_shader2_Normal.png");
-		Texture* pRoughnessTexture = new Texture("res/Textures/openPBR_shader2_Roughness.png");
-		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
-		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
+        Texture* pAlbedoTexture = new Texture("res/Textures/Reactor_BaseColor.png");
+		Texture* pNormalTexture = new Texture("res/Textures/Reactor_Normal.png");
+		Texture* pRoughnessTexture = new Texture("res/Textures/Reactor_Roughness.png");
+		Texture* pMetalnessTexture = new Texture("res/Textures/Reactor_Metallic.png");
+		Texture* pDisplacementTexture = new Texture("res/Textures/Reactor_Displacement.png");
 
-        auto levelData = importSceneFromJsonText("res/Scene/test.json");
+        auto levelData = importSceneFromJsonText("res/Scene/Test2.json");
 
         for (auto* col : levelData.allColliders) {
             RessourcesManager::GetTileMap()->SetWalkableWithCollider(*col, false);
         }
-      
-        levelData.root->transform.WorldTranslate({ 0,-5,0 });
 
         Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
         Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
@@ -448,6 +446,8 @@ public:
         // 6. Enregistrer la lumière dans le manager
         LightManager::AddLight(*pLight);
 
+		RessourcesManager::SetupLevelData(levelData);
+
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
         PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
@@ -462,7 +462,7 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-        RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
+        /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
@@ -471,7 +471,7 @@ public:
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-		RessourcesManager::AddEnnemy(Snowman);
+		RessourcesManager::AddEnnemy(Snowman);*/
 
         /*GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
@@ -525,9 +525,6 @@ public:
         uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
         uiImage.SetActive(true);
-
-
-
     }
 
     void MenuManager::PauseGame()

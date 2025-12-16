@@ -40,6 +40,7 @@ public:
 	static void AddEnnemy(Ennemy* ennemy);
 	static gce::Vector<Ennemy*> GetEnnemies();
 	static void SpawnEnnemies(int indice, float32 minDistance);
+	static void SetupLevelData(ImportedLevelData levelData);
 
 private:
     //----------Weapon---------

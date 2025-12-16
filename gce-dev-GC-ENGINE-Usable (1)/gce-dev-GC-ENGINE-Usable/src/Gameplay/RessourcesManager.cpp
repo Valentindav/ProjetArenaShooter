@@ -190,3 +190,14 @@ void RessourcesManager::SpawnEnnemies(int indice, float32 minDistance)
     if (m_instance == nullptr || m_instance->m_ennemies.Size() < indice) return;
 	m_instance->m_ennemies[indice]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
 }
+
+void RessourcesManager::SetupLevelData(ImportedLevelData levelData)
+{
+    if (m_instance == nullptr) Create();
+    if (m_instance->m_importedLevelData != nullptr)
+    {
+        delete m_instance->m_importedLevelData;
+        m_instance->m_importedLevelData = nullptr;
+    }
+    m_instance->m_importedLevelData = new ImportedLevelData(levelData);
+}
