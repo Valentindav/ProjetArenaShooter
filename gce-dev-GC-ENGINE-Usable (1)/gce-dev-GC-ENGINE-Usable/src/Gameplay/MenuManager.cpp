@@ -469,6 +469,11 @@ public:
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
+
         /*GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });

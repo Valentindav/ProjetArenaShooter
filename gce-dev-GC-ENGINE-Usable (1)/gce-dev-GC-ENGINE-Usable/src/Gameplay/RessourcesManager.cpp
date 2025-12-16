@@ -156,24 +156,18 @@ void RessourcesManager::ClearCurrentLevel()
 		m_instance->m_importedLevelData->root->Destroy();
     }
 }
-
-bool RessourcesManager::IsZoneSafeForPlayer(gce::BoxCollider* zoneCol)
+Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
 {
-    if (m_instance == nullptr || m_instance->m_player == nullptr) return true;
-
-    Player* player = m_instance->m_player;
-    gce::GameObject* playerObj = player->GetGameObject();
-    if (!playerObj) return true;
-
-    // On suppose que le joueur a un BoxCollider
-    auto* playerCol = playerObj->GetComponent<gce::BoxCollider>();
-    if (!playerCol) return true;
-
-    return !CheckAABBOverlap(zoneCol->GetWorldBox(), playerCol->GetWorldBox());
-}
-
-bool RessourcesManager::CheckAABBOverlap(const gce::Box& b1, const gce::Box& b2) {
-    return (b1.min.x <= b2.max.x && b1.max.x >= b2.min.x) &&
-        (b1.min.y <= b2.max.y && b1.max.y >= b2.min.y) &&
-        (b1.min.z <= b2.max.z && b1.max.z >= b2.min.z);
+    if (m_instance == nullptr || m_instance->m_importedLevelData == nullptr || m_instance->m_importedLevelData->spawnZones.empty() || m_instance->m_player == nullptr || m_instance->m_player->GetGameObject() == nullptr)
+    {
+        return { 0.f,0.f,0.f };
+    }
+    size_t randomIndex = static_cast<size_t>(std::rand()) % m_instance->m_importedLevelData->spawnZones.size();
+    gce::Vector3f32 spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
+    while ((m_instance->m_player->GetGameObject()->transform.GetWorldPosition() - spawnZone).Norm() < minDist)
+    {
+        randomIndex = static_cast<size_t>(std::rand()) % m_instance->m_importedLevelData->spawnZones.size();
+        spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
+	}
+	return spawnZone;
 }

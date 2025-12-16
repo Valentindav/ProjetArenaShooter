@@ -5,10 +5,8 @@
 #include "nlohmann.hpp"
 #include <fstream>
 #include <vector>
-#include <string> // Nécessaire pour std::string
-
-// Assurez-vous que le chemin est bon
-#include "../Engine/Components/BoxCollider.h" 
+#include <string>
+#include "Components/BoxCollider.h" 
 
 using json = nlohmann::json;
 
@@ -16,7 +14,7 @@ struct ImportedLevelData {
     gce::GameObject* root;
     std::vector<gce::GameObject*> allObjects;
     std::vector<gce::BoxCollider*> allColliders;
-    std::vector<gce::GameObject*> spawnZones;
+    std::vector<gce::Vector3f32> spawnZones;
 };
 
 struct MeshData {
@@ -143,22 +141,14 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
 
             gce::Vector<gce::Vertex> vertexs;
             for (int i = 0; i < vertCount; ++i)
-                vertexs.PushBack(gce::Vertex(verts[i], { 0.f,0.f,0.f }, { 0.f , 0.f, 0.f }, uvs[i]));
-
-            gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
-            gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
-            mr->SetGeometry(geo);
+                vertexs.PushBack(gce::Vertex(verts[i], { 0.f,0.f,0.f }, { 0.f , 0.f, 0.f }, uvs[i]));            
 
             // --- LOGIQUE DE TRI ---
 
             // Cas 1 : C'est une Zone de Spawn (Commence par "zone")
             if (obj.name.find("Zone") == 0)
             {
-                // Ajout d'un collider trigger pour la zone
-                gce::BoxCollider* col = go->AddComponent<gce::BoxCollider>();
-                col->SetActive(true);
-                // On cache le visuel
-                mr->SetActive(false);
+                gce::Vector3f32 go = { obj.position[0], obj.position[1], obj.position[2] };
 
                 result.spawnZones.push_back(go);
             }
@@ -166,10 +156,13 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             // "remet de quoi remplir le vecteur box collider quand le nom contient box collider"
             else if (obj.name.find("BoxCollider") != std::string::npos)
             {
+                gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
+                gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
+                mr->SetGeometry(geo);
+
                 gce::BoxCollider* col = go->AddComponent<gce::BoxCollider>();
                 col->SetActive(true);
 
-                // On l'ajoute à la liste pour le baking de la TileMap
                 result.allColliders.push_back(col);
             }
         }

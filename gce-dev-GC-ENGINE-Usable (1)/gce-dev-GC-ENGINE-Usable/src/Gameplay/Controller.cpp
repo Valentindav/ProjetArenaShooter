@@ -66,8 +66,8 @@ using namespace gce;
         if (GetKey(Keyboard::R))
         {
             player->m_realoading = true;
-            if (player->ReloadCD <= 0.0f) {
-                player->ammo = 15;
+            if (player->m_reloadCD <= 0.0f) {
+                player->m_ammo = 15;
                 player->m_realoading = false;
             }
         }
@@ -131,7 +131,7 @@ using namespace gce;
         {
 				if (player->m_currentState == Player::GIFT_WEAPON || player->m_currentState == Player::NERF_WEAPON || player->m_currentState == Player::THOMPSON_WEAPON)
                 {
-                    if (player->ammo > 0 && !player->m_realoading) {
+                    if (player->m_ammo > 0 && !player->m_realoading) {
                         Scene* scene = const_cast<Scene*>(obj->GetScene());
                         GameObject& BulletObject = GameObject::Create(*scene);
                         BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
@@ -140,24 +140,24 @@ using namespace gce;
                         bullet->SetOwner(obj);
                         obj->GetScript<Move>()->lastBullet = bullet;
                         obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
-						player->ammo -= 1;
-                        player->ReloadCD = 1.0f;
+						player->m_ammo -= 1;
+                        player->m_reloadCD = 1.0f;
                     } else {
                         player->m_realoading = true;
-                        if (player->ReloadCD <= 0.0f) {
-							player->ammo = 15;
+                        if (player->m_reloadCD <= 0.0f) {
+							player->m_ammo = 15;
                             player->m_realoading = false;
                         }
                     }
                 }
                 else if (player->m_currentState == Player::CANDY_CANE || player->m_currentState == Player::BROKEN_CANDY_CANE || player->m_currentState == Player::TESSON) {
-                    if (player->meleeCD < 0.0f) {
+                    if (player->m_meleeCD < 0.0f) {
                         for (auto entity : RessourcesManager::getEntities()) {
                             if (entity != nullptr && entity->GetGameObject() != nullptr && entity != entityPlayer && player != nullptr) {
                                 Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - entity->GetGameObject()->transform.GetWorldPosition();
                                 if (d.Norm() < 5.0f) {
                                     entity->TakeDamage(player->m_damage);
-									player->meleeCD = 1.0f;
+									player->m_meleeCD = 1.0f;
                                 }
                             }
                         }
@@ -182,6 +182,11 @@ using namespace gce;
            
             player->m_energy += 10 * GameManager::DeltaTime();
         }
-		player->ReloadCD -= GameManager::DeltaTime();
-		player->meleeCD -= GameManager::DeltaTime();
+        if (GetKeyDown(Keyboard::N))
+        {
+
+        }
+
+		player->m_reloadCD -= GameManager::DeltaTime();
+		player->m_meleeCD -= GameManager::DeltaTime();
     }
