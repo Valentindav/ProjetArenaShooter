@@ -1,11 +1,12 @@
 #pragma once
 #include "Entity.h"
 
-class Bullet :public Entity
+class Bullet : public Entity
 {
-	GameObject* m_owner = nullptr;
-	int m_damage = 1;
-	float m_lifeTime = 0.0f;
+	GameObject* m_owner;
+	int m_damage;
+	float m_lifeTime;
+
 public:
 	Bullet(GameObject* obj, float spd = 500);
 	void AddShoot();
@@ -16,11 +17,6 @@ public:
 	int GetDamage() const { return m_damage; }
 	void SetLifeTime(float time) { m_lifeTime = time; }
 	float GetLifeTime() const { return m_lifeTime; }
-	void SetOwner(GameObject* owner) 
-	{
-		m_owner = owner;
-	}
-	GameObject* GetOwner() 
-	{
-		if (this == nullptr) return 0; return m_owner; }
+	void SetOwner(GameObject* owner) { m_owner = owner; }
+	GameObject* GetOwner() { if (this == nullptr) return nullptr; return m_owner; }
 };

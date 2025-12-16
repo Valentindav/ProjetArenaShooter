@@ -3,6 +3,7 @@
 #include "SnowMan.h"
 #include "Robot.h"
 #include "RessourcesManager.h"
+#include "MenuManager.h"
 
 using namespace gce;
 
@@ -11,42 +12,61 @@ private:
 	inline static Vector<GameObject*> s_pendingDestroy;
 
 public:
-	void Start() // Start the lifetime of the bullet
+	void Start()
 	{
 		Bullet* self = dynamic_cast<Bullet*>(RessourcesManager::GetEntityFromGameObject(m_pOwner));
 		if (!self) return;
 		self->SetLifeTime(3.0f);
 	}
 
-	void Update() // move the bullet forward and destroy it when her lifetime is 0
+	void Update()
 	{
-		Entity* entity = nullptr;
-		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
-		Bullet* bullet = dynamic_cast<Bullet*>(entity);
-		if (!m_pOwner && !m_pOwner->IsActive() && !bullet->GetOwner() && !bullet->GetOwner()->IsActive())
+		if (!m_pOwner || !m_pOwner->IsActive())
 		{
-			s_pendingDestroy.PushBack(m_pOwner);
 			return;
 		}
+
+		Entity* entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		if (!entity) return;
+
+		Bullet* bullet = dynamic_cast<Bullet*>(entity);
+		if (!bullet) return;
+
+		GameObject* owner = bullet->GetOwner();
+		if (!owner || !owner->IsActive())
+		{
+			m_pOwner->SetActive(false);
+			bool already = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == m_pOwner)
+				{
+					already = true;
+					break;
+				}
+			}
+			if (!already) s_pendingDestroy.PushBack(m_pOwner);
+			return;
+		}
+
 		if (!s_pendingDestroy.Empty())
 		{
 			for (GameObject* pObj : s_pendingDestroy)
 			{
-				pObj->Destroy();
+				if (pObj)
+				{
+					pObj->Destroy();
+				}
 			}
 			s_pendingDestroy.Clear();
 		}
+
 		if (bullet->GetLifeTime() >= 0.0f)
 		{
-			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * entity->GetSpeed()/100 * GameManager::DeltaTime());
+			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * entity->GetSpeed() / 100 * GameManager::DeltaTime());
 		}
 		else
 		{
-			if (!m_pOwner->IsActive())
-			{
-				return;
-			}
-
 			m_pOwner->SetActive(false);
 
 			bool already = false;
@@ -54,25 +74,30 @@ public:
 			{
 				if (p == m_pOwner)
 				{
-					already = true; break;
+					already = true;
+					break;
 				}
 			}
 			if (!already) s_pendingDestroy.PushBack(m_pOwner);
 		}
+
 		bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
 	}
 
-	void CollisionEnter(GameObject* other) //handle collision with entity
+	void CollisionEnter(GameObject* other)
 	{
-		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+		if (!m_pOwner || !m_pOwner->IsActive() || !other || !other->IsActive()) return;
 
-		Entity* ownerEntity = nullptr;
-		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		Entity* ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		if (!ownerEntity) return;
 
-		Entity* OtherEntity = nullptr;
-		OtherEntity = RessourcesManager::GetEntityFromGameObject(other);
+		Bullet* bulletEntity = dynamic_cast<Bullet*>(ownerEntity);
+		if (!bulletEntity) return;
 
-		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+		GameObject* bulletOwner = bulletEntity->GetOwner();
+		if (bulletOwner == other) return;
+
+		if (m_pOwner->IsActive())
 		{
 			m_pOwner->SetActive(false);
 			bool already = false;
@@ -80,7 +105,8 @@ public:
 			{
 				if (p == m_pOwner)
 				{
-					already = true; break;
+					already = true;
+					break;
 				}
 			}
 			if (!already)
@@ -88,75 +114,87 @@ public:
 				s_pendingDestroy.PushBack(m_pOwner);
 			}
 		}
-		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+
+		if (other->IsActive())
 		{
 			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
 			{
-				bool alreadyOther = false;
-				for (GameObject* p : s_pendingDestroy)
-				{
-					if (p == other)
-					{
-						alreadyOther = true;
-						break;
-					}
-				}
+				Entity* OtherEntity = RessourcesManager::GetEntityFromGameObject(other);
 
-				Entity* Otherentity = nullptr;
-				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
-				if (!alreadyOther)
+				if (OtherEntity)
 				{
-						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
+					OtherEntity->TakeDamage(bulletEntity->GetDamage());
+
+					if (other->GetName() == "Player")
+					{
+						Player* player = dynamic_cast<Player*>(OtherEntity);
+						if (player)
+						{
+							MenuManager* menuManager = MenuManager::GetInstance();
+							if (menuManager)
+							{
+								menuManager->UpdateHealthUI(player->m_life, 13.0f);
+							}
+						}
+					}
 				}
 			}
 		}
 	}
-
 	END_SCRIPT
 
-	Bullet::Bullet(GameObject* obj, float spd) : Entity(obj,spd)
+		Bullet::Bullet(GameObject* obj, float spd) : Entity(obj, spd), m_owner(nullptr), m_damage(1), m_lifeTime(0.0f)
 	{
 		obj->SetName("bullet");
 		MeshRenderer* pWeaponRenderer = obj->AddComponent<MeshRenderer>();
 		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-		obj->transform.LocalScale({ 0.05,0.05,0.05 });
+		obj->transform.LocalScale({ 0.05, 0.05, 0.05 });
 		obj->AddComponent<BoxCollider>()->SetActive(true);
 		obj->AddComponent<PhysicComponent>();
 		obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
-		AddShoot();
 		obj->GetComponent<PhysicComponent>()->SetIsTrigger(true);
+		AddShoot();
 	}
 
-	
-    void Bullet::AddShoot() // add shoot script
-    {
-        GameObject* obj = GetGameObject();
-        if (obj)
-        {
-            obj->SetName("Bullet");
-            obj->AddScript<Shoot_Update>();
-        }
-    }
-
-    void Bullet::DeleteShoot() // delete shoot script
-    {
-        GameObject* obj = GetGameObject();
-        if (obj)
-        {
-            obj->RemoveScript<Shoot_Update>();
-        }
-    }
-
-	void Bullet::SetTexture(std::string_view path) // set bullet texture
+	void Bullet::AddShoot()
 	{
-		MeshRenderer* pMeshRenderer = GetGameObject()->AddComponent<MeshRenderer>();
+		GameObject* obj = GetGameObject();
+		if (obj)
+		{
+			obj->SetName("Bullet");
+			obj->AddScript<Shoot_Update>();
+		}
+	}
+
+	void Bullet::DeleteShoot()
+	{
+		GameObject* obj = GetGameObject();
+		if (obj)
+		{
+			obj->RemoveScript<Shoot_Update>();
+		}
+	}
+
+	void Bullet::SetTexture(std::string_view path)
+	{
+		GameObject* obj = GetGameObject();
+		if (!obj) return;
+
+		MeshRenderer* pMeshRenderer = obj->GetComponent<MeshRenderer>();
+		if (!pMeshRenderer) return;
+
 		Texture* pNewTexture = new Texture(path);
 		pMeshRenderer->SetAlbedoTexture(pNewTexture);
 	}
 
-	void Bullet::SetShape(gce::Geometry* geo)// set bullet shape
+	void Bullet::SetShape(gce::Geometry* geo)
 	{
-		MeshRenderer* pMeshRenderer = GetGameObject()->AddComponent<MeshRenderer>();
+		GameObject* obj = GetGameObject();
+		if (!obj) return;
+
+		MeshRenderer* pMeshRenderer = obj->GetComponent<MeshRenderer>();
+		if (!pMeshRenderer) return;
+
 		pMeshRenderer->SetGeometry(geo);
 	}
 
@@ -165,20 +203,25 @@ public:
 		if (this == nullptr) return;
 		GameObject* go = GetGameObject();
 		if (!go) return;
-		if (!go->HasComponent<BoxCollider>() || !go->HasComponent<PhysicComponent>()) {
-			m_damage = dmg;
+
+		m_damage = dmg;
+
+		if (!go->HasComponent<BoxCollider>() || !go->HasComponent<PhysicComponent>())
+		{
 			return;
 		}
-		m_damage = dmg;
+
 		BoxCollider* bc = go->GetComponent<BoxCollider>();
 		PhysicComponent* pc = go->GetComponent<PhysicComponent>();
-		if (m_damage == 0) {
+
+		if (m_damage == 0)
+		{
 			if (bc) bc->SetActive(false);
 			if (pc) pc->SetActive(false);
 		}
-		else {
+		else
+		{
 			if (bc) bc->SetActive(true);
 			if (pc) pc->SetActive(true);
-			std::cout << "Damage set to " << m_damage << std::endl;
 		}
 	}
