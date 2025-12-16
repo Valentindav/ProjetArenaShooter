@@ -17,11 +17,11 @@ public:
 	state m_currentState = GIFT_WEAPON;
 
 	int m_weaponLevel = 1;
-	float ReloadCD = 1.0f;
+	float m_reloadCD = 1.0f;
 
-	float ammo = 15;
+	float m_ammo = 15;
 	float m_energy = 100.0f;
-	float meleeCD = 1.0f;
+	float m_meleeCD = 1.0f;
 	float m_baseSpeed;
 	bool m_realoading = false;
 

@@ -10,6 +10,7 @@
 #include "Deer.h"
 #include "Boss.h"
 #include "RayCast.h"
+#include "TileMap.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -328,6 +329,9 @@ public:
             m_CameraObject->SetActive(true);
         }
 
+		TileMap* tileMap = new TileMap(50, 50, 1.0f, *m_scene, { -25.f,0.f,-25.f });
+		RessourcesManager::SetTileMap(tileMap);
+
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();
         // Correction : Enregistrement et dsactivation propre de la lumire du joueur
@@ -388,7 +392,7 @@ public:
         pLightAbove->UpdateLight();
 
         // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
-        GameObject& SceneLight = GameObject::Create(*m_scene);
+        /*GameObject& SceneLight = GameObject::Create(*m_scene);
         SceneLight.SetName("Light");
         SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
         Light* pSceneLight = SceneLight.AddComponent<Light>();
@@ -396,9 +400,55 @@ public:
         pSceneLight->DefaultPointLight();
         pSceneLight->intensity = 1.0f;
         pSceneLight->range = 20.0f;
-        pSceneLight->UpdateLight();
+        pSceneLight->UpdateLight();*/
 
         //----------------------------------TestWorld----------------------------------
+
+		/*GameObject& TestWorld = GameObject::Create(*m_scene);
+		MeshRenderer* pTestWorldRenderer = TestWorld.AddComponent<MeshRenderer>();
+		pTestWorldRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Obj/Test_I_Shaped.obj"));
+		pTestWorldRenderer->SetAlbedoTexture(new Texture("res/Textures/openPBR_shader2_BaseColor.png"));*/
+
+		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
+
+        Texture* pAlbedoTexture = new Texture("res/Textures/openPBR_shader2_BaseColor.png");
+		Texture* pNormalTexture = new Texture("res/Textures/openPBR_shader2_Normal.png");
+		Texture* pRoughnessTexture = new Texture("res/Textures/openPBR_shader2_Roughness.png");
+		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
+		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
+
+        auto levelData = importSceneFromJsonText("res/Scene/test.json");
+
+        for (auto* col : levelData.allColliders) {
+            tileMap->SetWalkableWithCollider(*col, false);
+        }
+      
+        levelData.root->transform.WorldTranslate({ 0,-5,0 });
+
+        Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
+        Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
+
+        // 1. Créer le GameObject pour la lumière
+        GameObject& lightGo = GameObject::Create(*m_scene);
+
+        // 2. Positionner le GameObject
+        lightGo.transform.SetWorldPosition(lightPos);
+
+        // 3. Ajouter le composant Light
+        Light* pLight = lightGo.AddComponent<Light>();
+
+        // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
+        pLight->DefaultPointLight();
+
+        // 5. Personnaliser les propriétés (optionnel mais recommandé)
+        // Accès direct aux champs de LightData car Light hérite de LightData
+        pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
+        pLight->intensity = 0.2f;                   // Intensité
+        pLight->range = 20.0f;                      // Rayon d'action
+        pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
+
+        // 6. Enregistrer la lumière dans le manager
+        LightManager::AddLight(*pLight);
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -416,9 +466,15 @@ public:
 
         /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
-        Robot* robot = new Robot(&RobotObject);*/
-         
-       /* GameObject& SnowManObject = GameObject::Create(*m_scene);
+        Robot* robot = new Robot(&RobotObject);
+
+        GameObject& SnowManObject = GameObject::Create(*m_scene);
+        SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
+        SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
+        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
+
+        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
+
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 

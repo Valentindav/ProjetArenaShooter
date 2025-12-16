@@ -1,5 +1,6 @@
 #include "RessourcesManager.h"
 #include "Entity.h"
+#include "Player.h"
 
 void RessourcesManager::Create()
 {
@@ -134,22 +135,39 @@ void RessourcesManager::SetTileMap(TileMap* tileMap)
     m_instance->m_tileMap = tileMap;
 }
 
-void RessourcesManager::AddLevelObject(GameObject* obj)
+void RessourcesManager::AddLevel(ImportedLevelData level)
 {
-    if (obj)
+    if (m_instance == nullptr) Create();
+    if (m_instance->m_importedLevelData != nullptr)
     {
-        m_levelObjects.PushBack(obj);
+        delete m_instance->m_importedLevelData;
+        m_instance->m_importedLevelData = nullptr;
     }
+    m_instance->m_importedLevelData = new ImportedLevelData(level);
 }
 
 void RessourcesManager::ClearCurrentLevel()
 {
-    for (GameObject* obj : m_levelObjects)
+    if (m_instance == nullptr || m_instance->m_importedLevelData == nullptr)
+        return;
+
+    if (m_instance->m_importedLevelData->root)
     {
-        if (obj != nullptr)
-        {
-			obj->Destroy();
-        }
+		m_instance->m_importedLevelData->root->Destroy();
     }
-    m_levelObjects.Clear();
+}
+Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
+{
+    if (m_instance == nullptr || m_instance->m_importedLevelData == nullptr || m_instance->m_importedLevelData->spawnZones.empty() || m_instance->m_player == nullptr || m_instance->m_player->GetGameObject() == nullptr)
+    {
+        return { 0.f,0.f,0.f };
+    }
+    size_t randomIndex = static_cast<size_t>(std::rand()) % m_instance->m_importedLevelData->spawnZones.size();
+    gce::Vector3f32 spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
+    while ((m_instance->m_player->GetGameObject()->transform.GetWorldPosition() - spawnZone).Norm() < minDist)
+    {
+        randomIndex = static_cast<size_t>(std::rand()) % m_instance->m_importedLevelData->spawnZones.size();
+        spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
+	}
+	return spawnZone;
 }

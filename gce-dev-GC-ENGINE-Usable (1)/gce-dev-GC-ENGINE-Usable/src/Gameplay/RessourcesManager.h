@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.h>
 #include "TileMap.h"
+#include "JsonImporter.hpp"
 
 class Entity;
 class Player;
@@ -15,7 +16,7 @@ public:
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
 	static void SetEnemySelected(Entity* enemy);
-    static void AddLevelObject(GameObject* obj);
+    static void AddLevel(ImportedLevelData level);
     static void ClearCurrentLevel();
     
     static gce::Geometry* GetBottle();
@@ -35,6 +36,8 @@ public:
 
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
+	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
+
 private:
     //----------Weapon---------
     gce::Geometry* m_thomsonGeo = gce::GeometryFactory::LoadGeometry("res/Obj/thomson.obj");
@@ -54,5 +57,5 @@ private:
     Player* m_player = nullptr;
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
-    inline static gce::Vector<GameObject*> m_levelObjects;
+	ImportedLevelData* m_importedLevelData = nullptr;
 };
