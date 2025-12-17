@@ -4,14 +4,19 @@
 #include "MoveScript.h"
 #include "RessourcesManager.h"
 #include "LevelManager.h"
+#include "AudioManager.h"
 
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
     {
+        Scene* scene = const_cast<Scene*>(RessourcesManager::GetPlayer()->GetGameObject()->GetScene());
+        AudioManager* audioMgr = AudioManager::GetInstance();
+
         Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
 		Player* player = dynamic_cast<Player*>(entityPlayer);
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
+            if (audioMgr) audioMgr->PlayWalkSound();
             if (GetKey(Keyboard::LSHIFT) && player->m_energy>0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (player->GetSpeed()*5) * GameManager::DeltaTime());
 				player->m_energy -= 20 * GameManager::DeltaTime();
@@ -22,6 +27,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::S))
         {
+            if (audioMgr) audioMgr->PlayWalkSound();
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -32,6 +38,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::Q) || GetKey(Keyboard::A))
         {
+            if (audioMgr) audioMgr->PlayWalkSound();
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -42,6 +49,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::D))
         {
+            if (audioMgr) audioMgr->PlayWalkSound();
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -57,6 +65,7 @@ using namespace gce;
         if (GetKey(Keyboard::SPACE))
         {
             if (player->m_jumpCount < 1) {
+            if (audioMgr) audioMgr->PlayJumpSound();
                 player->m_jumpCount++;
                 Move* moveScript = obj->GetScript<Move>();
                 PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
@@ -72,6 +81,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::R))
         {
+            if (audioMgr) audioMgr->PlayRealoadSound();
             player->m_realoading = true;
             if (!player->m_isWeaponAnimating)
                 player->TriggerReloadAnimation();
@@ -140,6 +150,7 @@ using namespace gce;
         {
 				if (player->m_currentState == Player::GIFT_WEAPON || player->m_currentState == Player::NERF_WEAPON || player->m_currentState == Player::THOMPSON_WEAPON)
                 {
+                    if (audioMgr) audioMgr->PlayShootSound();
                     if (player->m_ammo > 0 && !player->m_realoading) {
                         Scene* scene = const_cast<Scene*>(obj->GetScene());
                         GameObject& BulletObject = GameObject::Create(*scene);
@@ -157,7 +168,7 @@ using namespace gce;
                         player->TriggerShootAnimation();
                     } else {
                         player->m_realoading = true;
-
+                        if (audioMgr) audioMgr->PlayRealoadSound();
                         if (!player->m_isWeaponAnimating)
                             player->TriggerReloadAnimation();
 

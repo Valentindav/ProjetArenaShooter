@@ -12,6 +12,7 @@
 #include "RayCast.h"
 #include "TileMap.h"
 #include "Heal.h"
+#include "AudioManager.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -523,6 +524,9 @@ public:
         uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
         uiImage.SetActive(true);
+
+        GameObject& AudioManagerObj = GameObject::Create(*m_scene);
+        AudioManagerObj.AddScript<AudioManager>();
     }
 
     void MenuManager::PauseGame()
