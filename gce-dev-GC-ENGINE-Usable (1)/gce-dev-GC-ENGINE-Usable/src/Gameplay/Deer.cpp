@@ -12,17 +12,21 @@ using namespace gce;
 
 Deer::Deer(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
-    Texture* pPlayerTexture = new Texture("res/Textures/crosshair.png");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
+    MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetDeer());
+    boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y - 0.5f,obj->transform.GetWorldPosition().z });
 
-    obj->transform.LocalScale({ 1.5,1.5,1.5 });
+    obj->transform.SetLocalScale({ 1.f, 2.f, 1.f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Deer");
+    //MeshRenderer* pBoxolliderRenderer = obj->AddComponent<MeshRenderer>();
+   // pBoxolliderRenderer->SetGeometry(SHAPES.CUBE);
+    obj->AddChild(*boxColliderObj);
+    obj->transform.SetLocalScale({ 0.9f, 1.f, 0.9f });
     m_life = 15.f;
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);

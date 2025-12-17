@@ -1095,6 +1095,14 @@ namespace gce {
 		collisionDir.SelfNormalize();
 		Vector3f32 normal = collisionDir;
 
+		// --- FIX GHOST COLLISION (Pour Sphère) ---
+		// Si la normale est orientée vers le haut (sol), on l'aligne parfaitement
+		Vector3f32 boxUp = boxC.m_worldBox.axisY;
+		if (normal.DotProduct(boxUp) > 0.707f)
+		{
+			normal = boxUp;
+		}
+
 		bool p2IsDynamic = pPhysComp2 && !pPhysComp2->IsKinematic();
 
 		// --- LOGIC KINEMATIC & DYNAMIC (RÉSOLUTION DE LA VITESSE) ---
@@ -1177,7 +1185,19 @@ namespace gce {
 		// Si la direction de chevauchement est opposée à la direction centre-à-centre, on l'inverse.
 		if (IsLessEqual(directionCenters.DotProduct(overlapVect), 0.f, 1)) overlapVect = -overlapVect;
 
+		// --- HOTFIX MICRO FORCES ---
+		// Si la force de pénétration est minime sur les axes horizontaux (X et Z),
+		// on l'annule pour éviter les glissements parasites et le jitter.
+		// Cela stabilise le joueur sur le sol et contre les murs.
+		float threshold = 0.1f; // Seuil de tolérance (10cm)
+		if (Abs(overlapVect.x) < threshold) overlapVect.x = 0.0f;
+		if (Abs(overlapVect.z) < threshold) overlapVect.z = 0.0f;
+		// ---------------------------
+
 		Vector3f32 normal = overlapVect.Normalize();
+
+		// Sécurité : Si le vecteur devient nul (car overlap < threshold sur tous les axes), on annule tout
+		if (normal.SquareNorm() == 0.0f) return;
 
 		// --- LOGIC KINEMATIC & DYNAMIC (RÉSOLUTION DE LA VITESSE) ---
 		bool p2IsDynamic = pPhysComp2 && !pPhysComp2->IsKinematic();
@@ -1215,13 +1235,14 @@ namespace gce {
 		}
 
 		// --- Anti overlap system (avec Slop pour corriger la position) ---
-		float32 overlapNorm = overlapVect.Norm();
+		float32 overlapNorm = overlapVect.Norm(); // Recalculé avec les composantes annulées
 		float32 slop = 0.01f;
 
 		if (IsMore(overlapNorm, slop, 1))
 		{
 			float32 correctionAmount = overlapNorm - slop;
-			Vector3f32 direction = overlapVect.Normalize() * correctionAmount;
+			// On utilise la normale recalculée (pure) pour la direction
+			Vector3f32 direction = normal * correctionAmount;
 
 			if (p2IsDynamic)
 			{

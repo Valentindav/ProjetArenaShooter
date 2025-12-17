@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "SnowMan.h"
 #include "Robot.h"
+#include "Boss.h"
 #include "RessourcesManager.h"
 
 using namespace gce;
@@ -64,8 +65,9 @@ public:
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
+		if (other->GetName() == "RayCast") return;
 		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
-
+		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 
@@ -92,6 +94,7 @@ public:
 		{
 			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
 			{
+				if (other->GetName() == "Boss" && dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(other))->m_isShielded) return;
 				bool alreadyOther = false;
 				for (GameObject* p : s_pendingDestroy)
 				{
@@ -106,7 +109,12 @@ public:
 				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
 				if (!alreadyOther)
 				{
+					if (dynamic_cast<Bullet*>(ownerEntity)->GetOwner()->GetName() != "Player") {
 						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
+					}
+					else {
+						Otherentity->TakeDamage(RessourcesManager::GetPlayer()->m_damage);
+					}
 				}
 			}
 		}
@@ -179,6 +187,5 @@ public:
 		else {
 			if (bc) bc->SetActive(true);
 			if (pc) pc->SetActive(true);
-			std::cout << "Damage set to " << m_damage << std::endl;
 		}
 	}

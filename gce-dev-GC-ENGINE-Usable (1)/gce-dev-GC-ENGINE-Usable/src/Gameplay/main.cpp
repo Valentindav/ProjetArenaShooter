@@ -1,18 +1,9 @@
 #include <windows.h>
 #include <Engine.h>
-#include "Player.h"
-#include "SnowMan.h"
-#include "Robot.h"
 #include "RessourcesManager.h"
-#include "Player.h"
 #include "MenuManager.h"
-#include "JsonImporter.hpp"
-#include "Elf.h"
-#include "Deer.h"
-#include "Boss.h"
-
+#include "LevelManager.h"
 /*TODO
-- texturing 
 - UIX
 - sound effect
 - ennemies spawn 
@@ -25,6 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::Console::Init();
     gce::GameManager::Create();
     RessourcesManager::Create();
+	LevelManager::Create();
     gce::Scene& scene = gce::Scene::Create();
 
     TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
@@ -40,6 +32,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
     MenuManager::Create(&scene);
+
     gce::GameManager::Run(params);
     gce::GameManager::Destroy();
     gce::Console::UnInit();

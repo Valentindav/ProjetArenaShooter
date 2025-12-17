@@ -155,7 +155,7 @@ vector<Node<Tile>*> TileMap::ReconstructPath(Node<Tile>* start, Node<Tile>* targ
 
 bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
 {
-    if (!start || !target || !start->data->walkable || !target->data->walkable)
+    if (!start || !target )
     {
         return false;
     }
@@ -213,6 +213,72 @@ bool TileMap::FindPath(Node<Tile>* const& start, Node<Tile>* const& target)
             }
         }
     }
-
 	return false;
+}
+
+void TileMap::SetWalkableWithCollider(const BoxCollider& box, bool walkable)
+{
+    // 1. Récupérer la boîte englobante (AABB) du collider en coordonnées monde
+    // Note: On utilise const reference pour 'box' pour éviter une copie inutile
+    Vector3f32 boxMin = box.GetWorldBox().min;
+    Vector3f32 boxMax = box.GetWorldBox().max;
+
+    // 2. Calculer l'origine réelle de la grille (coin supérieur gauche)
+    float halfWidth = (m_width * m_cellSize) / 2.0f;
+    float halfLength = (m_length * m_cellSize) / 2.0f;
+    float gridStartX = m_origin.x - halfWidth;
+    float gridStartZ = m_origin.z - halfLength;
+
+    // 3. Déterminer les indices approximatifs de début et fin pour ne pas parcourir toute la carte
+    // On ajoute une marge de sécurité (+/- 1)
+    int startI = static_cast<int>((boxMin.x - gridStartX) / m_cellSize) - 1;
+    int endI = static_cast<int>((boxMax.x - gridStartX) / m_cellSize) + 1;
+    int startJ = static_cast<int>((boxMin.z - gridStartZ) / m_cellSize) - 1;
+    int endJ = static_cast<int>((boxMax.z - gridStartZ) / m_cellSize) + 1;
+
+    // On clamp (limite) les indices pour rester dans le tableau
+    startI = max(0, startI);
+    endI = min(m_width - 1, endI);
+    startJ = max(0, startJ);
+    endJ = min(m_length - 1, endJ);
+
+    float tileArea = m_cellSize * m_cellSize;
+    float thresholdArea = tileArea * 0.25f; // Règle des 25%
+
+    // 4. Parcourir les tuiles candidates
+    for (int i = startI; i <= endI; ++i)
+    {
+        for (int j = startJ; j <= endJ; ++j)
+        {
+            // Calcul des coordonnées monde de la Tuile (carré)
+            float tileMinX = gridStartX + (i * m_cellSize);
+            float tileMaxX = tileMinX + m_cellSize;
+            float tileMinZ = gridStartZ + (j * m_cellSize);
+            float tileMaxZ = tileMinZ + m_cellSize;
+
+            // 5. Calcul de l'aire d'intersection (AABB vs AABB)
+            // On cherche le max des mins et le min des maxs
+            float overlapMinX = max(tileMinX, boxMin.x);
+            float overlapMaxX = min(tileMaxX, boxMax.x);
+            float overlapMinZ = max(tileMinZ, boxMin.z);
+            float overlapMaxZ = min(tileMaxZ, boxMax.z);
+
+            // Si les intervalles se croisent, la différence est positive
+            float overlapWidth = max(0.0f, overlapMaxX - overlapMinX);
+            float overlapDepth = max(0.0f, overlapMaxZ - overlapMinZ);
+
+            float overlapArea = overlapWidth * overlapDepth;
+
+            // 6. Si l'aire recouverte dépasse 25% de la surface de la tuile
+            if (overlapArea >= thresholdArea)
+            {
+                if (m_nodeVector[i][j]) {
+                    m_nodeVector[i][j]->data->walkable = walkable;
+
+                    // Debug visuel optionnel pour voir quelles cases sont bloquées
+                    // std::cout << "Blocked Tile: " << i << ", " << j << " (Overlap: " << (overlapArea/tileArea)*100 << "%)" << std::endl;
+                }
+            }
+        }
+    }
 }

@@ -11,17 +11,21 @@ using namespace gce;
 
 Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_tileMap(tileMap)
 {
-    MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
-    pPlayerRenderer->SetGeometry(SHAPES.CUBE);
-    Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
-    pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
+    GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
+    MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetElf());
+    boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y - 0.5f,obj->transform.GetWorldPosition().z });
 
-    obj->transform.LocalScale({ 0.15,0.15,0.15 });
+    obj->transform.SetLocalScale({ 1.f, 2.f, 1.f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Elf");
+    //MeshRenderer* pBoxolliderRenderer = obj->AddComponent<MeshRenderer>();
+   // pBoxolliderRenderer->SetGeometry(SHAPES.CUBE);
+    obj->AddChild(*boxColliderObj);
+    obj->transform.SetLocalScale({ 0.3f, 0.5f, 0.3f });
     m_life = 5.f;
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);

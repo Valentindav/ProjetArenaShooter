@@ -248,7 +248,7 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
 }
 
 static void OnUpdateTeleportBoss(GameObject* me) {
-
+	me->transform.SetWorldPosition({ float(rand() % 100 + 1),-9.3f, float(rand() % 100 + 1) });
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
@@ -383,14 +383,28 @@ static void OnUpdateLaserBoss(GameObject* me) {
     }
 }
 
+
+static void OnStartShieldBoss(GameObject* me) {
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
+    self->m_hasAlreadyShielded = true;
+    self->m_isShielded = true;
+}
+
 static void OnUpdateShieldBoss(GameObject* me) {
-/*	Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
-	Boss* self = dynamic_cast<Boss*>(ent);
-	if (!self) return;
-	self->m_hasAlreadyShielded = true;
-	self->m_isShielded = true;
+
+    Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
+    Boss* self = dynamic_cast<Boss*>(ent);
+    if (!self) return;
+    if (self->m_maxShieldDuration <= 0.0f) {
+        self->m_isShielded = false;
+    }
+
+	self->m_maxShieldDuration -= GameManager::DeltaTime();
+
     //teleport to a safe zone above
 	//Ennemies Spawn Logic Here 
-	// when all enemies are dead desactvate shield*/
+	// when all enemies are dead desactvate shield
 }
 

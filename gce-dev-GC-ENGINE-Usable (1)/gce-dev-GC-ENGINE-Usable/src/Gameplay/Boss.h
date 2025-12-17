@@ -13,11 +13,12 @@ private:
 public:
 	std::unordered_map<String, float> m_cooldown;
 	std::unordered_map<String, float> m_lastUse;
-
+	float m_baseLife = 0.f;
 	float m_time = 0.f;
 	//---------Shield----------
 	bool m_isShielded = false;
 	bool m_hasAlreadyShielded = false;
+	float m_maxShieldDuration = 5.f;	
 	//---------Slam-----------
 	GameObject* m_slamWave = nullptr;
 	std::vector<GameObject*> m_slamWaveSegments;
@@ -40,6 +41,7 @@ public:
 	// 
 	//-------------Functions--------------
 	Boss(GameObject* obj, TileMap* tileMap, float spd = 150);
+	~Boss();
 	void Die() override;
 	void Attack()override;
 	void AddScript();

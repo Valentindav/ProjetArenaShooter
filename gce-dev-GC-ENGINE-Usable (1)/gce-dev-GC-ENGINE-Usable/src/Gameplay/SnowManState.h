@@ -75,7 +75,7 @@ static void OnUpdateIdleSnowman(GameObject* me) {
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
-    Vector3f32 snowmanPos = me->transform.GetWorldPosition();
+    Vector3f32 snowmanPos = me->transform.GetWorldPosition();    
 
     Vector3f32 direction = playerPos - snowmanPos;
     direction.Normalize();
@@ -87,6 +87,8 @@ static void OnUpdateIdleSnowman(GameObject* me) {
     self->SetCurrentTargetNodePosition();
     self->GeneratePathToPlayer(player->GetGameObject());
     self->FollowPath();
+
+	if (self->GetCurrentPath().size() < 2) return;
 }
 
 

@@ -17,7 +17,6 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
 
     Player* player = RessourcesManager::GetPlayer();
     if (!player) return;
-
     Vector3f32 playerPos = player->GetGameObject()->transform.GetWorldPosition();
     Vector3f32 robotPos = me->transform.GetWorldPosition();
     Vector3f32 dir = playerPos - robotPos;

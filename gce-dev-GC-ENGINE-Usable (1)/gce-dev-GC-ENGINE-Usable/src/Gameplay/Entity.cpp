@@ -10,10 +10,6 @@ void Entity::TakeDamage(int damage) // Entity action when she take m_damage ->ma
 {
     if (this->m_life <= 0)
     {
-        std::cout << "dead " << this->GetGameObject()->GetName() << std::endl;
-        if (this->GetGameObject()->GetName() == "Player") {
-            RessourcesManager::SetPlayer(nullptr);
-        }
         this->GetGameObject()->SetActive(false);
         this->GetGameObject()->Destroy();
 
@@ -24,6 +20,6 @@ void Entity::TakeDamage(int damage) // Entity action when she take m_damage ->ma
     else
     {
         this->m_life = this->m_life - damage;
-        std::cout << this->m_life << std::endl;
+		std::cout << "Entity took " << damage << " damage, remaining life: " << this->m_life << std::endl;
     }
 }
