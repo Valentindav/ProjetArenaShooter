@@ -409,44 +409,46 @@ public:
 
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
-        Texture* pAlbedoTexture = new Texture("res/Textures/Reactor_BaseColor.png");
-		Texture* pNormalTexture = new Texture("res/Textures/Reactor_Normal.png");
-		Texture* pRoughnessTexture = new Texture("res/Textures/Reactor_Roughness.png");
-		Texture* pMetalnessTexture = new Texture("res/Textures/Reactor_Metallic.png");
-		Texture* pDisplacementTexture = new Texture("res/Textures/Reactor_Displacement.png");
+        RessourcesManager::CreateMaterials(
+            "res/Textures/Reactor_BaseColor.png",
+            "res/Textures/Reactor_Normal.png",
+            "res/Textures/Reactor_Metallic.png",
+            "res/Textures/Reactor_Roughness.png",
+            "res/Textures/Reactor_Displacement.png"
+		);
 
-        auto levelData = importSceneFromJsonText("res/Scene/Test2.json");
+  //      auto levelData = importSceneFromJsonText("res/Scene/Test2.json");
 
-        for (auto* col : levelData.allColliders) {
-            RessourcesManager::GetTileMap()->SetWalkableWithCollider(*col, false);
-        }
+  //      for (auto* col : levelData.allColliders) {
+  //          RessourcesManager::GetTileMap()->SetWalkableWithCollider(*col, false);
+  //      }
 
-        Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
-        Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
+  //      Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
+  //      Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 
-        // 1. Créer le GameObject pour la lumière
-        GameObject& lightGo = GameObject::Create(*m_scene);
+  //      // 1. Créer le GameObject pour la lumière
+  //      GameObject& lightGo = GameObject::Create(*m_scene);
 
-        // 2. Positionner le GameObject
-        lightGo.transform.SetWorldPosition(lightPos);
+  //      // 2. Positionner le GameObject
+  //      lightGo.transform.SetWorldPosition(lightPos);
 
-        // 3. Ajouter le composant Light
-        Light* pLight = lightGo.AddComponent<Light>();
+  //      // 3. Ajouter le composant Light
+  //      Light* pLight = lightGo.AddComponent<Light>();
 
-        // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
-        pLight->DefaultPointLight();
+  //      // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
+  //      pLight->DefaultPointLight();
 
-        // 5. Personnaliser les propriétés (optionnel mais recommandé)
-        // Accès direct aux champs de LightData car Light hérite de LightData
-        pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
-        pLight->intensity = 0.2f;                   // Intensité
-        pLight->range = 20.0f;                      // Rayon d'action
-        pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
+  //      // 5. Personnaliser les propriétés (optionnel mais recommandé)
+  //      // Accès direct aux champs de LightData car Light hérite de LightData
+  //      pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
+  //      pLight->intensity = 0.2f;                   // Intensité
+  //      pLight->range = 20.0f;                      // Rayon d'action
+  //      pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
 
-        // 6. Enregistrer la lumière dans le manager
-        LightManager::AddLight(*pLight);
+  //      // 6. Enregistrer la lumière dans le manager
+  //      LightManager::AddLight(*pLight);
 
-		RessourcesManager::SetupLevelData(levelData);
+		//RessourcesManager::SetupLevelData(levelData);
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
