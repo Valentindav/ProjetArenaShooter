@@ -65,8 +65,8 @@ public:
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
-		if (other->GetName() == "RayCast") return;
-		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
+		if (other->GetName() == "RayCast" || other->GetName() == "Floor") return;
+		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
 		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
@@ -74,7 +74,126 @@ public:
 		Entity* OtherEntity = nullptr;
 		OtherEntity = RessourcesManager::GetEntityFromGameObject(other);
 
-		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other && !dynamic_cast<Bullet*>(ownerEntity)->GetNotCollide())
+		{
+			m_pOwner->SetActive(false);
+			bool already = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == m_pOwner)
+				{
+					already = true; break;
+				}
+			}
+			if (!already)
+			{
+				s_pendingDestroy.PushBack(m_pOwner);
+			}
+		}
+		if (other->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other)
+		{
+			if (other->GetName() == "Player" || other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Elf" || other->GetName() == "Deer" || other->GetName() == "Boss")
+			{
+				if (other->GetName() == "Boss" && dynamic_cast<Boss*>(RessourcesManager::GetEntityFromGameObject(other))->m_isShielded) return;
+				bool alreadyOther = false;
+				for (GameObject* p : s_pendingDestroy)
+				{
+					if (p == other)
+					{
+						alreadyOther = true;
+						break;
+					}
+				}
+
+				Entity* Otherentity = nullptr;
+				Otherentity = RessourcesManager::GetEntityFromGameObject(other);
+				if (!alreadyOther)
+				{
+					if (dynamic_cast<Bullet*>(ownerEntity)->GetOwner()->GetName() != "Player") {
+						Otherentity->TakeDamage(dynamic_cast<Bullet*>(ownerEntity)->GetDamage());
+					}
+					else {
+						Otherentity->TakeDamage(RessourcesManager::GetPlayer()->m_damage);
+					}
+				}
+			}
+		}
+	}
+
+	END_SCRIPT
+
+		DECLARE_SCRIPT(FollowingBullet, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
+private:
+	inline static Vector<GameObject*> s_pendingDestroy;
+
+public:
+	void Start() // Start the lifetime of the bullet
+	{
+		Bullet* self = dynamic_cast<Bullet*>(RessourcesManager::GetEntityFromGameObject(m_pOwner));
+		if (!self) return;
+		self->SetLifeTime(3.0f);
+	}
+
+	void Update() // move the bullet forward and destroy it when her lifetime is 0
+	{
+		if(!(RessourcesManager::GetChoosedEnemy() || !RessourcesManager::GetChoosedEnemy()->GetGameObject())) return;
+		Entity* entity = nullptr;
+		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		Bullet* bullet = dynamic_cast<Bullet*>(entity);
+		std::cout << "looking for " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->GetName() << std::endl;
+		std::cout << "pos bullet " << m_pOwner->transform.GetWorldPosition().x << " " << m_pOwner->transform.GetWorldPosition().y << " " << m_pOwner->transform.GetWorldPosition().z << std::endl;
+		std::cout << "other pos " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().x << " " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().y << " " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().z << std::endl;
+		if (!m_pOwner && !m_pOwner->IsActive() && !bullet->GetOwner() && !bullet->GetOwner()->IsActive())
+		{
+			s_pendingDestroy.PushBack(m_pOwner);
+			return;
+		}
+		if (!s_pendingDestroy.Empty())
+		{
+			for (GameObject* pObj : s_pendingDestroy)
+			{
+				pObj->Destroy();
+			}
+			s_pendingDestroy.Clear();
+		}
+		if (bullet->GetLifeTime() >= 0.0f)
+		{
+			m_pOwner->transform.WorldTranslate(RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition());
+		}
+		else
+		{
+			if (!m_pOwner->IsActive())
+			{
+				return;
+			}
+
+			m_pOwner->SetActive(false);
+
+			bool already = false;
+			for (GameObject* p : s_pendingDestroy)
+			{
+				if (p == m_pOwner)
+				{
+					already = true; break;
+				}
+			}
+			if (!already) s_pendingDestroy.PushBack(m_pOwner);
+		}
+		bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
+	}
+
+	void CollisionEnter(GameObject* other) //handle collision with entity
+	{
+		if (other->GetName() == "RayCast") return;
+		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
+		std::cout << "Collision with " << other->GetName() << std::endl;
+		Entity* ownerEntity = nullptr;
+		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+
+		Entity* OtherEntity = nullptr;
+		OtherEntity = RessourcesManager::GetEntityFromGameObject(other);
+
+		if (m_pOwner->IsActive() && dynamic_cast<Bullet*>(ownerEntity)->GetOwner() != other && !dynamic_cast<Bullet*>(ownerEntity)->GetNotCollide())
 		{
 			m_pOwner->SetActive(false);
 			bool already = false;
@@ -133,6 +252,7 @@ public:
 		obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);
 		AddShoot();
 		obj->GetComponent<PhysicComponent>()->SetIsTrigger(true);
+		m_notCollide = false;
 	}
 
 	
@@ -145,6 +265,17 @@ public:
             obj->AddScript<Shoot_Update>();
         }
     }
+
+	void Bullet::Addfollow()// add following shoot script
+	{
+		GameObject* obj = GetGameObject();
+		if (obj)
+		{
+			obj->SetName("Bullet");
+			if(obj->GetScript<Shoot_Update>()) obj->RemoveScript<Shoot_Update>();
+			obj->AddScript<FollowingBullet>();
+		}
+	}
 
     void Bullet::DeleteShoot() // delete shoot script
     {

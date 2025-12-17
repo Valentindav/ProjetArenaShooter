@@ -34,6 +34,8 @@ public:
 
 	float m_damage = 1;
 
+	int m_bazooShoot = 1;
+
 	Player(GameObject* obj, float spd = 5);
 	void UpdateWeapon();
 	void AddMove();

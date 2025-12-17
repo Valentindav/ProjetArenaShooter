@@ -148,6 +148,7 @@ using namespace gce;
                         obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
 						player->m_ammo -= 1;
                         player->m_reloadCD = 1.0f;
+                        if(player->m_currentState == Player::GIFT_WEAPON) bullet->GetGameObject()->GetComponent<MeshRenderer>()->SetGeometry(RessourcesManager::GetGift());
                         if (player->GetCameraFeedback())
                             player->GetCameraFeedback()->TriggerShootRecoil();
                         player->TriggerShootAnimation();
@@ -165,8 +166,8 @@ using namespace gce;
                 }
                 else if (player->m_currentState == Player::CANDY_CANE || player->m_currentState == Player::BROKEN_CANDY_CANE || player->m_currentState == Player::TESSON) {
                     if (player->m_meleeCD < 0.0f) {
-                        for (auto entity : RessourcesManager::getEntities()) {
-                            if (entity && entity->GetGameObject() != nullptr && entity != entityPlayer && player && player->GetGameObject()) {
+                        for (auto entity : RessourcesManager::GetEntities()) {
+                            if (entity != nullptr || entity->GetGameObject() != nullptr || entity != entityPlayer && player || player->GetGameObject()) {
                                 Vector3f32 d = player->GetGameObject()->transform.GetWorldPosition() - entity->GetGameObject()->transform.GetWorldPosition();
                                 if (d.Norm() < 5.0f) {
                                     entity->TakeDamage(player->m_damage);
@@ -177,19 +178,27 @@ using namespace gce;
                     }
                 }
                 else if (player->m_currentState == Player::BAZZOKA_WEAPON) {
-                    /*RAYCAST CODE + following bullet*/
+                    if (player->m_bazooShoot > 0 && !player->m_realoading) {
+                        Scene* scene = const_cast<Scene*>(obj->GetScene());
+                        GameObject& BulletObject = GameObject::Create(*scene);
+                        BulletObject.transform.SetWorldPosition(obj->transform.GetWorldPosition());
+                        BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
+                        Bullet* bullet = new Bullet(&BulletObject);
+                        bullet->SetOwner(obj);
+						bullet->Addfollow();
+                        obj->GetScript<Move>()->lastBullet = bullet;
+                        obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
+                        player->m_bazooShoot += 1;
+                        player->m_reloadCD = 1.0f;
+                        if (player->GetCameraFeedback())
+                            player->GetCameraFeedback()->TriggerShootRecoil();
+                        player->TriggerShootAnimation();
+                    }
                 }
         }
         if (GetButtonDown(Mouse::RIGHT))
         {
-            if (obj->GetScript<Move>()->lastBullet == nullptr)
-            {
-                return;
-            }
-
-            MeshRenderer* pWeaponRenderer = obj->GetScript<Move>()->lastBullet->GetGameObject()->GetComponent<MeshRenderer>();
-            pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-            obj->GetScript<Move>()->lastBullet->DeleteShoot();
+			RessourcesManager::SetChoosedEnemy(RessourcesManager::GetSelectedEnemy());
         }
         if (!GetKey(Keyboard::LSHIFT) && player->m_energy < 100.0f) {
            
@@ -210,6 +219,13 @@ using namespace gce;
         if (GetKeyDown(Keyboard::L))
         {
             LevelManager::LoadLevel(2);
+        }
+
+        Move* moveScript = obj->GetScript<Move>();
+        PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
+        if (moveScript && phys && moveScript->onGround && !GetKey(Keyboard::Z) && !GetKey(Keyboard::Q) && !GetKey(Keyboard::S) && !GetKey(Keyboard::D)) {
+           Vector3f32 currentVel = phys->GetVelocity();
+		   phys->SetVelocity({ 0.0f, currentVel.y, 0.0f });
         }
 		player->m_reloadCD -= GameManager::DeltaTime();
 		player->m_meleeCD -= GameManager::DeltaTime();

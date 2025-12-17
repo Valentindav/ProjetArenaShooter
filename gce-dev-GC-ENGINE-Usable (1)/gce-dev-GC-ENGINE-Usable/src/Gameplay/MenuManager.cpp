@@ -45,7 +45,7 @@ public:
                 menuManager->ShowGameOverMenu();
             }
 
-            gce::Vector<Entity*> entities = RessourcesManager::getEntities();
+            gce::Vector<Entity*> entities = RessourcesManager::GetEntities();
             int enemyCount = 0;
             for (Entity* entity : entities)
             {
@@ -354,7 +354,7 @@ public:
         GameObject& Weapon = GameObject::Create(*m_scene);
         Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
         MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
+        pWeaponRenderer->SetGeometry(RessourcesManager::GetGift());
 		Weapon.SetName("Weapon");
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
@@ -472,7 +472,7 @@ public:
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
 
@@ -490,7 +490,7 @@ public:
 
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

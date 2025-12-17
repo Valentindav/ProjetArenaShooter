@@ -30,7 +30,7 @@ void RessourcesManager::RemoveEntities(Entity* entity) // supprime l'entity du v
     }
 }
 
-gce::Vector<Entity*> RessourcesManager::getEntities() // get entities vector
+gce::Vector<Entity*> RessourcesManager::GetEntities() // get entities vector
 {
     if (m_instance == nullptr) return {};
     return m_instance->m_entities;
@@ -78,6 +78,18 @@ gce::Geometry* RessourcesManager::GetNerf()
     return m_instance->m_nerfGeo;
 }
 
+gce::Geometry* RessourcesManager::GetBrokenSugarCane()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_brokenSurgarCaneGeo;
+}
+
+gce::Geometry* RessourcesManager::GetGift()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_explodingGeo;
+}
+
 gce::Geometry* RessourcesManager::GetElf() {
     if (m_instance == nullptr) return nullptr;
     return m_instance->m_elfGeo;
@@ -123,6 +135,19 @@ Entity* RessourcesManager::GetSelectedEnemy() // get selected enemy
          if (e->GetGameObject() == go) return e;
      }
      return nullptr;
+ }
+
+ Entity* RessourcesManager::GetChoosedEnemy()
+ {
+     if (m_instance == nullptr || m_instance->m_choosedEnemy == nullptr) return nullptr;
+	 return m_instance->m_choosedEnemy;
+ }
+
+ void RessourcesManager::SetChoosedEnemy(Entity* enemy)
+ {
+     if (m_instance == nullptr || enemy == nullptr) Create();
+	 m_instance->m_choosedEnemy = enemy;
+     std::cout << "Choosed Enemy: " << m_instance->m_choosedEnemy->GetGameObject()->GetName() << std::endl;
  }
  
 TileMap* RessourcesManager::GetTileMap()
