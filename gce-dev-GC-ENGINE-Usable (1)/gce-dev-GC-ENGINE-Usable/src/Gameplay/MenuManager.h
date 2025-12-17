@@ -24,10 +24,12 @@ private:
     Camera* pCamera;
 
     GameObject* m_mainMenuPanel;
+    GameObject* m_mainText;
     GameObject* m_playButton;
     GameObject* m_quitButton;
 
     GameObject* m_pauseMenuPanel;
+    GameObject* m_pauseText;
     GameObject* m_resumeButton;
     GameObject* m_restartButtonPause;
     GameObject* m_mainMenuButtonPause;

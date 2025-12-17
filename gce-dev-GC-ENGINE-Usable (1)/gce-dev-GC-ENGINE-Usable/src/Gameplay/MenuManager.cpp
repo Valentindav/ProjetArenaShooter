@@ -115,22 +115,22 @@ public:
         if (m_Instance) m_Instance->StartGame();
     }
 
-    void MenuManager::OnQuitButtonClick() 
+    void MenuManager::OnQuitButtonClick() // quit button behavior
     {
         if (m_Instance) m_Instance->QuitGame();
     }
 
-    void MenuManager::OnResumeButtonClick()
+    void MenuManager::OnResumeButtonClick() // resume button behavior
     {
         if (m_Instance) m_Instance->ResumeGame();
     }
 
-    void MenuManager::OnRestartButtonClick() 
+    void MenuManager::OnRestartButtonClick() // restart button behavior
     { 
         if (m_Instance) m_Instance->RestartGame();
     }
 
-    void MenuManager::OnMainMenuButtonClick()
+    void MenuManager::OnMainMenuButtonClick() // menu button behavior
     {
         if (m_Instance) m_Instance->ReturnToMainMenu();
     }
@@ -138,37 +138,48 @@ public:
     // --- création boutons ---
     void MenuManager::CreateMainMenu()
     {
+        gce::WindowParam params;
         if (!m_scene) return;
         
         m_mainMenuPanel = &GameObject::Create(*m_scene);
         m_mainMenuPanel->SetName("MainMenuPanel");
         m_mainMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
 
+
+        {
+            m_mainText = &GameObject::Create(*m_scene);
+            m_mainText->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f - 300, 1.0f });
+            m_mainText->transform.LocalScale({ 300.0f, 100.0f, 1.0f });
+            UiImage& text = *m_mainText->AddComponent<UiImage>();
+            text.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_1.png");
+        }
+
         {
             m_playButton = &GameObject::Create(*m_scene);
-            m_playButton->transform.LocalTranslate({ 200.0f, 50.0f, 0.0f });
-            m_playButton->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
+            m_playButton->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
+            m_playButton->transform.LocalScale({ 300.0f, 100.0f, 1.0f });
             UiButton* button = m_playButton->AddComponent<UiButton>();
             button->AddListener(OnPlayButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/play.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/play.png");
             m_mainMenuPanel->AddChild(*m_playButton);
         }
 
         {
             m_quitButton = &GameObject::Create(*m_scene);
-            m_quitButton->transform.LocalTranslate({ 200.0f, 150.0f, 0.0f });
-            m_quitButton->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
+            m_quitButton->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f + 150, 1.0f });
+            m_quitButton->transform.LocalScale({ 300.0f, 100.0f, 1.0f });
             UiButton* button = m_quitButton->AddComponent<UiButton>();
             button->AddListener(OnQuitButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/quit.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/quit.png");
             m_mainMenuPanel->AddChild(*m_quitButton);
         }
     }
 
     void MenuManager::CreatePauseMenu()
     {
+        gce::WindowParam params;
         if (!m_scene) return;
         m_pauseMenuPanel = &GameObject::Create(*m_scene);
         m_pauseMenuPanel->SetName("PauseMenuPanel");
@@ -176,34 +187,34 @@ public:
 
         {
             m_resumeButton = &GameObject::Create(*m_scene);
-            m_resumeButton->transform.LocalTranslate({ 400.0f, 50.0f, 0.0f });
+            m_resumeButton->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
             m_resumeButton->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
             UiButton* button = m_resumeButton->AddComponent<UiButton>();
             button->AddListener(OnResumeButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/resume.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/resume.png");
             m_pauseMenuPanel->AddChild(*m_resumeButton);
         }
 
         {
             m_restartButtonPause = &GameObject::Create(*m_scene);
-            m_restartButtonPause->transform.LocalTranslate({ 400.0f, 150.0f, 0.0f });
+            m_restartButtonPause->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f + 150, 1.0f });
             m_restartButtonPause->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
             UiButton* button = m_restartButtonPause->AddComponent<UiButton>();
             button->AddListener(OnRestartButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/retry.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/retry.png");
             m_pauseMenuPanel->AddChild(*m_restartButtonPause);
         }
 
         {
             m_mainMenuButtonPause = &GameObject::Create(*m_scene);
-            m_mainMenuButtonPause->transform.LocalTranslate({ 400.0f, 250.0f, 0.0f });
+            m_mainMenuButtonPause->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f + 300, 1.0f });
             m_mainMenuButtonPause->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
             UiButton* button = m_mainMenuButtonPause->AddComponent<UiButton>();
             button->AddListener(OnMainMenuButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/main_menu.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/main_menu.png");
             m_pauseMenuPanel->AddChild(*m_mainMenuButtonPause);
         }
 
@@ -212,29 +223,30 @@ public:
 
     void MenuManager::CreateGameOverMenu()// create game over menu
     {
+        gce::WindowParam params;
         if (!m_scene) return;
         m_gameOverPanel = &GameObject::Create(*m_scene);
         m_gameOverPanel->SetName("GameOverPanel");
         m_gameOverPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
     {
         m_restartButtonGameOver = &GameObject::Create(*m_scene);
-        m_restartButtonGameOver->transform.LocalTranslate({ 600.0f, 50.0f, 0.0f });
+        m_restartButtonGameOver->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
         m_restartButtonGameOver->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
         UiButton* button = m_restartButtonGameOver->AddComponent<UiButton>();
         button->AddListener(OnRestartButtonClick);
-        button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+        button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/retry.png");
+        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/retry.png");
         m_gameOverPanel->AddChild(*m_restartButtonGameOver);
     }
 
     {
         m_mainMenuButtonGameOver = &GameObject::Create(*m_scene);
-        m_mainMenuButtonGameOver->transform.LocalTranslate({ 600.0f, 150.0f, 0.0f });
+        m_mainMenuButtonGameOver->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f + 150, 1.0f });
         m_mainMenuButtonGameOver->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
         UiButton* button = m_mainMenuButtonGameOver->AddComponent<UiButton>();
         button->AddListener(OnMainMenuButtonClick);
-        button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+        button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/main_menu.png");
+        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/main_menu.png");
         m_gameOverPanel->AddChild(*m_mainMenuButtonGameOver);
     }
         m_gameOverPanel->SetActive(false);
@@ -242,29 +254,30 @@ public:
 
     void MenuManager::CreateVictoryMenu()// create victory menu
     {
+        gce::WindowParam params;
         if (!m_scene) return;
         m_victoryPanel = &GameObject::Create(*m_scene);
         m_victoryPanel->SetName("VictoryPanel");
         m_victoryPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
         {
             m_restartButtonVictory = &GameObject::Create(*m_scene);
-            m_restartButtonVictory->transform.LocalTranslate({ 600.0f, 50.0f, 0.0f });
+            m_restartButtonVictory->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
             m_restartButtonVictory->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
             UiButton* button = m_restartButtonVictory->AddComponent<UiButton>();
             button->AddListener(OnRestartButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/retry.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/retry.png");
             m_victoryPanel->AddChild(*m_restartButtonVictory);
         }
 
         {
             m_mainMenuButtonVictory = &GameObject::Create(*m_scene);
-            m_mainMenuButtonVictory->transform.LocalTranslate({ 600.0f, 150.0f, 0.0f });
+            m_mainMenuButtonVictory->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f + 150, 1.0f });
             m_mainMenuButtonVictory->transform.LocalScale({ 216.0f, 69.0f, 1.0f });
             UiButton* button = m_mainMenuButtonVictory->AddComponent<UiButton>();
             button->AddListener(OnMainMenuButtonClick);
-            button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
+            button->pBitMapBrush = new BitMapBrush("res/Textures/Buttons/main_menu.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/Buttons_Pressed/main_menu.png");
             m_victoryPanel->AddChild(*m_mainMenuButtonVictory);
         }
         m_victoryPanel->SetActive(false);
@@ -334,7 +347,6 @@ public:
 
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();
-        // Correction : Enregistrement et dsactivation propre de la lumire du joueur
         gce::LightManager::AddLight(*light);
         light->DefaultDirectionLight();
         light->intensity = 0.0f;
