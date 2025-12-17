@@ -520,16 +520,19 @@ public:
         uiCrosshair.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
         //ajout de la barre de vie
+        gce::Vector2f32 center2 = { 576.f, (float)params.height - 128.f };
+        gce::Vector2f32 size2 = { 1117.f, 301.f };
+        gce::Vector2f32 posUi2 = center2 - size2 * 0.5f;
+        float scaleX1 = 750.f / 1117.f;
+        float scaleY1 = 225.f / 301.f;
+
+
         gce::GameObject& healthBar = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiLifeBar = *healthBar.AddComponent<gce::UiImage>();
         healthBar.SetName("UI_Life");
-        gce::Vector2f32 center2 = { 558.5f, (float)params.height - 150.5f };
-        gce::Vector2f32 size2 = { 1117.f, 301.f };
-        gce::Vector2f32 posUi2 = center2 - size2 * 0.5f;
-
         uiLifeBar.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_empty.png");
-        uiLifeBar.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[0] = &uiLifeBar;
 
 		//ajout de la barre de vie 1
@@ -538,7 +541,7 @@ public:
         healthBar1.SetName("UI_Life_1");
         uiLifeBar1.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar1.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_1.png");
-        uiLifeBar1.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar1.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[1] = &uiLifeBar1;
 
         //ajout de la barre de vie 2
@@ -547,7 +550,7 @@ public:
         healthBar2.SetName("UI_Life_2");
         uiLifeBar2.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar2.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_2.png");
-        uiLifeBar2.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar2.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[2] = &uiLifeBar2;
 
         //ajout de la barre de vie 3
@@ -556,7 +559,7 @@ public:
         healthBar3.SetName("UI_Life_3");
         uiLifeBar3.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar3.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_3.png");
-        uiLifeBar3.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar3.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[3] = &uiLifeBar3;
 
 		//ajout de la barre de vie 4
@@ -565,7 +568,7 @@ public:
         healthBar4.SetName("UI_Life_4");
         uiLifeBar4.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar4.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_4.png");
-        uiLifeBar4.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar4.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[4] = &uiLifeBar4;
 
         //ajout de la barre de vie 5
@@ -574,7 +577,7 @@ public:
         healthBar5.SetName("UI_Life_5");
         uiLifeBar5.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar5.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_5.png");
-        uiLifeBar5.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar5.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[5] = &uiLifeBar5;
 
         //ajout de la barre de vie 6
@@ -583,7 +586,7 @@ public:
         healthBar6.SetName("UI_Life_6");
         uiLifeBar6.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar6.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_6.png");
-        uiLifeBar6.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar6.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[6] = &uiLifeBar6;
 
         //ajout de la barre de vie 7
@@ -592,7 +595,7 @@ public:
         healthBar7.SetName("UI_Life_7");
         uiLifeBar7.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar7.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_7.png");
-        uiLifeBar7.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar7.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[7] = &uiLifeBar7;
 
         //ajout de la barre de vie 8
@@ -601,7 +604,7 @@ public:
         healthBar8.SetName("UI_Life_8");
         uiLifeBar8.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar8.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_8.png");
-        uiLifeBar8.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar8.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[8] = &uiLifeBar8;
 
         //ajout de la barre de vie 9
@@ -610,7 +613,7 @@ public:
         healthBar9.SetName("UI_Life_9");
         uiLifeBar9.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar9.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_9.png");
-        uiLifeBar9.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar9.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[9] = &uiLifeBar9;
 
         //ajout de la barre de vie 10
@@ -619,7 +622,7 @@ public:
         healthBar10.SetName("UI_Life_10");
         uiLifeBar10.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar10.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_10.png");
-        uiLifeBar10.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar10.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[10] = &uiLifeBar10;
 
         //ajout de la barre de vie 11
@@ -628,7 +631,7 @@ public:
         healthBar11.SetName("UI_Life_11");
         uiLifeBar11.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar11.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_11.png");
-        uiLifeBar11.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar11.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[11] = &uiLifeBar11;
 
         //ajout de la barre de vie 12
@@ -637,7 +640,7 @@ public:
         healthBar12.SetName("UI_Life_12");
         uiLifeBar12.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar12.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_12.png");
-        uiLifeBar12.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar12.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[12] = &uiLifeBar12;
 
         //ajout de la barre de vie 13
@@ -646,12 +649,10 @@ public:
         healthBar13.SetName("UI_Life_13");
         uiLifeBar13.InitializeImage(posUi2, size2, 1.f);
         uiLifeBar13.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_full.png");
-        uiLifeBar13.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        uiLifeBar13.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[13] = &uiLifeBar13;
 
         uiCrosshair.SetActive(true);
-        //for (int i = 0; i < 14; ++i)
-        //    if (m_uiLifeBars[i]) m_uiLifeBars[i]->SetActive(false);
     }
 
     void MenuManager::ShowUIHealthBar()
