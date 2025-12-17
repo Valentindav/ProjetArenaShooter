@@ -1,6 +1,8 @@
 #include "RessourcesManager.h"
 #include "Entity.h"
 #include "Player.h"
+#include "Ennemy.h" 
+#include "JsonImporter.hpp"
 
 void RessourcesManager::Create()
 {
@@ -170,4 +172,80 @@ Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
         spawnZone = m_instance->m_importedLevelData->spawnZones[randomIndex];
 	}
 	return spawnZone;
+}
+
+void RessourcesManager::AddEnnemy(Ennemy* ennemy)
+{
+    if (m_instance == nullptr) Create();
+    m_instance->m_ennemies.PushBack(ennemy);
+}
+
+gce::Vector<Ennemy*> RessourcesManager::GetEnnemies()
+{
+    if (m_instance == nullptr) return {};
+    return m_instance->m_ennemies;
+}
+
+void RessourcesManager::SpawnEnnemies(int indice, float32 minDistance)
+{
+    if (m_instance == nullptr || m_instance->m_ennemies.Size() < indice) return;
+	m_instance->m_ennemies[indice]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
+}
+
+void RessourcesManager::SetupLevelData(ImportedLevelData levelData)
+{
+    if (m_instance == nullptr) Create();
+    if (m_instance->m_importedLevelData != nullptr)
+    {
+        delete m_instance->m_importedLevelData;
+        m_instance->m_importedLevelData = nullptr;
+    }
+    m_instance->m_importedLevelData = new ImportedLevelData(levelData);
+}
+
+void RessourcesManager::AddMaterial(const MaterialData& mat)
+{
+    if (m_instance == nullptr) Create();
+    m_instance->m_materials.push_back(mat);
+}
+
+MaterialData* RessourcesManager::GetMaterial(int index)
+{
+    if (m_instance == nullptr) return nullptr;
+    if (index < 0 || index >= static_cast<int>(m_instance->m_materials.size())) return nullptr;
+    return &m_instance->m_materials[index];
+}
+
+void RessourcesManager::AssignMaterialToRenderer(gce::MeshRenderer* mr, int index)
+{
+    if (m_instance == nullptr || mr == nullptr) return;
+    MaterialData* mat = GetMaterial(index);
+    if (mat == nullptr) return;
+    if (mat->albedo)
+		mr->SetAlbedoTexture(mat->albedo);
+    if (mat->normal)
+		mr->SetNormalTexture(mat->normal);
+    if (mat->metallic)
+		mr->SetMetalnessTexture(mat->metallic);
+    if (mat->roughness)
+		mr->SetRoughnessTexture(mat->roughness);
+    if (mat->displacement)
+		mr->SetDisplacementTexture(mat->displacement);
+}
+
+void RessourcesManager::CreateMaterials(String albedoPath, String normalPath, String metallicPath, String roughnessPath, String displacementPath)
+{
+    if (m_instance == nullptr) Create();
+    MaterialData mat;
+    if (!albedoPath.empty())
+        mat.albedo = new gce::Texture(albedoPath);
+    if (!normalPath.empty())
+        mat.normal = new gce::Texture(normalPath);
+    if (!metallicPath.empty())
+        mat.metallic = new gce::Texture(metallicPath);
+    if (!roughnessPath.empty())
+        mat.roughness = new gce::Texture(roughnessPath);
+    if (!displacementPath.empty())
+        mat.displacement = new gce::Texture(displacementPath);
+    m_instance->m_materials.push_back(mat);
 }

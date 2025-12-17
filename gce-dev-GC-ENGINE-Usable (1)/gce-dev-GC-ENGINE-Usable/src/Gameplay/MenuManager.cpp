@@ -409,44 +409,46 @@ public:
 
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
-        Texture* pAlbedoTexture = new Texture("res/Textures/openPBR_shader2_BaseColor.png");
-		Texture* pNormalTexture = new Texture("res/Textures/openPBR_shader2_Normal.png");
-		Texture* pRoughnessTexture = new Texture("res/Textures/openPBR_shader2_Roughness.png");
-		Texture* pMetalnessTexture = new Texture("res/Textures/openPBR_shader2_Metallic.png");
-		Texture* pDisplacementTexture = new Texture("res/Textures/openPBR_shader2_Displacement.png");
+        RessourcesManager::CreateMaterials(
+            "res/Textures/Reactor_BaseColor.png",
+            "res/Textures/Reactor_Normal.png",
+            "res/Textures/Reactor_Metallic.png",
+            "res/Textures/Reactor_Roughness.png",
+            "res/Textures/Reactor_Displacement.png"
+		);
 
-        /*auto levelData = importSceneFromJsonText("res/Scene/test.json");
+  //      auto levelData = importSceneFromJsonText("res/Scene/Test2.json");
 
-        for (auto* col : levelData.allColliders) {
-            tileMap->SetWalkableWithCollider(*col, false);
-        }
-      
-        levelData.root->transform.WorldTranslate({ 0,-5,0 });
+  //      for (auto* col : levelData.allColliders) {
+  //          RessourcesManager::GetTileMap()->SetWalkableWithCollider(*col, false);
+  //      }
 
-        Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
-        Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
+  //      Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
+  //      Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 
-        // 1. Créer le GameObject pour la lumière
-        GameObject& lightGo = GameObject::Create(*m_scene);
+  //      // 1. Créer le GameObject pour la lumière
+  //      GameObject& lightGo = GameObject::Create(*m_scene);
 
-        // 2. Positionner le GameObject
-        lightGo.transform.SetWorldPosition(lightPos);
+  //      // 2. Positionner le GameObject
+  //      lightGo.transform.SetWorldPosition(lightPos);
 
-        // 3. Ajouter le composant Light
-        Light* pLight = lightGo.AddComponent<Light>();
+  //      // 3. Ajouter le composant Light
+  //      Light* pLight = lightGo.AddComponent<Light>();
 
-        // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
-        pLight->DefaultPointLight();
+  //      // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
+  //      pLight->DefaultPointLight();
 
-        // 5. Personnaliser les propriétés (optionnel mais recommandé)
-        // Accès direct aux champs de LightData car Light hérite de LightData
-        pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
-        pLight->intensity = 0.2f;                   // Intensité
-        pLight->range = 20.0f;                      // Rayon d'action
-        pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
+  //      // 5. Personnaliser les propriétés (optionnel mais recommandé)
+  //      // Accès direct aux champs de LightData car Light hérite de LightData
+  //      pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
+  //      pLight->intensity = 0.2f;                   // Intensité
+  //      pLight->range = 20.0f;                      // Rayon d'action
+  //      pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
 
-        // 6. Enregistrer la lumière dans le manager
-        LightManager::AddLight(*pLight);*/
+  //      // 6. Enregistrer la lumière dans le manager
+  //      LightManager::AddLight(*pLight);
+
+		//RessourcesManager::SetupLevelData(levelData);
 
         //----------------------------------Run----------------------------------
         //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
@@ -471,12 +473,13 @@ public:
         SnowManObject.transform.SetWorldRotation({ 90.0f,0.0f,0.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-        /GameObject& SnowManObject = GameObject::Create(*m_scene);
+		RessourcesManager::AddEnnemy(Snowman);*/
 
+        /*GameObject& SnowManObject = GameObject::Create(*m_scene);
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
+        SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());*/
 
-        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowManObject2.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
@@ -487,17 +490,17 @@ public:
         SnowMan* Snowman3 = new SnowMan(&SnowManObject3, RessourcesManager::GetTileMap());*/
 
 
-        GameObject& DeerObject = GameObject::Create(*m_scene);
+        /*GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
-        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
+        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());*/
 
        /* GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());*/
 
-        GameObject& BossObject = GameObject::Create(*m_scene);
+       /* GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 
@@ -526,9 +529,6 @@ public:
         uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
         uiImage.SetActive(true);
-
-
-
     }
 
     void MenuManager::PauseGame()

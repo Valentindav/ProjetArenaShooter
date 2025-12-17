@@ -1,11 +1,19 @@
 #pragma once
 #include <Engine.h>
 #include "TileMap.h"
-#include "JsonImporter.hpp"
+
+struct MaterialData {
+    gce::Texture* albedo = nullptr;
+    gce::Texture* normal = nullptr;
+    gce::Texture* metallic = nullptr;
+    gce::Texture* roughness = nullptr;
+    gce::Texture* displacement = nullptr;
+};
 
 class Entity;
 class Player;
 class Ennemy;
+struct ImportedLevelData;
 class RessourcesManager
 {
 public:
@@ -37,6 +45,15 @@ public:
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
 	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
+	static void AddEnnemy(Ennemy* ennemy);
+	static gce::Vector<Ennemy*> GetEnnemies();
+	static void SpawnEnnemies(int indice, float32 minDistance);
+	static void SetupLevelData(ImportedLevelData levelData);
+
+    static void AddMaterial(const MaterialData& mat);
+    static MaterialData* GetMaterial(int index);
+    static void AssignMaterialToRenderer(gce::MeshRenderer* mr, int index);
+	static void CreateMaterials(String albedoPath, String normalPath, String metallicPath, String roughnessPath, String displacementPath);
 
 private:
     //----------Weapon---------
@@ -58,4 +75,6 @@ private:
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
 	ImportedLevelData* m_importedLevelData = nullptr;
+	gce::Vector<Ennemy*> m_ennemies;
+    std::vector<MaterialData> m_materials;
 };

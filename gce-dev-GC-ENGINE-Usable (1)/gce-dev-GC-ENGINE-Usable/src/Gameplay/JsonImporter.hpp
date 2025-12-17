@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "Components/BoxCollider.h" 
+#include "RessourcesManager.h"
 
 using json = nlohmann::json;
 
@@ -149,11 +150,9 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             if (obj.name.find("Zone") == 0)
             {
                 gce::Vector3f32 go = { obj.position[0], obj.position[1], obj.position[2] };
-
                 result.spawnZones.push_back(go);
             }
             // Cas 2 : C'est un obstacle (Contient "BoxCollider")
-            // "remet de quoi remplir le vecteur box collider quand le nom contient box collider"
             else if (obj.name.find("BoxCollider") != std::string::npos)
             {
                 gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
@@ -164,6 +163,33 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
                 col->SetActive(true);
 
                 result.allColliders.push_back(col);
+            }
+            // Cas 3 (Correction) : C'est un mesh décoratif ou standard
+            else
+            {
+                gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
+                gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
+                mr->SetGeometry(geo);
+
+                if (!obj.name.empty() && obj.name[0] == '-')
+                {
+                    try {
+                        size_t nextDash = obj.name.find('-', 1);
+
+                        std::string numberStr;
+                        if (nextDash != std::string::npos) {
+                            numberStr = obj.name.substr(1, nextDash - 1);
+                        }
+                        else {
+                            numberStr = obj.name.substr(1);
+                        }
+                        int textureIndex = std::stoi(numberStr);
+                        RessourcesManager::AssignMaterialToRenderer(mr, textureIndex);
+                    }
+                    catch (const std::exception& e) {
+                        std::cerr << "[ImportScene] Error parsing texture index for object " << obj.name << ": " << e.what() << "\n";
+                    }
+                }
             }
         }
 

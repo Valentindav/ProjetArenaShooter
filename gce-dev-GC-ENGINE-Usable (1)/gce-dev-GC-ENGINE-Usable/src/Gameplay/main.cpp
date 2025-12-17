@@ -2,6 +2,7 @@
 #include <Engine.h>
 #include "RessourcesManager.h"
 #include "MenuManager.h"
+#include "LevelManager.h"
 /*TODO
 - UIX
 - sound effect
@@ -15,6 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::Console::Init();
     gce::GameManager::Create();
     RessourcesManager::Create();
+	LevelManager::Create();
     gce::Scene& scene = gce::Scene::Create();
 
     TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
