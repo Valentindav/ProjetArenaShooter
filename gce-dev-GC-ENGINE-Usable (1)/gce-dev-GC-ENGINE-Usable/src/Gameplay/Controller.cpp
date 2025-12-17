@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "MoveScript.h"
 #include "RessourcesManager.h"
+#include "LevelManager.h"
+
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
     {
@@ -185,6 +187,18 @@ using namespace gce;
         if (GetKeyDown(Keyboard::N))
         {
 			RessourcesManager::SpawnEnnemies(0, 0.0f);
+        }
+        if (GetKeyDown(Keyboard::J))
+        {
+            LevelManager::LoadLevel(0);
+        }
+        if (GetKeyDown(Keyboard::K))
+        {
+            LevelManager::LoadLevel(1);
+        }
+        if (GetKeyDown(Keyboard::L))
+        {
+            LevelManager::LoadLevel(2);
         }
 
 		player->m_reloadCD -= GameManager::DeltaTime();
