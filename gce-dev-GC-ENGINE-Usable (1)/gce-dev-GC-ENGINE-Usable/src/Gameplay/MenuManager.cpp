@@ -20,7 +20,6 @@ private :
 public:
     void Update()
     {
-		std::cout << "Spawn Timer: " << RessourcesManager::GetSpawnTimer() << std::endl;
         if (RessourcesManager::GetSpawnTimer() >= 5.0f)
         {
             RessourcesManager::SpawnEnnemies(0.0f);
@@ -396,15 +395,15 @@ public:
         pLightAbove->UpdateLight();
 
         // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
-        /*GameObject& SceneLight = GameObject::Create(*m_scene);
+        GameObject& SceneLight = GameObject::Create(*m_scene);
         SceneLight.SetName("Light");
-        SceneLight.transform.SetWorldPosition({ 0.0f, 5.0f, 0.0f });
+        SceneLight.transform.SetWorldPosition({ 0.0f, 30.0f, 0.0f });
         Light* pSceneLight = SceneLight.AddComponent<Light>();
         gce::LightManager::AddLight(*pSceneLight);
         pSceneLight->DefaultPointLight();
         pSceneLight->intensity = 1.0f;
-        pSceneLight->range = 20.0f;
-        pSceneLight->UpdateLight();*/
+        pSceneLight->range = 200.0f;
+        pSceneLight->UpdateLight();
 
         //----------------------------------TestWorld----------------------------------
 
