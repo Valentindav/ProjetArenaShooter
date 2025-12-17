@@ -197,7 +197,7 @@ using namespace gce;
         }
         if (GetKeyDown(Keyboard::N))
         {
-			RessourcesManager::SpawnEnnemies(0, 0.0f);
+			RessourcesManager::SpawnEnnemies(0.0f);
         }
         if (GetKeyDown(Keyboard::J))
         {

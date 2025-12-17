@@ -156,6 +156,9 @@ void RessourcesManager::ClearCurrentLevel()
     if (m_instance->m_importedLevelData->root)
     {
 		m_instance->m_importedLevelData->root->Destroy();
+		m_instance->m_importedLevelData->spawnZones.clear();
+        delete m_instance->m_importedLevelData;
+		m_instance->m_importedLevelData = nullptr;
     }
 }
 Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
@@ -186,10 +189,14 @@ gce::Vector<Ennemy*> RessourcesManager::GetEnnemies()
     return m_instance->m_ennemies;
 }
 
-void RessourcesManager::SpawnEnnemies(int indice, float32 minDistance)
+void RessourcesManager::SpawnEnnemies(float32 minDistance)
 {
-    if (m_instance == nullptr || m_instance->m_ennemies.Size() < indice) return;
-	m_instance->m_ennemies[indice]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
+    if (m_instance == nullptr || m_instance->m_ennemies.Empty()) return;
+	m_instance->m_ennemies[0]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
+	m_instance->m_ennemies[0]->GetGameObject()->SetActive(true);
+	m_instance->m_activeEnnemies.PushBack(m_instance->m_ennemies[0]);
+	m_instance->m_ennemies.Erase(m_instance->m_ennemies.begin());
+	m_instance->m_spawnTimer = 0.0f;
 }
 
 void RessourcesManager::SetupLevelData(ImportedLevelData levelData)
@@ -248,4 +255,15 @@ void RessourcesManager::CreateMaterials(String albedoPath, String normalPath, St
     if (!displacementPath.empty())
         mat.displacement = new gce::Texture(displacementPath);
     m_instance->m_materials.push_back(mat);
+}
+void RessourcesManager::UpdateSpawnTimer()
+{
+    if (m_instance == nullptr) return;
+    m_instance->m_spawnTimer += GameManager::DeltaTime();
+}
+
+float32 RessourcesManager::GetSpawnTimer()
+{
+    if (m_instance == nullptr) return 0.0f;
+    return m_instance->m_spawnTimer;
 }

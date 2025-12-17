@@ -44,10 +44,11 @@ public:
 
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
+
 	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
 	static void AddEnnemy(Ennemy* ennemy);
 	static gce::Vector<Ennemy*> GetEnnemies();
-	static void SpawnEnnemies(int indice, float32 minDistance);
+	static void SpawnEnnemies(float32 minDistance);
 	static void SetupLevelData(ImportedLevelData levelData);
 
     static void AddMaterial(const MaterialData& mat);
@@ -55,6 +56,8 @@ public:
     static void AssignMaterialToRenderer(gce::MeshRenderer* mr, int index);
 	static void CreateMaterials(String albedoPath, String normalPath, String metallicPath, String roughnessPath, String displacementPath);
 
+    static void UpdateSpawnTimer();
+    static float32 GetSpawnTimer();
 private:
     //----------Weapon---------
     gce::Geometry* m_thomsonGeo = gce::GeometryFactory::LoadGeometry("res/Obj/thomson.obj");
@@ -75,6 +78,8 @@ private:
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
 	ImportedLevelData* m_importedLevelData = nullptr;
-	gce::Vector<Ennemy*> m_ennemies;
+    gce::Vector<Ennemy*> m_ennemies;
+	gce::Vector<Ennemy*> m_activeEnnemies;
+	float32 m_spawnTimer = 0.0f;
     std::vector<MaterialData> m_materials;
 };

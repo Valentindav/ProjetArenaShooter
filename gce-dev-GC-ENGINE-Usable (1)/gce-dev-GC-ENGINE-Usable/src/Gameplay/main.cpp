@@ -37,5 +37,4 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     gce::GameManager::Destroy();
     gce::Console::UnInit();
     return 0;
-
 }

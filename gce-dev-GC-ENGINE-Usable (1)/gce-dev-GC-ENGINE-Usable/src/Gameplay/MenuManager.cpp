@@ -20,6 +20,12 @@ private :
 public:
     void Update()
     {
+		std::cout << "Spawn Timer: " << RessourcesManager::GetSpawnTimer() << std::endl;
+        if (RessourcesManager::GetSpawnTimer() >= 5.0f)
+        {
+            RessourcesManager::SpawnEnnemies(0.0f);
+        }
+		RessourcesManager::UpdateSpawnTimer();
         MenuManager* menuManager = MenuManager::GetInstance();
         if (!menuManager) return;
 
@@ -64,7 +70,7 @@ public:
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
             }
-        }
+        }        
     }
     END_SCRIPT
 
@@ -491,6 +497,12 @@ public:
         GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
+
+		RessourcesManager::AddEnnemy(Snowman);
+		RessourcesManager::AddEnnemy(Snowman2);
+		RessourcesManager::AddEnnemy(Snowman3);
+		RessourcesManager::AddEnnemy(deer);
+		RessourcesManager::AddEnnemy(elf);
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

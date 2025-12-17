@@ -22,6 +22,4 @@ namespace gce {
         Vector<LevelData> m_levels;
         int m_currentIndex = -1;
     };
-
 }
-
