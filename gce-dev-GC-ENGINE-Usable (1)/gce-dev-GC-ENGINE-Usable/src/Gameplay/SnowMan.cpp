@@ -23,7 +23,7 @@ SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("SnowMan");
     obj->AddChild(*boxColliderObj);
-    obj->transform.SetLocalScale({ 0.6f, 0.6f, 0.6f });
+    obj->transform.SetLocalScale({ 1.f, 1.0f, 1.f });
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";
