@@ -36,9 +36,9 @@ class CameraFeedback
 public:
     struct ShakeParams
     {
-        float intensity = 0.1f;
-        float duration = 0.3f;
-        float frequency = 20.0f;
+        float m_intensity = 0.1f;
+        float m_duration = 0.3f;
+        float m_frequency = 20.0f;
     };
 
     void UpdateShake(float deltaTime);

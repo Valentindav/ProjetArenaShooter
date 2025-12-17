@@ -11,27 +11,27 @@ using namespace gce;
 
 struct AudioData
 {
-    std::string name;
-    std::wstring path;
-    Category category;
-    bool isLoaded;
+    std::string m_name;
+    std::wstring m_path;
+    Category m_category;
+    bool m_isLoaded;
 };
 
 DECLARE_SCRIPT(AudioManager, ScriptFlag::Start | ScriptFlag::Update)
 
 private:
-    std::vector<AudioData> audioLibrary;
-    int currentIndex = -1;
+    std::vector<AudioData> m_audioLibrary;
+    int m_currentIndex = -1;
 
-    std::string walkSound = "WalkSound";
-    std::string jumpSound = "JumpSound";
-    std::string shootSound = "ShootSound";
-    std::string realoadSound = "realoadSound";
+    std::string m_walkSound = "WalkSound";
+    std::string m_jumpSound = "JumpSound";
+    std::string m_shootSound = "ShootSound";
+    std::string m_realoadSound = "realoadSound";
 
-    static AudioManager* instance;
+    static AudioManager* m_instance;
 
 public:
-    static AudioManager* GetInstance() { return instance; }
+    static AudioManager* GetInstance() { return m_instance; }
 
     void Start();
     void Update();

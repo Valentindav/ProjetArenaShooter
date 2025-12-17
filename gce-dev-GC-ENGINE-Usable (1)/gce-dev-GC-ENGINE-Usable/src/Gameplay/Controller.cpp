@@ -135,14 +135,12 @@ using namespace gce;
         if (GetKeyDown(Keyboard::_4)) {
             if (player->m_weaponLevel < 3) {
                 player->m_weaponLevel++;
-                std::cout << "Weapon level increased to: " << player->m_weaponLevel << std::endl;
                 player->UpdateWeapon();
             }
         }
         if (GetKeyDown(Keyboard::_5)) {
             if (player->m_weaponLevel > 1) {
                 player->m_weaponLevel--;
-                std::cout << "Weapon level increased to: " << player->m_weaponLevel << std::endl;
                 player->UpdateWeapon();
             }
         }

@@ -327,20 +327,20 @@ namespace gce {
 //
 // 	// Start a float tween with a pointer to a variable
 // 	// @param Example : 0.0f, 5.0f, 4.0f, Easing::EaseInOutQuint, var, pGameObjet
-//     static TweenInstance* Start(float32 start, float32 end, float32 duration, EasingFunction easing, float32& updateVariable, void* pUser)
+//     static TweenInstance* Start(float32 start, float32 end, float32 m_duration, EasingFunction easing, float32& updateVariable, void* pUser)
 // 	{
 //
-// 		FloatTweenInstance* tween = new FloatTweenInstance(start, end, duration, easing, updateVariable, pUser);
+// 		FloatTweenInstance* tween = new FloatTweenInstance(start, end, m_duration, easing, updateVariable, pUser);
 // 		s_activeTweens.push_back(tween);
 // 		return tween;
 //     }
 //
 // 	// Start a float tween with a lambda function
 // 	// @param Example : 0.0f, 5.0f, 4.0f, Easing::EaseInOutQuint, [](float32 value, void* user) { /* Update logic */ }, pGameObjet
-// 	static TweenInstance* Start(float32 start, float32 end, float32 duration, EasingFunction easing, UpdateFloatFunction updateFuction, void* pUser)
+// 	static TweenInstance* Start(float32 start, float32 end, float32 m_duration, EasingFunction easing, UpdateFloatFunction updateFuction, void* pUser)
 // 	{
 //
-// 		CustomTweenInstance* tween = new CustomTweenInstance(start, end, duration, easing, updateFuction, pUser);
+// 		CustomTweenInstance* tween = new CustomTweenInstance(start, end, m_duration, easing, updateFuction, pUser);
 // 		s_activeTweens.push_back(tween);
 // 		return tween;
 // 	}
@@ -348,7 +348,7 @@ namespace gce {
 //
 // 	// Start a Vector3 tween with a GameObject transform
 // 	// @param Example : {0, 0, 0}, {5, 0, 0}, 3.0f, Easing::EaseOutQuint, "position", pGameObjet
-//     static TweenInstance* Start(Vector3f32 start, Vector3f32 end, float32 duration, EasingFunction easing, String const& transform, void* pUser)
+//     static TweenInstance* Start(Vector3f32 start, Vector3f32 end, float32 m_duration, EasingFunction easing, String const& transform, void* pUser)
 // 	{
 // 		UpdateVector3Function update = nullptr;
 // 		// if (transform == "Position")
@@ -360,7 +360,7 @@ namespace gce {
 // 		// else 
 // 		// 	throw std::invalid_argument("Unknown transform type");
 //
-// 		Vector3TweenInstance* tween = new Vector3TweenInstance(start, end, duration, easing, update, pUser);
+// 		Vector3TweenInstance* tween = new Vector3TweenInstance(start, end, m_duration, easing, update, pUser);
 // 		s_activeTweens.push_back(tween);
 // 		return tween;
 //     }
@@ -407,14 +407,14 @@ namespace gce {
 //
 // private:
 //
-// 	/// Float tween instance
+// 	/// Float tween m_instance
 //     class FloatTweenInstance : public TweenInstance 
 // 	{
 //     public:
-// 		FloatTweenInstance(float32 start, float32 end, float32 duration, EasingFunction easing, float32& updateVariable, void* pUser)
+// 		FloatTweenInstance(float32 start, float32 end, float32 m_duration, EasingFunction easing, float32& updateVariable, void* pUser)
 // 		: m_startValue(start), m_endValue(end), m_updateVariable(updateVariable)
 // 		{
-// 			m_duration = duration;
+// 			m_duration = m_duration;
 // 			m_elapsed = 0;
 // 			m_running = true;
 // 			m_paused = false;
@@ -451,14 +451,14 @@ namespace gce {
 // 		float32& m_updateVariable;
 //     };
 //
-// 	/// Vector3 tween instance
+// 	/// Vector3 tween m_instance
 //     class Vector3TweenInstance : public TweenInstance 
 // 	{
 //     public:
-// 		Vector3TweenInstance(Vector3f32 start, Vector3f32 end, float32 duration, EasingFunction easing, UpdateVector3Function Update, void* pUser)
+// 		Vector3TweenInstance(Vector3f32 start, Vector3f32 end, float32 m_duration, EasingFunction easing, UpdateVector3Function Update, void* pUser)
 // 		: m_startValue(start), m_endValue(end), m_updateFonction(Update)
 // 		{
-// 			m_duration = duration;
+// 			m_duration = m_duration;
 // 			m_elapsed = 0;
 // 			m_running = true;
 // 			m_paused = false;
@@ -498,14 +498,14 @@ namespace gce {
 //         UpdateVector3Function m_updateFonction;
 //     };
 //
-// 	/// Custom float tween instance that allows for custom update functions
+// 	/// Custom float tween m_instance that allows for custom update functions
 // 	class CustomTweenInstance : public TweenInstance 
 // 	{
 // 	public:
-// 		CustomTweenInstance(float32 start, float32 end, float32 duration, EasingFunction easing, UpdateFloatFunction Update, void* pUser)
+// 		CustomTweenInstance(float32 start, float32 end, float32 m_duration, EasingFunction easing, UpdateFloatFunction Update, void* pUser)
 // 		: m_startValue(start), m_endValue(end), m_updateFonction(Update)
 // 		{
-// 			m_duration = duration; 
+// 			m_duration = m_duration; 
 // 			m_elapsed = 0;
 // 			m_running = true; 
 // 			m_paused = false;

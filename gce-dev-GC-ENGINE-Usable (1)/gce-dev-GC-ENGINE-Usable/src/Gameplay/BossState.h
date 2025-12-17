@@ -16,8 +16,6 @@ static void OnStartEmptyBoss(GameObject* me) {
     Boss* self = dynamic_cast<Boss*>(ent);
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
     if (!self) return;
-
-	std::cout << "Boss State Started: " << sm->actualAction << std::endl;
 }
 
 static void OnEndEmptyBoss(GameObject* me) {
@@ -177,7 +175,6 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
         self->m_slamRadius = 1.0f;
         self->m_hasHitPlayer = false;
         self->Use("GroundSlam");
-        std::cout << "Ground Slam Started!" << std::endl;
 
         Scene* scene = const_cast<Scene*>(me->GetScene());
 

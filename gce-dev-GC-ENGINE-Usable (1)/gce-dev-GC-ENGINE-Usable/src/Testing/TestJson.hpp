@@ -10,8 +10,8 @@ BEGIN_TEST( Json )
 
     const char8* path = RES_PATH"res/Testing/sample1.json";
 
-    //JsonObject* root = JsonParser::Deserialize(path);
-    //JsonParser::Deserialize(path);
+    //JsonObject* root = JsonParser::Deserialize(m_path);
+    //JsonParser::Deserialize(m_path);
 
     Vector<JsonObject*>* parsed = JsonParser::Deserialize(path);
 

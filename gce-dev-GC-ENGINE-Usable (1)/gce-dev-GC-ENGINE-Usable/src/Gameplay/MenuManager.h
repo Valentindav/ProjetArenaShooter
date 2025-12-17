@@ -15,11 +15,11 @@ enum class GameState
 class MenuManager
 {
 private:
-    static MenuManager* m_Instance;
+    static MenuManager* m_instance;
     GameState m_currentState;
     Scene* m_scene;
 
-    GameObject* m_CameraObject;
+    GameObject* m_cameraObject;
     Camera* pCamera;
 
     GameObject* m_mainMenuPanel;
@@ -51,7 +51,7 @@ public:
     static void Create(Scene* scene);
     static MenuManager* GetInstance() 
     {
-        return m_Instance; 
+        return m_instance; 
     }
 
     void SetGameState(GameState state);
@@ -60,7 +60,7 @@ public:
         return m_currentState; 
     }
 
-    GameObject* GetCamera() { return m_CameraObject; }
+    GameObject* GetCamera() { return m_cameraObject; }
 
     void CreateMainMenu();
     void CreatePauseMenu();

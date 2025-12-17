@@ -14,7 +14,7 @@ namespace gce
 {	
 	/////////////////////////////////////////////////////////////////////
 	/// @brief Skybox Creation.
-	/// @param path Path of the Skybox's texture in res file
+	/// @param m_path Path of the Skybox's texture in res file
 	/// @param scale Scale of the Skybox set at 20 if not set by user
 	/////////////////////////////////////////////////////////////////////
 	CubeMap::CubeMap(std::string const& path, Vector3f32 const& scale)
@@ -35,7 +35,7 @@ namespace gce
 
 	//////////////////////////////////////////////////////////////////////
 	/// @brief Skybox Creation.
-	/// @param path Path of the Skybox's texture in res file
+	/// @param m_path Path of the Skybox's texture in res file
 	/// @param scale Scale of the Skybox set at 20 if not set by user
 	/// @note Skybox store it's own pso and texture
 	//////////////////////////////////////////////////////////////////////

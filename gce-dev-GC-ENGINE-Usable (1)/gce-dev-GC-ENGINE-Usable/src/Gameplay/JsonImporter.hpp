@@ -110,7 +110,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
 
         gce::GameObject* go = &gce::GameObject::Create(activeScene);
 
-        // Utilisation de .c_str() possible car obj.name est maintenant une std::string
+        // Utilisation de .c_str() possible car obj.m_name est maintenant une std::string
         go->SetName(obj.name.c_str());
 
         // Transform
