@@ -204,7 +204,7 @@ using namespace gce;
         {
             LevelManager::LoadLevel(0);
 			RessourcesManager::GetCurrentLevel()->root->transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
-			RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({0.0f, 30.0f, 0.0f});
+			RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({0.0f, 70.0f, 0.0f});
         }
         if (GetKeyDown(Keyboard::K))
         {

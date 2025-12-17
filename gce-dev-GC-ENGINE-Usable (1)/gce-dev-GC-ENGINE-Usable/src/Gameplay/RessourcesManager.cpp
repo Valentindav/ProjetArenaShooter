@@ -198,7 +198,7 @@ gce::Vector<Ennemy*> RessourcesManager::GetEnnemies()
 
 void RessourcesManager::SpawnEnnemies(float32 minDistance)
 {
-    if (m_instance == nullptr || m_instance->m_ennemies.Empty() || m_instance->m_importedLevelData->spawnZones.empty()) return;
+    if (m_instance == nullptr || m_instance->m_ennemies.Empty() || m_instance->m_importedLevelData == nullptr || m_instance->m_importedLevelData->spawnZones.empty()) return;
 	m_instance->m_ennemies[0]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
 	m_instance->m_ennemies[0]->GetGameObject()->SetActive(true);
 	m_instance->m_activeEnnemies.PushBack(m_instance->m_ennemies[0]);

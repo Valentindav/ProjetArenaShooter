@@ -376,35 +376,6 @@ public:
         Floor.AddComponent<BoxCollider>()->SetActive(true);
         Floor.SetName("Floor");
 
-        Light* light2 = Floor.AddComponent<Light>();
-        // Correction : Enregistrement et dsactivation propre de la lumire du sol
-        gce::LightManager::AddLight(*light2);
-        light2->DefaultDirectionLight();
-        light2->intensity = 0.0f;
-        light2->UpdateLight();
-
-        // Ajout d'une lumire directionnelle venant du haut pour clairer toute la scne
-        GameObject& LightAbove = GameObject::Create(*m_scene);
-        Light* pLightAbove = LightAbove.AddComponent<Light>();
-        gce::LightManager::AddLight(*pLightAbove);
-        pLightAbove->DefaultDirectionLight();
-        pLightAbove->direction = { 0.0f, -1.0f, 0.0f }; // Pointe vers le bas
-        LightAbove.transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
-        pLightAbove->intensity = 1.f;
-        pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        pLightAbove->UpdateLight();
-
-        // Ajout d'une lumire ponctuelle sur un GameObject "Light" au-dessus de la scne
-        GameObject& SceneLight = GameObject::Create(*m_scene);
-        SceneLight.SetName("Light");
-        SceneLight.transform.SetWorldPosition({ 0.0f, 30.0f, 0.0f });
-        Light* pSceneLight = SceneLight.AddComponent<Light>();
-        gce::LightManager::AddLight(*pSceneLight);
-        pSceneLight->DefaultPointLight();
-        pSceneLight->intensity = 1.0f;
-        pSceneLight->range = 200.0f;
-        pSceneLight->UpdateLight();
-
         //----------------------------------TestWorld----------------------------------
 
 		/*GameObject& TestWorld = GameObject::Create(*m_scene);
@@ -413,6 +384,11 @@ public:
 		pTestWorldRenderer->SetAlbedoTexture(new Texture("res/Textures/openPBR_shader2_BaseColor.png"));*/
 
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
+
+        RessourcesManager::CreateMaterials(
+            "res/Textures/WhiteColor.png",
+			"", "", "", ""
+        );
 
         RessourcesManager::CreateMaterials(
             "res/Textures/Reactor_BaseColor.png",
@@ -431,27 +407,27 @@ public:
   //      Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
   //      Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 
-  //      // 1. Créer le GameObject pour la lumière
-  //      GameObject& lightGo = GameObject::Create(*m_scene);
+        // 1. Créer le GameObject pour la lumière
+        GameObject& lightGo = GameObject::Create(*m_scene);
 
-  //      // 2. Positionner le GameObject
-  //      lightGo.transform.SetWorldPosition(lightPos);
+        // 2. Positionner le GameObject
+        lightGo.transform.SetWorldPosition({0.f,200.f,0.f});
 
-  //      // 3. Ajouter le composant Light
-  //      Light* pLight = lightGo.AddComponent<Light>();
+        // 3. Ajouter le composant Light
+        Light* pLight = lightGo.AddComponent<Light>();
 
-  //      // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
-  //      pLight->DefaultPointLight();
+        // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
+        pLight->DefaultPointLight();
 
-  //      // 5. Personnaliser les propriétés (optionnel mais recommandé)
-  //      // Accès direct aux champs de LightData car Light hérite de LightData
-  //      pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
-  //      pLight->intensity = 0.2f;                   // Intensité
-  //      pLight->range = 20.0f;                      // Rayon d'action
-  //      pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
+        // 5. Personnaliser les propriétés (optionnel mais recommandé)
+        // Accès direct aux champs de LightData car Light hérite de LightData
+        pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
+        pLight->intensity = 1.5f;                   // Intensité
+        pLight->range = 2000.0f;                      // Rayon d'action
+        pLight->position = { 0.f,200.f,0.f };                // IMPORTANT : Mettre à jour la position dans la structure de données
 
-  //      // 6. Enregistrer la lumière dans le manager
-  //      LightManager::AddLight(*pLight);
+        // 6. Enregistrer la lumière dans le manager
+        LightManager::AddLight(*pLight);
 
 		//RessourcesManager::SetupLevelData(levelData);
 
