@@ -18,6 +18,7 @@ private:
     static MenuManager* m_Instance;
     GameState m_currentState;
     Scene* m_scene;
+
     GameObject* m_CameraObject;
     Camera* pCamera;
 
@@ -42,32 +43,35 @@ private:
     GameObject* m_restartButtonVictory;
     GameObject* m_mainMenuButtonVictory;
 
-    GameObject* m_hudPanel;
-    GameObject* m_candyCaneUI;
-
     MenuManager();
+
     void RecreateScene();
 
 public:
     static void Create(Scene* scene);
-    static MenuManager* GetInstance() { return m_Instance; }
+    static MenuManager* GetInstance() 
+    {
+        return m_Instance; 
+    }
 
     void SetGameState(GameState state);
-    GameState GetGameState() const { return m_currentState; }
+    GameState GetGameState() const 
+    {
+        return m_currentState; 
+    }
+
     GameObject* GetCamera() { return m_CameraObject; }
 
     void CreateMainMenu();
     void CreatePauseMenu();
     void CreateGameOverMenu();
     void CreateVictoryMenu();
-    void CreateHUD();
 
     void ShowMainMenu();
     void ShowPauseMenu();
     void ShowGameOverMenu();
     void ShowVictoryMenu();
     void HideAllMenus();
-    void UpdateHealthUI(float currentHealth, float maxHealth);
 
     static void OnPlayButtonClick();
     static void OnQuitButtonClick();
