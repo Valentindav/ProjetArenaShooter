@@ -105,7 +105,7 @@ void AudioManager::PlayCurrentSound()
 {
     if (currentIndex >= 0 && currentIndex < audioLibrary.size())
     {
-        const auto& audio = audioLibrary[currentIndex];
+        const AudioData audio = audioLibrary[currentIndex];
         bool loop = (audio.category == Category::MUSIC);
         AudioUse::Stop(audio.name.c_str());
         AudioUse::Play(audio.name.c_str(), loop);
@@ -154,7 +154,7 @@ void AudioManager::IncreaseVolume()
 {
     if (currentIndex >= 0 && currentIndex < audioLibrary.size())
     {
-        const auto& audio = audioLibrary[currentIndex];
+        const AudioData audio = audioLibrary[currentIndex];
         AudioUse::SetVolumeOfCategory(audio.category, 80);
     }
 }
@@ -163,7 +163,7 @@ void AudioManager::DecreaseVolume()
 {
     if (currentIndex >= 0 && currentIndex < audioLibrary.size())
     {
-        const auto& audio = audioLibrary[currentIndex];
+        const AudioData audio = audioLibrary[currentIndex];
         AudioUse::SetVolumeOfCategory(audio.category, 20);
     }
 }
