@@ -37,6 +37,7 @@ public:
 
         if (menuManager->GetGameState() == GameState::Playing)
         {
+            menuManager->ShowUIHealthBar();
             Player* player = RessourcesManager::GetPlayer();
 
             if (player == nullptr || player->GetGameObject() == nullptr)
@@ -49,6 +50,7 @@ public:
             int enemyCount = 0;
             for (Entity* entity : entities)
             {
+				if (!entity->GetGameObject()->GetName()) return;
                 if (entity->GetGameObject()->GetName() == "Bullet") return;
                 if (entity == nullptr) return;
                 if (entity == player) return;
@@ -149,7 +151,7 @@ public:
             UiButton* button = m_playButton->AddComponent<UiButton>();
             button->AddListener(OnPlayButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_mainMenuPanel->AddChild(*m_playButton);
         }
 
@@ -160,7 +162,7 @@ public:
             UiButton* button = m_quitButton->AddComponent<UiButton>();
             button->AddListener(OnQuitButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_mainMenuPanel->AddChild(*m_quitButton);
         }
     }
@@ -179,7 +181,7 @@ public:
             UiButton* button = m_resumeButton->AddComponent<UiButton>();
             button->AddListener(OnResumeButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_pauseMenuPanel->AddChild(*m_resumeButton);
         }
 
@@ -190,7 +192,7 @@ public:
             UiButton* button = m_restartButtonPause->AddComponent<UiButton>();
             button->AddListener(OnRestartButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_pauseMenuPanel->AddChild(*m_restartButtonPause);
         }
 
@@ -201,7 +203,7 @@ public:
             UiButton* button = m_mainMenuButtonPause->AddComponent<UiButton>();
             button->AddListener(OnMainMenuButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_pauseMenuPanel->AddChild(*m_mainMenuButtonPause);
         }
 
@@ -221,7 +223,7 @@ public:
         UiButton* button = m_restartButtonGameOver->AddComponent<UiButton>();
         button->AddListener(OnRestartButtonClick);
         button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
         m_gameOverPanel->AddChild(*m_restartButtonGameOver);
     }
 
@@ -232,7 +234,7 @@ public:
         UiButton* button = m_mainMenuButtonGameOver->AddComponent<UiButton>();
         button->AddListener(OnMainMenuButtonClick);
         button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+        button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
         m_gameOverPanel->AddChild(*m_mainMenuButtonGameOver);
     }
         m_gameOverPanel->SetActive(false);
@@ -251,7 +253,7 @@ public:
             UiButton* button = m_restartButtonVictory->AddComponent<UiButton>();
             button->AddListener(OnRestartButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_victoryPanel->AddChild(*m_restartButtonVictory);
         }
 
@@ -262,7 +264,7 @@ public:
             UiButton* button = m_mainMenuButtonVictory->AddComponent<UiButton>();
             button->AddListener(OnMainMenuButtonClick);
             button->pBitMapBrush = new BitMapBrush("res/Exemple/TexturesTest.jpg");
-            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/crosshair.png");
+            button->pHoverBitMapBrush = new BitMapBrush("res/Textures/UI/crosshair.png");
             m_victoryPanel->AddChild(*m_mainMenuButtonVictory);
         }
         m_victoryPanel->SetActive(false);
@@ -504,21 +506,177 @@ public:
 
         // Ajout du crosshair
         gce::GameObject& crosshair = gce::GameObject::Create(*m_scene);
-        gce::UiImage& uiImage = *crosshair.AddComponent<gce::UiImage>();
+        gce::UiImage& uiCrosshair = *crosshair.AddComponent<gce::UiImage>();
 
         gce::Vector2f32 center = { (float)params.width / 2.f, (float)params.height / 2.f };
         gce::Vector2f32 size = { 64.f, 64.f };
         gce::Vector2f32 posUi = center - size * 0.5f;
 
-        uiImage.InitializeImage(posUi, size, 1.f);
-        uiImage.btmBrush = new gce::BitMapBrush("res/Textures/crosshair.png");
+        uiCrosshair.InitializeImage(posUi, size, 1.f);
+        uiCrosshair.btmBrush = new gce::BitMapBrush("res/Textures/UI/crosshair.png");
 
-        // Calcul de l'échelle : TailleCible / TailleImage
         float scaleX = 64.f / 224.f;
         float scaleY = 64.f / 221.f;
-        uiImage.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+        uiCrosshair.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
-        uiImage.SetActive(true);
+        //ajout de la barre de vie
+        gce::GameObject& healthBar = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar = *healthBar.AddComponent<gce::UiImage>();
+        healthBar.SetName("UI_Life");
+        gce::Vector2f32 center2 = { 558.5f, (float)params.height - 150.5f };
+        gce::Vector2f32 size2 = { 1117.f, 301.f };
+        gce::Vector2f32 posUi2 = center2 - size2 * 0.5f;
+
+        uiLifeBar.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_empty.png");
+        uiLifeBar.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[0] = &uiLifeBar;
+
+		//ajout de la barre de vie 1
+        gce::GameObject& healthBar1 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar1 = *healthBar1.AddComponent<gce::UiImage>();
+        healthBar1.SetName("UI_Life_1");
+        uiLifeBar1.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar1.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_1.png");
+        uiLifeBar1.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[1] = &uiLifeBar1;
+
+        //ajout de la barre de vie 2
+        gce::GameObject& healthBar2 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar2 = *healthBar2.AddComponent<gce::UiImage>();
+        healthBar2.SetName("UI_Life_2");
+        uiLifeBar2.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar2.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_2.png");
+        uiLifeBar2.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[2] = &uiLifeBar2;
+
+        //ajout de la barre de vie 3
+        gce::GameObject& healthBar3 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar3 = *healthBar3.AddComponent<gce::UiImage>();
+        healthBar3.SetName("UI_Life_3");
+        uiLifeBar3.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar3.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_3.png");
+        uiLifeBar3.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[3] = &uiLifeBar3;
+
+		//ajout de la barre de vie 4
+        gce::GameObject& healthBar4 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar4 = *healthBar4.AddComponent<gce::UiImage>();
+        healthBar4.SetName("UI_Life_4");
+        uiLifeBar4.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar4.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_4.png");
+        uiLifeBar4.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[4] = &uiLifeBar4;
+
+        //ajout de la barre de vie 5
+        gce::GameObject& healthBar5 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar5 = *healthBar5.AddComponent<gce::UiImage>();
+        healthBar5.SetName("UI_Life_5");
+        uiLifeBar5.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar5.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_5.png");
+        uiLifeBar5.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[5] = &uiLifeBar5;
+
+        //ajout de la barre de vie 6
+        gce::GameObject& healthBar6 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar6 = *healthBar6.AddComponent<gce::UiImage>();
+        healthBar6.SetName("UI_Life_6");
+        uiLifeBar6.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar6.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_6.png");
+        uiLifeBar6.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[6] = &uiLifeBar6;
+
+        //ajout de la barre de vie 7
+        gce::GameObject& healthBar7 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar7 = *healthBar7.AddComponent<gce::UiImage>();
+        healthBar7.SetName("UI_Life_7");
+        uiLifeBar7.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar7.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_7.png");
+        uiLifeBar7.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[7] = &uiLifeBar7;
+
+        //ajout de la barre de vie 8
+        gce::GameObject& healthBar8 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar8 = *healthBar8.AddComponent<gce::UiImage>();
+        healthBar8.SetName("UI_Life_8");
+        uiLifeBar8.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar8.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_8.png");
+        uiLifeBar8.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[8] = &uiLifeBar8;
+
+        //ajout de la barre de vie 9
+        gce::GameObject& healthBar9 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar9 = *healthBar9.AddComponent<gce::UiImage>();
+        healthBar9.SetName("UI_Life_9");
+        uiLifeBar9.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar9.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_9.png");
+        uiLifeBar9.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[9] = &uiLifeBar9;
+
+        //ajout de la barre de vie 10
+        gce::GameObject& healthBar10 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar10 = *healthBar10.AddComponent<gce::UiImage>();
+        healthBar10.SetName("UI_Life_10");
+        uiLifeBar10.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar10.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_10.png");
+        uiLifeBar10.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[10] = &uiLifeBar10;
+
+        //ajout de la barre de vie 11
+        gce::GameObject& healthBar11 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar11 = *healthBar11.AddComponent<gce::UiImage>();
+        healthBar11.SetName("UI_Life_11");
+        uiLifeBar11.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar11.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_11.png");
+        uiLifeBar11.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[11] = &uiLifeBar11;
+
+        //ajout de la barre de vie 12
+        gce::GameObject& healthBar12 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar12 = *healthBar12.AddComponent<gce::UiImage>();
+        healthBar12.SetName("UI_Life_12");
+        uiLifeBar12.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar12.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_12.png");
+        uiLifeBar12.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[12] = &uiLifeBar12;
+
+        //ajout de la barre de vie 13
+        gce::GameObject& healthBar13 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiLifeBar13 = *healthBar13.AddComponent<gce::UiImage>();
+        healthBar13.SetName("UI_Life_13");
+        uiLifeBar13.InitializeImage(posUi2, size2, 1.f);
+        uiLifeBar13.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_full.png");
+        uiLifeBar13.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { 1.f, 1.f, 1.f }, 0.f);
+        m_uiLifeBars[13] = &uiLifeBar13;
+
+        uiCrosshair.SetActive(true);
+        //for (int i = 0; i < 14; ++i)
+        //    if (m_uiLifeBars[i]) m_uiLifeBars[i]->SetActive(false);
+    }
+
+    void MenuManager::ShowUIHealthBar()
+    {
+        MenuManager* menuManager = MenuManager::GetInstance();
+        if (!menuManager) return;
+        if (menuManager->GetGameState() != GameState::Playing) return;
+
+        Player* player = RessourcesManager::GetPlayer();
+        if (!player) return;
+        float hp = player->m_life;
+        if (hp < 0.0f) hp = 0.0f;
+        if (hp > 14.0f) hp = 14.0f;
+        int index = static_cast<int>(hp);
+
+        for (int i = 0; i < 14; ++i)
+        {
+            if (m_uiLifeBars[i])
+            {
+                if (i == index)
+                    m_uiLifeBars[i]->SetActive(true);
+                else
+                    m_uiLifeBars[i]->SetActive(false);
+            }
+        }
     }
 
     void MenuManager::PauseGame()
