@@ -69,6 +69,9 @@ static void OnStartIdleSnowman(GameObject* me) {
 }
 
 static void OnUpdateIdleSnowman(GameObject* me) {
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     SnowMan* self = dynamic_cast<SnowMan*>(ent);
     if (!self) return;

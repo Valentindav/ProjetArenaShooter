@@ -4,7 +4,7 @@
 #include "Robot.h"
 #include "Boss.h"
 #include "RessourcesManager.h"
-
+#include "MenuManager.h"
 using namespace gce;
 
 DECLARE_SCRIPT(Shoot_Update, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
@@ -21,6 +21,10 @@ public:
 
 	void Update() // move the bullet forward and destroy it when her lifetime is 0
 	{
+		MenuManager* mm = MenuManager::GetInstance();
+		if (mm && mm->GetGameState() != GameState::Playing)
+			return;
+
 		Entity* entity = nullptr;
 		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 		Bullet* bullet = dynamic_cast<Bullet*>(entity);
@@ -37,7 +41,7 @@ public:
 			}
 			s_pendingDestroy.Clear();
 		}
-		if (bullet->GetLifeTime() >= 0.0f)
+		if (bullet && bullet->GetLifeTime() >= 0.0f)
 		{
 			m_pOwner->transform.WorldTranslate(m_pOwner->transform.GetLocalForward() * entity->GetSpeed()/100 * GameManager::DeltaTime());
 		}
@@ -60,12 +64,12 @@ public:
 			}
 			if (!already) s_pendingDestroy.PushBack(m_pOwner);
 		}
-		bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
+		if (bullet) bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
 	}
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
-		if (other->GetName() == "RayCast" || other->GetName() == "Floor") return;
+		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
 		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
@@ -125,6 +129,9 @@ public:
 		DECLARE_SCRIPT(FollowingBullet, ScriptFlag::Update | ScriptFlag::Start | ScriptFlag::CollisionEnter)
 private:
 	inline static Vector<GameObject*> s_pendingDestroy;
+	float m_spawnTimer = 0.0f;
+	bool m_isHoming = false;
+	const float m_forwardDuration = 0.25f;
 
 public:
 	void Start() // Start the lifetime of the bullet
@@ -132,33 +139,70 @@ public:
 		Bullet* self = dynamic_cast<Bullet*>(RessourcesManager::GetEntityFromGameObject(m_pOwner));
 		if (!self) return;
 		self->SetLifeTime(3.0f);
+		m_spawnTimer = 0.0f;
+		m_isHoming = false;
 	}
 
 	void Update() // move the bullet forward and destroy it when her lifetime is 0
 	{
-		if(!(RessourcesManager::GetChoosedEnemy() || !RessourcesManager::GetChoosedEnemy()->GetGameObject())) return;
-		Entity* entity = nullptr;
-		entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		if (!m_pOwner) return;
+		Entity* entity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
+		if (!entity) return;
 		Bullet* bullet = dynamic_cast<Bullet*>(entity);
-		std::cout << "looking for " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->GetName() << std::endl;
-		std::cout << "pos bullet " << m_pOwner->transform.GetWorldPosition().x << " " << m_pOwner->transform.GetWorldPosition().y << " " << m_pOwner->transform.GetWorldPosition().z << std::endl;
-		std::cout << "other pos " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().x << " " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().y << " " << RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition().z << std::endl;
-		if (!m_pOwner && !m_pOwner->IsActive() && !bullet->GetOwner() && !bullet->GetOwner()->IsActive())
+		if (!bullet) return;
+
+		if (!m_pOwner->IsActive() || !bullet->GetOwner() || !bullet->GetOwner()->IsActive())
 		{
 			s_pendingDestroy.PushBack(m_pOwner);
 			return;
 		}
+
 		if (!s_pendingDestroy.Empty())
 		{
 			for (GameObject* pObj : s_pendingDestroy)
 			{
-				pObj->Destroy();
+				if (pObj) pObj->Destroy();
 			}
 			s_pendingDestroy.Clear();
 		}
-		if (bullet->GetLifeTime() >= 0.0f)
+
+		if (!m_isHoming && m_spawnTimer < m_forwardDuration)
 		{
-			m_pOwner->transform.WorldTranslate(RessourcesManager::GetChoosedEnemy()->GetGameObject()->transform.GetWorldPosition());
+			Vector3f32 forward = m_pOwner->transform.GetWorldForward();
+			float speed = entity->GetSpeed();
+			m_pOwner->transform.WorldTranslate(forward * (speed / 100.0f) * GameManager::DeltaTime());
+		}
+		else
+		{
+			if (!m_isHoming) m_isHoming = true;
+
+			GameObject* targetGO = nullptr;
+			if (RessourcesManager::GetChoosedEnemy()) targetGO = RessourcesManager::GetChoosedEnemy()->GetGameObject();
+
+			if (targetGO)
+			{
+				Vector3f32 targetPos = targetGO->transform.GetWorldPosition();
+				Vector3f32 currentPos = m_pOwner->transform.GetWorldPosition();
+				Vector3f32 dir = targetPos - currentPos;
+				float dist = dir.Norm();
+				if (dist > 0.0001f)
+				{
+					dir = dir / dist;
+					float speed = entity->GetSpeed();
+					m_pOwner->transform.WorldTranslate(dir * (speed / 100.0f) * GameManager::DeltaTime());
+				}
+			}
+			else
+			{
+				Vector3f32 forward = m_pOwner->transform.GetWorldForward();
+				float speed = entity->GetSpeed();
+				m_pOwner->transform.WorldTranslate(forward * (speed / 100.0f) * GameManager::DeltaTime());
+			}
+		}
+
+		if (bullet->GetLifeTime() > 0.0f)
+		{
+			bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
 		}
 		else
 		{
@@ -179,12 +223,12 @@ public:
 			}
 			if (!already) s_pendingDestroy.PushBack(m_pOwner);
 		}
-		bullet->SetLifeTime(bullet->GetLifeTime() - GameManager::DeltaTime());
+		m_spawnTimer += GameManager::DeltaTime();
 	}
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
-		if (other->GetName() == "RayCast") return;
+		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
 		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;

@@ -4,6 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
+#include "MenuManager.h"
 
 using namespace gce;
 
@@ -12,6 +13,10 @@ static void OnStartShootRobot(GameObject* me) {
 }
 
 static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting state with 3 state attack patern
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
+
     Robot* self = dynamic_cast<Robot*>(RessourcesManager::GetEntityFromGameObject(me));
     if (!self) return;
 

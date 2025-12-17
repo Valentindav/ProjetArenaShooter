@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Ennemy.h" 
 #include "JsonImporter.hpp"
+#include "Heal.h"
 
 void RessourcesManager::Create()
 {
@@ -147,7 +148,18 @@ Entity* RessourcesManager::GetSelectedEnemy() // get selected enemy
  {
      if (m_instance == nullptr || enemy == nullptr) Create();
 	 m_instance->m_choosedEnemy = enemy;
-     std::cout << "Choosed Enemy: " << m_instance->m_choosedEnemy->GetGameObject()->GetName() << std::endl;
+ }
+
+ void RessourcesManager::AddCookie(Heal* cookie)
+ {
+     if (m_instance == nullptr || cookie == nullptr) Create();
+	 m_instance->m_cookiesVector.PushBack(cookie);
+ }
+
+ gce::Vector<Heal*> RessourcesManager::GetCookies()
+ {
+     if (m_instance == nullptr) return {};
+	 return m_instance->m_cookiesVector;
  }
  
 TileMap* RessourcesManager::GetTileMap()

@@ -4,7 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
-
+#include "MenuManager.h"
 using namespace gce;
 
 static void OnStartShootDeer(GameObject* me) {
@@ -12,6 +12,9 @@ static void OnStartShootDeer(GameObject* me) {
 }
 
 static void OnUpdateShootDeer(GameObject* me) {
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Deer* self = dynamic_cast<Deer*>(ent);
     if (!self) return;
@@ -50,6 +53,9 @@ static void OnStartIdleDeer(GameObject* me) {
 }
 
 static void OnUpdateIdleDeer(GameObject* me) {
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Deer* self = dynamic_cast<Deer*>(ent);
     if (!self) return;

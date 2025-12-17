@@ -11,6 +11,7 @@
 #include "Boss.h"
 #include "RayCast.h"
 #include "TileMap.h"
+#include "Heal.h"
 
 MenuManager* MenuManager::m_Instance = nullptr;
 
@@ -472,6 +473,9 @@ public:
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
+		Heal* heal = new Heal(&GameObject::Create(*m_scene), 150.0f);
+		heal->GetGameObject()->transform.SetWorldPosition({ 2.0f,0.0f,2.0f });
+
         /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
@@ -482,13 +486,13 @@ public:
 
         GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
-        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
+        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());*/
 
         GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
 
-        GameObject& BossObject = GameObject::Create(*m_scene);
+       /* GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 

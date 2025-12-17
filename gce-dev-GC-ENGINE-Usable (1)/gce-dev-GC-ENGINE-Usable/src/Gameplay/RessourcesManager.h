@@ -10,6 +10,7 @@ struct MaterialData {
     gce::Texture* displacement = nullptr;
 };
 
+class Heal;
 class Entity;
 class Player;
 class Ennemy;
@@ -47,6 +48,9 @@ public:
 	static Entity* GetChoosedEnemy();
 	static void SetChoosedEnemy(Entity* enemy);
 
+	static void AddCookie(Heal* cookie);
+	static gce::Vector<Heal*> GetCookies();
+
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
 	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
@@ -75,6 +79,7 @@ private:
     gce::Geometry* m_SantaGeo = gce::GeometryFactory::LoadGeometry("res/Obj/pere noel.obj");
 
     gce::Vector<Entity*> m_entities;
+    gce::Vector<Heal*> m_cookiesVector;
     gce::Geometry* bulletGeo = gce::GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
     gce::Texture* m_bottleTexture = new gce::Texture("res/Exemple/TexturesTest.jpg");
     inline static RessourcesManager* m_instance = nullptr;

@@ -54,18 +54,21 @@ using namespace gce;
         {
             exit(0);
         }
-        if (GetKeyDown(Keyboard::SPACE))
+        if (GetKey(Keyboard::SPACE))
         {
-            Move* moveScript = obj->GetScript<Move>();
-            PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
-            if (moveScript && phys && moveScript->onGround)
-            {
-                Vector3f32 currentVel = phys->GetVelocity();
-                phys->SetVelocity({ currentVel.x, moveScript->jumpForce, currentVel.z });
-                moveScript->onGround = false;
+            if (player->m_jumpCount < 1) {
+                player->m_jumpCount++;
+                Move* moveScript = obj->GetScript<Move>();
+                PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
+                if (moveScript && phys && moveScript->onGround)
+                {
+                    Vector3f32 currentVel = phys->GetVelocity();
+                    phys->SetVelocity({ currentVel.x, moveScript->jumpForce, currentVel.z });
+                    moveScript->onGround = false;
+                }
+                if (player->GetCameraFeedback())
+                    player->GetCameraFeedback()->TriggerJumpBounce();
             }
-            if (player->GetCameraFeedback())
-                player->GetCameraFeedback()->TriggerJumpBounce();
         }
         if (GetKey(Keyboard::R))
         {
@@ -188,7 +191,7 @@ using namespace gce;
 						bullet->Addfollow();
                         obj->GetScript<Move>()->lastBullet = bullet;
                         obj->GetScript<Move>()->m_shootTimer = SHOOT_TIMER_WAIT;
-                        player->m_bazooShoot += 1;
+                        player->m_bazooShoot -= 1;
                         player->m_reloadCD = 1.0f;
                         if (player->GetCameraFeedback())
                             player->GetCameraFeedback()->TriggerShootRecoil();
