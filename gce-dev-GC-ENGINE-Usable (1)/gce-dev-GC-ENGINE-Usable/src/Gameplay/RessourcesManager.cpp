@@ -161,6 +161,13 @@ void RessourcesManager::ClearCurrentLevel()
 		m_instance->m_importedLevelData = nullptr;
     }
 }
+
+ImportedLevelData* RessourcesManager::GetCurrentLevel()
+{
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_importedLevelData;
+}
+
 Vector3f32 RessourcesManager::GetEnemySpawnPosition(float32 minDist)
 {
     if (m_instance == nullptr || m_instance->m_importedLevelData == nullptr || m_instance->m_importedLevelData->spawnZones.empty() || m_instance->m_player == nullptr || m_instance->m_player->GetGameObject() == nullptr)

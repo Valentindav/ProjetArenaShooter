@@ -4,6 +4,7 @@
 #include "MoveScript.h"
 #include "RessourcesManager.h"
 #include "LevelManager.h"
+#include "JsonImporter.hpp"
 
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
@@ -202,6 +203,7 @@ using namespace gce;
         if (GetKeyDown(Keyboard::J))
         {
             LevelManager::LoadLevel(0);
+			RessourcesManager::GetCurrentLevel()->root->transform.SetWorldPosition({ 0.0f,-10.0f,0.0f });
         }
         if (GetKeyDown(Keyboard::K))
         {

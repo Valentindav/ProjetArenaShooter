@@ -26,6 +26,7 @@ public:
 	static void SetEnemySelected(Entity* enemy);
     static void AddLevel(ImportedLevelData level);
     static void ClearCurrentLevel();
+	static ImportedLevelData* GetCurrentLevel();
     
     static gce::Geometry* GetBottle();
     static gce::Geometry* GetThomson();
