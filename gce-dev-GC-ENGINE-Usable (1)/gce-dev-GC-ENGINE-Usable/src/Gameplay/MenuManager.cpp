@@ -15,7 +15,7 @@
 #include "Heal.h"
 #include "AudioManager.h"
 
-MenuManager* MenuManager::m_Instance = nullptr;
+MenuManager* MenuManager::m_instance = nullptr;
 
 DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update)
 private :
@@ -618,7 +618,7 @@ public:
         float scaleY = 64.f / 221.f;
         uiCrosshair.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
-        uiImage.SetActive(true);
+        uiCrosshair.SetActive(true);
 
         GameObject& AudioManagerObj = GameObject::Create(*m_scene);
         AudioManagerObj.AddScript<AudioManager>();
