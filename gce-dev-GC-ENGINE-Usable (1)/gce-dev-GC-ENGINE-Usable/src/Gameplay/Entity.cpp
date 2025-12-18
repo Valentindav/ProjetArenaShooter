@@ -20,6 +20,6 @@ void Entity::TakeDamage(int damage) // Entity action when she take m_damage ->ma
     else
     {
         this->m_life = this->m_life - damage;
-		std::cout << "Entity took " << damage << " damage, remaining life: " << this->m_life << std::endl;
+		/*std::cout << "Entity took " << damage << " damage, remaining life: " << this->m_life << std::endl;*/
     }
 }

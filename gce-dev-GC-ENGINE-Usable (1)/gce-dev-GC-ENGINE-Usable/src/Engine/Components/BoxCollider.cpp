@@ -50,26 +50,23 @@ namespace gce {
 			m_worldBox.max = localScale * transform.GetWorldScale() * BOX_DEFAULT_VALUE;
 		}
 
-		m_worldBox.center = transform.GetWorldPosition() + m_localOffSet * transform.GetWorldScale();
-		m_worldBox.aabb.center = m_worldBox.center;
+		m_worldBox.center = transform.GetWorldPosition();
 
-		//Apply RotMatrix To center Point
 		if (m_localOffSet != Vector3f32{ 0,0,0 })
 		{
-			Physics::ScaleNRotateVect3(m_worldBox.center, transform.m_matrix);
+			// On transforme le vecteur offset (local) en vecteur monde (orienté)
+			// Note: Assure-toi que ScaleNRotateVect3 ne prend que la rotation/scale (3x3) et pas la translation
+			Vector3f32 rotatedOffset = Physics::ScaleNRotateVect3(m_localOffSet, transform.m_matrix);
+			m_worldBox.center += rotatedOffset;
 		}
+
+		m_worldBox.aabb.center = m_worldBox.center;	
 
 		m_worldBox.axisX = Physics::ScaleNRotateVect3(Vector3f32{ 1,0,0 }, transform.m_matrix).Normalize();
 		m_worldBox.axisY = Physics::ScaleNRotateVect3(Vector3f32{ 0,1,0 }, transform.m_matrix).Normalize();
 		m_worldBox.axisZ = Physics::ScaleNRotateVect3(Vector3f32{ 0,0,1 }, transform.m_matrix).Normalize();
 
 		Physics::UpdateBoundingBox(m_worldBox, transform.m_matrix, localScale);
-
-		//Apply RotMatrix To center Point
-		if (m_localOffSet != Vector3f32{ 0,0,0 })
-		{
-			Physics::ScaleNRotateVect3(m_worldBox.center, transform.m_matrix);
-		}
 	}
 
 #undef BOX_DEFAULT_VALUE

@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Export Scene to JSON",
     "author": "Gemini & User",
-    "version": (1, 3),
+    "version": (1, 4),
     "blender": (2, 80, 0),
     "location": "File > Export > Scene JSON",
     "description": "Exporte la scène complète et les meshes au format JSON (Fix BoxCollider Center)",
@@ -67,10 +67,14 @@ def get_mesh_data(obj, depsgraph):
     vertices_flat = []
     indices_flat = []
     uvs_flat = []
+    normals_flat = []
 
     for v in mesh.vertices:
         x, y, z = convert_vec(v.co)
         vertices_flat.extend([x, y, z])
+
+        nx, ny, nz = convert_vec(v.normal)
+        normals_flat.extend([nx, ny, nz])
 
     for tri in mesh.loop_triangles:
         indices_flat.extend([int(tri.vertices[0]), int(tri.vertices[1]), int(tri.vertices[2])])
@@ -96,7 +100,8 @@ def get_mesh_data(obj, depsgraph):
     return {
         "vertices": vertices_flat,
         "indices": indices_flat,
-        "uvs": uvs_flat
+        "uvs": uvs_flat,
+        "normals": normals_flat
     }
 
 # ------ OPERATOR ------

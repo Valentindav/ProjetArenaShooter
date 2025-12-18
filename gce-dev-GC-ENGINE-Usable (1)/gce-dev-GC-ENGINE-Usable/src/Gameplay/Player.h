@@ -43,6 +43,7 @@ public:
 	void AddMove();
 	void TakeDamage(int damage) override;
 
+	GameObject* m_cachedWeapon = nullptr;
 	bool m_isWeaponAnimating = false;
 	float m_weaponAnimTimer = 0.0f;
 	int m_weaponAnimPhase = 0;

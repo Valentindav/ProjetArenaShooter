@@ -24,6 +24,13 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     m_bazooShoot = 1;
     AddMove();
 
+    for (auto child : obj->GetChildren()) {
+        if (child->GetName() == "Weapon_1") {
+            m_cachedWeapon = child;
+            break;
+        }
+    }
+
     m_weaponOriginalPos = Vector3f32(0.0f, 0.0f, 0.0f);
 }
 
@@ -110,18 +117,9 @@ void Player::TriggerReloadAnimation()
 
 void Player::UpdateWeaponAnimation(float deltaTime)
 {
-    if (!m_isWeaponAnimating)
-    {
-        return;
-    }
+    if (!m_isWeaponAnimating || !m_cachedWeapon) return;
 
-    GameObject* weaponObj = nullptr;
-    for (auto child : GetGameObject()->GetChildren()) {
-        if (child->GetName() == "Weapon_1") {
-            weaponObj = child;
-            break;
-        }
-    }
+    GameObject* weaponObj = m_cachedWeapon;
 
     if (!weaponObj)
     {

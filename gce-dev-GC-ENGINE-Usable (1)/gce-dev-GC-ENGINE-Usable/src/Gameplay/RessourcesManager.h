@@ -21,12 +21,15 @@ public:
     static void Create();
     static void AddEntities(Entity* entity);
     static void RemoveEntities(Entity* entity);
+	
     static gce::Vector<Entity*> GetEntities();
+	
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
 	static void SetEnemySelected(Entity* enemy);
     static void AddLevel(ImportedLevelData level);
     static void ClearCurrentLevel();
+	static ImportedLevelData* GetCurrentLevel();
     
     static gce::Geometry* GetBottle();
     static gce::Geometry* GetThomson();
@@ -53,10 +56,11 @@ public:
 
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
+
 	static Vector3f32 GetEnemySpawnPosition(float32 minDistance);
 	static void AddEnnemy(Ennemy* ennemy);
 	static gce::Vector<Ennemy*> GetEnnemies();
-	static void SpawnEnnemies(int indice, float32 minDistance);
+	static void SpawnEnnemies(float32 minDistance);
 	static void SetupLevelData(ImportedLevelData levelData);
 
     static void AddMaterial(const MaterialData& mat);
@@ -64,6 +68,8 @@ public:
     static void AssignMaterialToRenderer(gce::MeshRenderer* mr, int index);
 	static void CreateMaterials(String albedoPath, String normalPath, String metallicPath, String roughnessPath, String displacementPath);
 
+    static void UpdateSpawnTimer();
+    static float32 GetSpawnTimer();
 private:
     //----------Weapon---------
     gce::Geometry* m_thomsonGeo = gce::GeometryFactory::LoadGeometry("res/Obj/thomson.obj");
@@ -88,6 +94,8 @@ private:
 	Entity* m_enemySelected = nullptr;
 	Entity* m_choosedEnemy = nullptr;
 	ImportedLevelData* m_importedLevelData = nullptr;
-	gce::Vector<Ennemy*> m_ennemies;
+    gce::Vector<Ennemy*> m_ennemies;
+	gce::Vector<Ennemy*> m_activeEnnemies;
+	float32 m_spawnTimer = 0.0f;
     std::vector<MaterialData> m_materials;
 };

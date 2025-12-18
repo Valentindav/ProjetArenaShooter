@@ -43,7 +43,7 @@ Deer::Deer(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Attack") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() <= 2.0f;
+                    return d.SquareNorm() < 4;
                 }
             }
         );
@@ -60,7 +60,7 @@ Deer::Deer(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Idle") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() > 2.0f;
+                    return d.SquareNorm() < 4;
                 }
             }
         );

@@ -23,6 +23,11 @@ private :
 public:
     void Update()
     {
+        if (RessourcesManager::GetSpawnTimer() >= 1.0f)
+        {
+            RessourcesManager::SpawnEnnemies(0.0f);
+        }
+		RessourcesManager::UpdateSpawnTimer();
         MenuManager* menuManager = MenuManager::GetInstance();
         if (!menuManager) return;
 
@@ -70,7 +75,7 @@ public:
                 menuManager->SetGameState(GameState::Victory);
                 menuManager->ShowVictoryMenu();
             }
-        }
+        }        
     }
     END_SCRIPT
 
@@ -508,6 +513,11 @@ public:
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
         RessourcesManager::CreateMaterials(
+            "res/Textures/WhiteColor.png",
+			"", "", "", ""
+        );
+
+        RessourcesManager::CreateMaterials(
             "res/Textures/Reactor_BaseColor.png",
             "res/Textures/Reactor_Normal.png",
             "res/Textures/Reactor_Metallic.png",
@@ -524,32 +534,31 @@ public:
   //      Vector3f32 targetPos = levelData.root->transform.GetWorldPosition();
   //      Vector3f32 lightPos = targetPos + Vector3f32(0.0f, 5.0f, 0.0f); // 5 unités au dessus
 
-  //      // 1. Créer le GameObject pour la lumière
-  //      GameObject& lightGo = GameObject::Create(*m_scene);
+        // 1. Créer le GameObject pour la lumière
+        GameObject& lightGo = GameObject::Create(*m_scene);
 
-  //      // 2. Positionner le GameObject
-  //      lightGo.transform.SetWorldPosition(lightPos);
+        // 2. Positionner le GameObject
+        lightGo.transform.SetWorldPosition({0.f,200.f,0.f});
 
-  //      // 3. Ajouter le composant Light
-  //      Light* pLight = lightGo.AddComponent<Light>();
+        // 3. Ajouter le composant Light
+        Light* pLight = lightGo.AddComponent<Light>();
 
-  //      // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
-  //      pLight->DefaultPointLight();
+        // 4. Initialiser comme une Point Light (lumière omnidirectionnelle)
+        pLight->DefaultPointLight();
 
-  //      // 5. Personnaliser les propriétés (optionnel mais recommandé)
-  //      // Accès direct aux champs de LightData car Light hérite de LightData
-  //      pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
-  //      pLight->m_intensity = 0.2f;                   // Intensité
-  //      pLight->range = 20.0f;                      // Rayon d'action
-  //      pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
-
-  //      // 6. Enregistrer la lumière dans le manager
-  //      LightManager::AddLight(*pLight);
+        // 5. Personnaliser les propriétés (optionnel mais recommandé)
+        // Accès direct aux champs de LightData car Light hérite de LightData
+        pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
+        pLight->intensity = 1.5f;                   // Intensité
+        pLight->range = 2000.0f;                      // Rayon d'action
+        pLight->position = { 0.f,200.f,0.f };                // IMPORTANT : Mettre à jour la position dans la structure de données
+		
+        // 6. Enregistrer la lumière dans le manager
+        LightManager::AddLight(*pLight);
 
 		//RessourcesManager::SetupLevelData(levelData);
 
         //----------------------------------Run----------------------------------
-        //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
         PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
         Weapon.transform.SetWorldPosition({ 1.0f,-0.3f,-8.f });
         Weapon.SetName("Weapon_1");
@@ -562,7 +571,7 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-        RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
+        /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
@@ -594,6 +603,12 @@ public:
         Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_cameraObject->transform.GetLocalPosition().z);
+
+		RessourcesManager::AddEnnemy(Snowman);
+		RessourcesManager::AddEnnemy(Snowman2);
+		RessourcesManager::AddEnnemy(Snowman3);
+		RessourcesManager::AddEnnemy(deer);
+		RessourcesManager::AddEnnemy(elf);*/
 
         Player* player = new Player(&PlayerObject,2);
         player->GetGameObject()->AddChild(*m_cameraObject);

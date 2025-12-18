@@ -63,6 +63,7 @@ public:
         if (m_pOwner && m_pOwner->IsActive())
         {
             // On récupère le nom de l'objet touché
+			if (!other->GetName()) return;
             String name = other->GetName();
             Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(m_pOwner);
             Player* player = dynamic_cast<Player*>(entityPlayer);

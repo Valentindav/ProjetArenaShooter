@@ -44,7 +44,7 @@ Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_til
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Attack") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() <= 5.0f;
+                    return d.SquareNorm() < 25;
                 }
             }
         );
@@ -61,7 +61,7 @@ Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_til
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Idle") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.Norm() > 5.0f;
+                    return d.SquareNorm() < 25;
                 }
             }
         );

@@ -5,6 +5,7 @@
 #include "RessourcesManager.h"
 #include "LevelManager.h"
 #include "AudioManager.h"
+#include "JsonImporter.hpp"
 
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
@@ -18,6 +19,10 @@ using namespace gce;
         bool moving = false;
 
         static std::unordered_map<gce::GameObject*, bool> s_prevMoving;
+		Player* player = RessourcesManager::GetPlayer();
+		Entity* entityPlayer = player;
+
+        if (player == nullptr || player->GetGameObject() != obj) return;
 
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
@@ -223,11 +228,13 @@ using namespace gce;
         }
         if (GetKeyDown(Keyboard::N))
         {
-			RessourcesManager::SpawnEnnemies(0, 0.0f);
+			RessourcesManager::SpawnEnnemies(0.0f);
         }
         if (GetKeyDown(Keyboard::J))
         {
             LevelManager::LoadLevel(0);
+			RessourcesManager::GetCurrentLevel()->root->transform.SetWorldPosition({ 0.0f,0.0f,0.0f });
+			RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({0.0f, 70.0f, 0.0f});
         }
         if (GetKeyDown(Keyboard::K))
         {

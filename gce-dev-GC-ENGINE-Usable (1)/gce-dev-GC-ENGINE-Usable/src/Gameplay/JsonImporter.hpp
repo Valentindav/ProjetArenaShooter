@@ -24,6 +24,7 @@ struct MeshData {
     gce::Vector<float> vertices;
     gce::Vector<uint32> indices;
     gce::Vector<float> uvs;
+    gce::Vector<float> normals;
 };
 
 struct SceneObject {
@@ -47,6 +48,7 @@ inline void from_json(const json& j, MeshData& m) {
     if (j.contains("vertices") && !j.at("vertices").is_null()) j.at("vertices").get_to(m.vertices);
     if (j.contains("indices") && !j.at("indices").is_null())  j.at("indices").get_to(m.indices);
     if (j.contains("uvs") && !j.at("uvs").is_null())      j.at("uvs").get_to(m.uvs);
+    if (j.contains("normals") && !j.at("normals").is_null())  j.at("normals").get_to(m.normals);
 }
 
 inline void from_json(const json& _j, SceneObject& _o) {
@@ -124,12 +126,24 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             // Création de la géométrie (identique à avant)
             gce::Vector<gce::Vector3f32> verts;
             gce::Vector<gce::Vector2f32> uvs;
+            gce::Vector<gce::Vector3f32> norms;
             gce::Vector<uint32> indices;
             size_t vertCount = obj.mesh.vertices.Size() / 3;
 
             verts.Reserve(vertCount);
+            norms.Reserve(vertCount);
+
             for (size_t i = 0; i < vertCount; ++i)
+            {
                 verts.PushBack({ obj.mesh.vertices[i * 3], obj.mesh.vertices[i * 3 + 1], obj.mesh.vertices[i * 3 + 2] });
+
+                if (obj.mesh.normals.Size() >= (i * 3 + 2)) {
+                    norms.PushBack({ obj.mesh.normals[i * 3], obj.mesh.normals[i * 3 + 1], obj.mesh.normals[i * 3 + 2] });
+                }
+                else {
+                    norms.PushBack({ 0.f, 1.f, 0.f });
+                }
+            }                
 
             indices = obj.mesh.indices;
 
@@ -144,7 +158,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
 
             gce::Vector<gce::Vertex> vertexs;
             for (int i = 0; i < vertCount; ++i)
-                vertexs.PushBack(gce::Vertex(verts[i], { 0.f,0.f,0.f }, { 0.f , 0.f, 0.f }, uvs[i]));            
+                vertexs.PushBack(gce::Vertex(verts[i], norms[i], { 0.f , 0.f, 0.f }, uvs[i]));
 
             // --- LOGIQUE DE TRI ---
 
@@ -158,6 +172,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             else if (obj.name.find("BoxCollider") != std::string::npos)
             {
                 gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();
+                mr->SetActive(false); // On ne veut pas le renderer visible
                 gce::Geometry* geo = new gce::Geometry(vertexs.Data(), vertexs.Size(), indices.Data(), indices.Size());
                 mr->SetGeometry(geo);
 
