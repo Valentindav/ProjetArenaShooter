@@ -160,6 +160,28 @@ void RessourcesManager::ClearCurrentLevel()
         delete m_instance->m_importedLevelData;
 		m_instance->m_importedLevelData = nullptr;
     }
+    if (m_instance->m_activeEnnemies.Empty() == false)
+    {
+        for (Ennemy* ennemy : m_instance->m_activeEnnemies)
+        {
+            if (ennemy->GetGameObject())
+            {
+                ennemy->GetGameObject()->Destroy();
+            }
+        }
+        m_instance->m_activeEnnemies.Clear();
+	}
+    if (m_instance->m_ennemies.Empty() == false)
+    {
+        for (Ennemy* ennemy : m_instance->m_ennemies)
+        {
+            if (ennemy->GetGameObject())
+            {
+                ennemy->GetGameObject()->Destroy();
+            }
+        }
+        m_instance->m_ennemies.Clear();
+	}
 }
 
 ImportedLevelData* RessourcesManager::GetCurrentLevel()
@@ -199,7 +221,7 @@ gce::Vector<Ennemy*> RessourcesManager::GetEnnemies()
 void RessourcesManager::SpawnEnnemies(float32 minDistance)
 {
     if (m_instance == nullptr || m_instance->m_ennemies.Empty() || m_instance->m_importedLevelData == nullptr || m_instance->m_importedLevelData->spawnZones.empty()) return;
-	m_instance->m_ennemies[0]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance));
+	m_instance->m_ennemies[0]->GetGameObject()->transform.SetWorldPosition(GetEnemySpawnPosition(minDistance) + Vector3f32{0.f, 20.f, 0.f});
 	m_instance->m_ennemies[0]->GetGameObject()->SetActive(true);
 	m_instance->m_activeEnnemies.PushBack(m_instance->m_ennemies[0]);
 	m_instance->m_ennemies.Erase(m_instance->m_ennemies.begin());

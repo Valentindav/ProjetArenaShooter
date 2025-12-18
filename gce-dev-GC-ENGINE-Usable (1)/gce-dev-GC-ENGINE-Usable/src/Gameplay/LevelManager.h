@@ -5,6 +5,7 @@ namespace gce {
     struct LevelData {
         String jsonPath;
         String name;
+        int ennemyCredit;
     };
 
     class LevelManager
@@ -14,6 +15,7 @@ namespace gce {
 
         static void LoadLevel(int index);
         static void LoadNextLevel();
+        static void LoadLevel1();
 
         int GetCurrentLevelIndex() { return m_currentIndex; }
 
