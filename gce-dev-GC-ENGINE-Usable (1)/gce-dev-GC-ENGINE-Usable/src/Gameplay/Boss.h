@@ -37,8 +37,11 @@ public:
 	float m_laserDuration = 3.0f;
 	float m_laserCurrentYaw = 0.f; 
 	float m_laserCurrentPitch = 0.f;
-	//------------------------
-	// 
+	//---------Sound------------
+	std::wstring m_groundSlam = WRES_PATH L"res/Exemple/DROSHEKALIMO.mp3";
+	std::wstring m_laser = WRES_PATH L"res/Exemple/Music.mp3";
+	std::wstring m_shoot = WRES_PATH L"res/Exemple/DROSHEKALIMO.mp3";
+	std::wstring m_heavyMelee = WRES_PATH L"res/Exemple/Music.mp3";
 	//-------------Functions--------------
 	Boss(GameObject* obj, TileMap* tileMap, float spd = 150);
 	~Boss();

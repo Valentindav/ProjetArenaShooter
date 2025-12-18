@@ -62,6 +62,7 @@ static void OnEndEmptyBoss(GameObject* me) {
 }
 
 static void OnUpdateShootBoss(GameObject* me) {
+  //  AudioUse::Play("Shoot");
     MenuManager* mm = MenuManager::GetInstance();
     if (mm && mm->GetGameState() != GameState::Playing)
         return;
@@ -126,6 +127,7 @@ static void OnUpdateIdleBoss(GameObject* me) {
 }
 
 static void OnUpdateHeavyMeleeBoss(GameObject* me) {
+   // AudioUse::Play("HeavyMelee");
     MenuManager* mm = MenuManager::GetInstance();
     if (mm && mm->GetGameState() != GameState::Playing)
         return;
@@ -150,6 +152,7 @@ static void OnUpdateHeavyMeleeBoss(GameObject* me) {
 }
 
 static void OnUpdateGroundSlamBoss(GameObject* me) {
+    // AudioUse::Play("GroundSlam");
     MenuManager* mm = MenuManager::GetInstance();
     if (mm && mm->GetGameState() != GameState::Playing)
         return;
@@ -271,6 +274,7 @@ static void OnUpdateTeleportBoss(GameObject* me) {
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
+    // AudioUse::Play("Laser");
     MenuManager* mm = MenuManager::GetInstance();
     if (mm && mm->GetGameState() != GameState::Playing)
         return;

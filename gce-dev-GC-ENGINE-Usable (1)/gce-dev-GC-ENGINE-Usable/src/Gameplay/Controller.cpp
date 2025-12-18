@@ -13,21 +13,26 @@ using namespace gce;
         AudioManager* audioMgr = AudioManager::GetInstance();
 
         Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
-		Player* player = dynamic_cast<Player*>(entityPlayer);
+        Player* player = dynamic_cast<Player*>(entityPlayer);
+
+        bool moving = false;
+
+        static std::unordered_map<gce::GameObject*, bool> s_prevMoving;
+
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
-            if (audioMgr) audioMgr->PlayWalkSound();
-            if (GetKey(Keyboard::LSHIFT) && player->m_energy>0.0f) {
-                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (player->GetSpeed()*5) * GameManager::DeltaTime());
-				player->m_energy -= 20 * GameManager::DeltaTime();
+            moving = true;
+            if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
+                player->m_energy -= 20 * GameManager::DeltaTime();
             }
             else {
-            obj->transform.WorldTranslate(obj->transform.GetLocalForward() * player->GetSpeed() * GameManager::DeltaTime());
+                obj->transform.WorldTranslate(obj->transform.GetLocalForward() * player->GetSpeed() * GameManager::DeltaTime());
             }
         }
         if (GetKey(Keyboard::S))
         {
-            if (audioMgr) audioMgr->PlayWalkSound();
+            moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -38,7 +43,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::Q) || GetKey(Keyboard::A))
         {
-            if (audioMgr) audioMgr->PlayWalkSound();
+            moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -49,7 +54,7 @@ using namespace gce;
         }
         if (GetKey(Keyboard::D))
         {
-            if (audioMgr) audioMgr->PlayWalkSound();
+            moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
                 player->m_energy -= 20 * GameManager::DeltaTime();
@@ -236,9 +241,24 @@ using namespace gce;
         Move* moveScript = obj->GetScript<Move>();
         PhysicComponent* phys = obj->GetComponent<PhysicComponent>();
         if (moveScript && phys && moveScript->onGround && !GetKey(Keyboard::Z) && !GetKey(Keyboard::Q) && !GetKey(Keyboard::S) && !GetKey(Keyboard::D)) {
-           Vector3f32 currentVel = phys->GetVelocity();
-		   phys->SetVelocity({ 0.0f, currentVel.y, 0.0f });
+            Vector3f32 currentVel = phys->GetVelocity();
+            phys->SetVelocity({ 0.0f, currentVel.y, 0.0f });
         }
-		player->m_reloadCD -= GameManager::DeltaTime();
-		player->m_meleeCD -= GameManager::DeltaTime();
+
+        bool prev = false;
+        auto it = s_prevMoving.find(obj);
+        if (it != s_prevMoving.end()) prev = it->second;
+
+        if (audioMgr)
+        {
+            if (moving && !prev)
+                audioMgr->StartWalkSound();
+            else if (!moving && prev)
+                audioMgr->StopWalkSound();
+        }
+
+        s_prevMoving[obj] = moving;
+
+        player->m_reloadCD -= GameManager::DeltaTime();
+        player->m_meleeCD -= GameManager::DeltaTime();
     }

@@ -11,6 +11,10 @@ void AudioManager::Start()
     LoadAllSounds();
     AudioUse::SetMasterVolume(50);
 
+    m_isWalkPlaying = false;
+    m_walkTimer = 0.0f;
+    m_walkInterval = 5.1f;
+
     if (!m_audioLibrary.empty())
     {
         m_currentIndex = 0;
@@ -50,6 +54,16 @@ void AudioManager::Update()
 
     if (GetKeyDown(Keyboard::DOWN_ARROW))
         DecreaseVolume();
+
+    if (m_isWalkPlaying)
+    {
+        m_walkTimer -= GameManager::DeltaTime();
+        if (m_walkTimer <= 0.0f)
+        {
+            AudioUse::Play(m_walkSound.c_str(), false);
+            m_walkTimer = m_walkInterval;
+        }
+    }
 }
 
 void AudioManager::InitializeAudioLibrary()
@@ -57,10 +71,10 @@ void AudioManager::InitializeAudioLibrary()
     AddAudioToLibrary("Music1", L"res/Exemple/Music.mp3", Category::MUSIC);
     AddAudioToLibrary("Son1", L"res/Exemple/DROSHEKALIMO.mp3", Category::SFX);
 
-    //AddAudioToLibrary(m_walkSound, L"res/Exemple/DROSHEKALIMO.mp3", Category::SFX);
-   // AddAudioToLibrary(m_jumpSound, L"res/Exemple/DROSHEKALIMO.mp3", Category::SFX);
-    //AddAudioToLibrary(m_shootSound, L"res/Exemple/DROSHEKALIMO.mp3", Category::SFX);
-    //AddAudioToLibrary(m_realoadSound, L"res/Exemple/DROSHEKALIMO.mp3", Category::SFX);
+    AddAudioToLibrary(m_walkSound, L"res/Sound/walk.mp3", Category::SFX);
+    //AddAudioToLibrary(m_jumpSound, L"res/Sound/DROSHEKALIMO.mp3", Category::SFX);
+    AddAudioToLibrary(m_shootSound, L"res/Sound/shoot.mp3", Category::SFX);
+    AddAudioToLibrary(m_realoadSound, L"res/Sound/reload.mp3", Category::SFX);
 }
 
 void AudioManager::AddAudioToLibrary(const std::string& name, const std::wstring& relativePath, Category cat)
@@ -128,6 +142,19 @@ void AudioManager::StopCurrentSound()
 {
     if (m_currentIndex >= 0 && m_currentIndex < m_audioLibrary.size())
         AudioUse::Stop(m_audioLibrary[m_currentIndex].m_name.c_str());
+}
+
+void AudioManager::StartWalkSound()
+{
+    if (m_isWalkPlaying) return;
+    m_isWalkPlaying = true;
+    m_walkTimer = 0.0f;
+}
+
+void AudioManager::StopWalkSound()
+{
+    if (!m_isWalkPlaying) return;
+    m_isWalkPlaying = false;
 }
 
 void AudioManager::PlayWalkSound()

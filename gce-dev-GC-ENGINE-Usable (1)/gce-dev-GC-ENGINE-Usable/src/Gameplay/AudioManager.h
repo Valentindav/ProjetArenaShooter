@@ -1,4 +1,3 @@
-// AudioManager.h
 #pragma once
 #include <Render.h>
 #include <Engine.h>
@@ -28,6 +27,10 @@ private:
     std::string m_shootSound = "ShootSound";
     std::string m_realoadSound = "realoadSound";
 
+    bool m_isWalkPlaying = false;
+    float m_walkTimer = 0.0f;
+    float m_walkInterval = 0.3f;
+
     static AudioManager* m_instance;
 
 public:
@@ -44,6 +47,8 @@ public:
     void PauseCurrentSound();
     void ResumeCurrentSound();
     void StopCurrentSound();
+    void StartWalkSound();
+    void StopWalkSound();
     void PlayWalkSound();
     void PlayRealoadSound();
     void PlayJumpSound();
