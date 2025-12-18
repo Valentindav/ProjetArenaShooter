@@ -16,7 +16,7 @@ namespace gce {
         static void LoadLevel(int index);
         static void LoadNextLevel();
         static void LoadLevel1();
-		/*static void LoadLevel2();*/
+		static void LoadLevel3();
 
         int GetCurrentLevelIndex() { return m_currentIndex; }
 		static int GetMaxEnemy() { return m_maxEnemy; }
