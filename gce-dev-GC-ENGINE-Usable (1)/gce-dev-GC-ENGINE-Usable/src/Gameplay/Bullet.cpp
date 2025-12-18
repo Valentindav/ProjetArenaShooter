@@ -67,7 +67,7 @@ public:
 	{
 		if (other->GetName() == "RayCast") return;
 		gce::Vector<Entity*> entity = RessourcesManager::getEntities();
-		std::cout << "Collision with " << other->GetName() << std::endl;
+		/*std::cout << "Collision with " << other->GetName() << std::endl;*/
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 

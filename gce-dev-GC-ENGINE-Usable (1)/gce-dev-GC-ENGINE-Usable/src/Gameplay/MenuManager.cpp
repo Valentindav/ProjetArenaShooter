@@ -20,7 +20,7 @@ private :
 public:
     void Update()
     {
-        if (RessourcesManager::GetSpawnTimer() >= 5.0f)
+        if (RessourcesManager::GetSpawnTimer() >= 1.0f)
         {
             RessourcesManager::SpawnEnnemies(0.0f);
         }
@@ -432,7 +432,6 @@ public:
 		//RessourcesManager::SetupLevelData(levelData);
 
         //----------------------------------Run----------------------------------
-        //testObject.transform.SetWorldPosition({ -2.0f,3.0f,0.0f });
         PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
         Weapon.transform.SetWorldPosition({ 1.0f,-0.3f,-8.f });
         Weapon.SetName("Weapon_1");
@@ -445,7 +444,7 @@ public:
         params.isSplitScreen = false;
         params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
-        RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
+        /*RobotObject.transform.SetWorldPosition({10.0f,8.0f,3.0f});
         RobotObject.transform.SetWorldRotation({ 00.0f,0.0f,0.0f });
         Robot* robot = new Robot(&RobotObject);
 
@@ -477,7 +476,7 @@ public:
 		RessourcesManager::AddEnnemy(Snowman2);
 		RessourcesManager::AddEnnemy(Snowman3);
 		RessourcesManager::AddEnnemy(deer);
-		RessourcesManager::AddEnnemy(elf);
+		RessourcesManager::AddEnnemy(elf);*/
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 

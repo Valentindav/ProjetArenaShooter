@@ -12,6 +12,14 @@
 #include "GameObject.h"
 
 namespace gce {
+	inline bool CheckAABBOverlap(const BoundingBox& a, const BoundingBox& b)
+	{
+		// Si l'une est à gauche, à droite, au-dessus, en-dessous, devant ou derrière l'autre : pas de collision.
+		if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
+		if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
+		if (a.max.z < b.min.z || a.min.z > b.max.z) return false;
+		return true;
+	}
 	void PhysicSystem::HandlePhysicCollision3D()
 	{
 		for (uint16 i = 0; i < SphereCollider::s_list.Size(); i++)
@@ -230,16 +238,26 @@ namespace gce {
 				BoxCollider& box2 = *BoxCollider::s_list[j];
 				if (box2.m_created == false || box2.IsActive() == false) continue;
 
-				bool flag = 0; //0 => box1 / 1 => box2
+				if (!CheckAABBOverlap(box1.m_worldBox.aabb, box2.m_worldBox.aabb))
+				{
+					continue;
+				}
+
+				PhysicComponent* physA = box1.GetOwner().GetComponent<PhysicComponent>();
+				PhysicComponent* physB = box2.GetOwner().GetComponent<PhysicComponent>();
+
+				bool isStaticA = (physA == nullptr) || physA->IsKinematic() || (physA->GetVelocity().SquareNorm() == 0.0f && physA->m_mass == 0.0f);
+				bool isStaticB = (physB == nullptr) || physB->IsKinematic() || (physB->GetVelocity().SquareNorm() == 0.0f && physB->m_mass == 0.0f);
+
 				bool hasPhysA = box1.GetOwner().HasComponent<PhysicComponent>();
-				bool hasPhysB = box2.GetOwner().HasComponent<PhysicComponent>();
-				if (!hasPhysA) flag = 1;
-				if (!hasPhysA && !hasPhysB)
+				bool hasPhysB = box2.GetOwner().HasComponent<PhysicComponent>();				
+				if (isStaticA && isStaticB)
 				{
 					if (!(box1.isTrigger || box2.isTrigger))
 						continue;
 				}
-
+				bool flag = 0;
+				if (physA == nullptr) flag = 1;
 				//CollideResult intersects = flag ? Physics::IntersectBoxBox(box2.m_worldBox, box1.m_worldBox) : Physics::IntersectBoxBox(box1.m_worldBox, box2.m_worldBox);
 				CollideResult intersects = Physics::IntersectBoxBox(box1.m_worldBox, box2.m_worldBox);
 

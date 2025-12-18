@@ -9,8 +9,11 @@
 using namespace gce;
     void Controller::HandleInput(gce::GameObject* obj)
     {
-        Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
-		Player* player = dynamic_cast<Player*>(entityPlayer);
+		Player* player = RessourcesManager::GetPlayer();
+		Entity* entityPlayer = player;
+
+        if (player == nullptr || player->GetGameObject() != obj) return;
+
         if (GetKey(Keyboard::Z) || GetKey(Keyboard::W))
         {
             if (GetKey(Keyboard::LSHIFT) && player->m_energy>0.0f) {

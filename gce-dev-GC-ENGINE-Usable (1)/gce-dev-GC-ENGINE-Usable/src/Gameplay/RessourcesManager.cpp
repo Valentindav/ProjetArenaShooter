@@ -30,9 +30,10 @@ void RessourcesManager::RemoveEntities(Entity* entity) // supprime l'entity du v
     }
 }
 
-gce::Vector<Entity*> RessourcesManager::getEntities() // get entities vector
+gce::Vector<Entity*>& RessourcesManager::getEntities() // get entities vector
 {
-    if (m_instance == nullptr) return {};
+    static gce::Vector<Entity*> empty;
+    if (m_instance == nullptr) return empty;
     return m_instance->m_entities;
 }
 
