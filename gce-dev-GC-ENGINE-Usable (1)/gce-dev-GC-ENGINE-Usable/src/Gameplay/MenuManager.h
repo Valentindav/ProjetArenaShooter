@@ -23,6 +23,12 @@ private:
 
     GameObject* m_cameraObject;
     Camera* pCamera;
+    bool m_isGameInitialized = false;
+private:
+    gce::GameObject* m_floorObject = nullptr;
+    gce::GameObject* m_crosshairObject = nullptr;
+    gce::UiImage* m_uiBossBarEmpty = nullptr;
+    gce::UiImage* m_uiBossBarFill = nullptr;
 
     GameObject* m_mainMenuPanel;
     GameObject* m_mainText;
@@ -50,7 +56,6 @@ private:
 
     MenuManager();
 
-    void RecreateScene();
 
 public:
 
@@ -92,6 +97,8 @@ public:
     void ShowUIStaminaBar();
     UiImage* m_uiLifeBars[13] = { nullptr };
     void ShowUIHealthBar();
+    void CreateBossUI();
+    void UpdateBossHealthBar(float currentHp, float maxHp);
     void PauseGame();
     void ResumeGame();
     void RestartGame();

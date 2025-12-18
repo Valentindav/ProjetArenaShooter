@@ -19,7 +19,7 @@
 MenuManager* MenuManager::m_instance = nullptr;
 
 DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update)
-private :
+private:
     int aliveCount = 0;
 public:
     void Update()
@@ -48,22 +48,35 @@ public:
         {
             menuManager->ShowUIHealthBar();
             menuManager->ShowUIStaminaBar();
+
             Player* player = RessourcesManager::GetPlayer();
 
-            if (player == nullptr || player->GetGameObject() == nullptr)
+            if (player == nullptr || player->GetGameObject() == nullptr || player->m_life <= 0)
             {
                 menuManager->SetGameState(GameState::GameOver);
                 menuManager->ShowGameOverMenu();
+                return; 
             }
 
             gce::Vector<Entity*> entities = RessourcesManager::GetEntities();
             int enemyCount = 0;
+            Boss* currentBoss = nullptr;
+
             for (Entity* entity : entities)
             {
-				if (!entity->GetGameObject()->GetName()) return;
-                if (entity->GetGameObject()->GetName() == "Bullet") return;
-                if (entity == nullptr) return;
-                if (entity == player) return;
+                if (entity == nullptr || entity == player) continue;
+
+                GameObject* obj = entity->GetGameObject();
+                if (!obj) continue;
+
+                if (obj->GetName() == "Bullet") continue;
+
+                Boss* b = dynamic_cast<Boss*>(entity);
+                if (b) {
+                    currentBoss = b;
+                    enemyCount++; 
+                    continue;
+                }
 
                 if (dynamic_cast<Ennemy*>(entity))
                 {
@@ -71,6 +84,14 @@ public:
                 }
             }
 
+            if (currentBoss)
+            {
+                menuManager->UpdateBossHealthBar(currentBoss->m_life, currentBoss->m_baseLife);
+            }
+            else
+            {
+                menuManager->UpdateBossHealthBar(0, 100);
+            }
             if (enemyCount == 0)
             {
                 menuManager->SetGameState(GameState::Victory);
@@ -374,15 +395,17 @@ public:
     }
 
 // --- création affichage ---
-    void MenuManager::ShowMainMenu()// show main menu
-    {
-        if (m_mainMenuPanel) m_mainMenuPanel->SetActive(true);
-        if (m_pauseMenuPanel) m_pauseMenuPanel->SetActive(false);
-        if (m_gameOverPanel) m_gameOverPanel->SetActive(false);
-        if (m_victoryPanel) m_victoryPanel->SetActive(false);
+        void MenuManager::ShowMainMenu()
+        {
+            m_currentState = GameState::MainMenu;
 
-        gce::UnlockMouseCursor();
-    }
+            HideAllMenus();
+
+            if (m_mainMenuPanel)
+                m_mainMenuPanel->SetActive(true); 
+
+            gce::UnlockMouseCursor();
+        }
 
     void MenuManager::ShowPauseMenu()
     {
@@ -424,16 +447,46 @@ public:
         m_currentState = state; 
     }
 
-    void MenuManager::StartGame() // start games
+    void MenuManager::StartGame()
     {
-        if (m_currentState == GameState::Playing) return;
-        m_currentState = GameState::Playing;
-        HideAllMenus();
-        if (m_cameraObject)
+        if (m_isGameInitialized)
         {
-            m_cameraObject->SetActive(true);
+            m_currentState = GameState::Playing;
+            HideAllMenus();
+
+            if (m_cameraObject) m_cameraObject->SetActive(true);
+            if (m_floorObject) m_floorObject->SetActive(true);
+            if (m_crosshairObject) m_crosshairObject->SetActive(true);
+
+            Player* player = RessourcesManager::GetPlayer();
+            if (player && player->GetGameObject()) 
+            {
+                player->GetGameObject()->SetActive(true);
+                player->GetGameObject()->transform.SetWorldPosition({ 0.0f, 2.0f, -10.0f });
+
+                player->m_life = 14.0f;
+                player->m_energy = 11.0f;
+            }
+
+            gce::Vector<Entity*> entities = RessourcesManager::GetEntities();
+            for (Entity* entity : entities) 
+            {
+                if (entity && entity->GetGameObject())
+                {
+                    entity->GetGameObject()->SetActive(true);
+                   
+                }
+            }
+
+            gce::LockMouseCursor();
+            return;
         }
 
+        m_currentState = GameState::Playing;
+        HideAllMenus();
+        if (m_cameraObject) m_cameraObject->SetActive(true);
+        m_isGameInitialized = true;
+        gce::LockMouseCursor();
 
         GameObject& PlayerObject = GameObject::Create(*m_scene);
         Light* light = PlayerObject.AddComponent<Light>();
@@ -443,7 +496,6 @@ public:
         light->UpdateLight();
 
         GameObject& RobotObject = GameObject::Create(*m_scene);
-
         Texture* pNewTexture = new Texture("res/Exemple/TexturesTest.jpg");
 
         GameObject& Weapon = GameObject::Create(*m_scene);
@@ -457,16 +509,16 @@ public:
 
         GameObject& RayCastObj = GameObject::Create(*m_scene);
 
-        GameObject& Floor = GameObject::Create(*m_scene);
-        Floor.transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
-        MeshRenderer* pFloorRenderer = Floor.AddComponent<MeshRenderer>();
+        m_floorObject = &GameObject::Create(*m_scene);
+        m_floorObject->transform.SetWorldPosition({ -5.0f,-10.0f,-5.0f });
+        MeshRenderer* pFloorRenderer = m_floorObject->AddComponent<MeshRenderer>();
         pFloorRenderer->SetGeometry(SHAPES.CUBE);
         pFloorRenderer->SetAlbedoTexture(pNewTexture);
-        Floor.transform.LocalScale({ 200.f,1.f,200.f });
-        Floor.AddComponent<BoxCollider>()->SetActive(true);
-        Floor.SetName("Floor");
+        m_floorObject->transform.LocalScale({ 200.f,1.f,200.f });
+        m_floorObject->AddComponent<BoxCollider>()->SetActive(true);
+        m_floorObject->SetName("Floor");
 
-        Light* light2 = Floor.AddComponent<Light>();
+        Light* light2 = m_floorObject->AddComponent<Light>();
         gce::LightManager::AddLight(*light2);
         light2->DefaultDirectionLight();
         light2->intensity = 0.0f;
@@ -481,11 +533,6 @@ public:
         pLightAbove->intensity = 1.f;
         pLightAbove->color = { 1.0f, 1.0f, 1.0f, 1.0f };
         pLightAbove->UpdateLight();
-
-        RessourcesManager::CreateMaterials(
-            "res/Textures/WhiteColor.png",
-            "", "", "", ""
-        );
 
         RessourcesManager::CreateMaterials(
             "res/Textures/Reactor_BaseColor.png",
@@ -510,15 +557,10 @@ public:
         Weapon.SetName("Weapon_1");
 
         gce::WindowParam params;
-        params.title = L"GCE Engine Window";
         params.width = 1920;
         params.height = 1080;
-        params.isFullScreen = true;
-        params.isSplitScreen = false;
-        params.screenDisposition = gce::SplitScreenDisposition::SQUARE_4_PLAYERS;
 
         RayCast* raycast = new RayCast(&RayCastObj, m_cameraObject->transform.GetLocalPosition().z);
-
 
         Player* player = new Player(&PlayerObject, 2);
         player->GetGameObject()->AddChild(*m_cameraObject);
@@ -528,9 +570,9 @@ public:
         RessourcesManager::SetPlayer(player);
         player->SetCamera(m_cameraObject);
 
-        // --- NOUVEAU : charger automatiquement le niveau 1 (index 0)
-        LevelManager::Create();      // s'assure que le LevelManager est initialisé
-        LevelManager::LoadLevel(0);  // charge le niveau 1
+
+        LevelManager::Create();     
+        LevelManager::LoadLevel(0); 
 
         // Ajout du crosshair
         gce::GameObject& crosshair = gce::GameObject::Create(*m_scene);
@@ -539,20 +581,16 @@ public:
         gce::Vector2f32 center = { (float)params.width / 2.f, (float)params.height / 2.f };
         gce::Vector2f32 size = { 64.f, 64.f };
         gce::Vector2f32 posUi = center - size * 0.5f;
-
         uiCrosshair.InitializeImage(posUi, size, 1.f);
         uiCrosshair.btmBrush = new gce::BitMapBrush("res/Textures/UI/crosshair.png");
-
-        float scaleX = 64.f / 224.f;
-        float scaleY = 64.f / 221.f;
-        uiCrosshair.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
-
         uiCrosshair.SetActive(true);
 
         GameObject& AudioManagerObj = GameObject::Create(*m_scene);
         AudioManagerObj.AddScript<AudioManager>();
 
-                //création barre d'endurance
+        m_isGameInitialized = true;
+        gce::LockMouseCursor();
+
         gce::Vector2f32 center3 = { 576.f, (float)params.height - 192.f };
         gce::Vector2f32 size3 = { 1117.f, 301.f };
         gce::Vector2f32 posUi3 = center3 - size3 * 0.5f;
@@ -562,7 +600,7 @@ public:
 
         gce::GameObject& staminaBar = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar = *staminaBar.AddComponent<gce::UiImage>();
-        staminaBar.SetName("UI_Life");
+        staminaBar.SetName("UI_Stamina");
         uiStaminaBar.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_empty.png");
         uiStaminaBar.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -570,7 +608,7 @@ public:
 
         gce::GameObject& staminaBar1 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar1 = *staminaBar1.AddComponent<gce::UiImage>();
-        staminaBar1.SetName("UI_Life");
+        staminaBar1.SetName("UI_Stamina_1");
         uiStaminaBar1.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar1.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_1.png");
         uiStaminaBar1.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -578,7 +616,7 @@ public:
 
         gce::GameObject& staminaBar2 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar2 = *staminaBar2.AddComponent<gce::UiImage>();
-        staminaBar2.SetName("UI_Life");
+        staminaBar2.SetName("UI_Stamina_2");
         uiStaminaBar2.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar2.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_2.png");
         uiStaminaBar2.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -586,7 +624,7 @@ public:
 
         gce::GameObject& staminaBar3 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar3 = *staminaBar3.AddComponent<gce::UiImage>();
-        staminaBar3.SetName("UI_Life");
+        staminaBar3.SetName("UI_Stamina_3");
         uiStaminaBar3.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar3.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_3.png");
         uiStaminaBar3.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -594,7 +632,7 @@ public:
 
         gce::GameObject& staminaBar4 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar4 = *staminaBar4.AddComponent<gce::UiImage>();
-        staminaBar4.SetName("UI_Life");
+        staminaBar4.SetName("UI_Stamina_4");
         uiStaminaBar4.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar4.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_4.png");
         uiStaminaBar4.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -602,7 +640,7 @@ public:
 
         gce::GameObject& staminaBar5 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar5 = *staminaBar.AddComponent<gce::UiImage>();
-        staminaBar5.SetName("UI_Life");
+        staminaBar5.SetName("UI_Stamina_5");
         uiStaminaBar5.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar5.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_5.png");
         uiStaminaBar5.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -610,7 +648,7 @@ public:
 
         gce::GameObject& staminaBar6 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar6 = *staminaBar6.AddComponent<gce::UiImage>();
-        staminaBar6.SetName("UI_Life");
+        staminaBar6.SetName("UI_Stamina_6");
         uiStaminaBar6.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar6.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_6.png");
         uiStaminaBar6.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -618,7 +656,7 @@ public:
 
         gce::GameObject& staminaBar7 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar7 = *staminaBar7.AddComponent<gce::UiImage>();
-        staminaBar7.SetName("UI_Life");
+        staminaBar7.SetName("UI_Stamina_7");
         uiStaminaBar7.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar7.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_7.png");
         uiStaminaBar7.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -626,7 +664,7 @@ public:
 
         gce::GameObject& staminaBar8 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar8 = *staminaBar8.AddComponent<gce::UiImage>();
-        staminaBar8.SetName("UI_Life");
+        staminaBar8.SetName("UI_Stamina_8");
         uiStaminaBar8.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar8.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_8.png");
         uiStaminaBar8.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -634,7 +672,7 @@ public:
 
         gce::GameObject& staminaBar9 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar9 = *staminaBar.AddComponent<gce::UiImage>();
-        staminaBar9.SetName("UI_Life");
+        staminaBar9.SetName("UI_Stamina_9");
         uiStaminaBar9.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar9.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_9.png");
         uiStaminaBar9.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -642,7 +680,7 @@ public:
 
         gce::GameObject& staminaBar10 = gce::GameObject::Create(*m_scene);
         gce::UiImage& uiStaminaBar10 = *staminaBar10.AddComponent<gce::UiImage>();
-        staminaBar10.SetName("UI_Life");
+        staminaBar10.SetName("UI_Stamina_10");
         uiStaminaBar10.InitializeImage(posUi3, size3, 1.f);
         uiStaminaBar10.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_full.png");
         uiStaminaBar10.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
@@ -835,6 +873,57 @@ public:
         }
     }
 
+    void MenuManager::CreateBossUI()
+    {
+        gce::WindowParam params;
+        gce::Vector2f32 size = { 1772.f, 188.f };
+        gce::Vector2f32 posUi = { (1920.f * 0.5f) - (size.x * 0.5f), 50.f };
+        float scaleX1 = 750.f / 1772.f;
+        float scaleY1 = 225.f / 188.f;
+
+        gce::GameObject& bossBarEmpty = gce::GameObject::Create(*m_scene);
+        m_uiBossBarEmpty = bossBarEmpty.AddComponent<gce::UiImage>();
+        bossBarEmpty.SetName("UI_Boss_Life_Empty");
+        m_uiBossBarEmpty->InitializeImage(posUi, size, 1.f);
+        m_uiBossBarEmpty->btmBrush = new gce::BitMapBrush("res/Textures/UI/boss_bar.png");
+
+        gce::GameObject& bossBarFill = gce::GameObject::Create(*m_scene);
+        m_uiBossBarFill = bossBarFill.AddComponent<gce::UiImage>();
+        bossBarFill.SetName("UI_Boss_Life_Fill");
+        m_uiBossBarFill->InitializeImage(posUi, size, 1.f);
+        m_uiBossBarFill->btmBrush = new gce::BitMapBrush("res/Textures/UI/slider.png");
+
+        m_uiBossBarEmpty->SetActive(false);
+        m_uiBossBarFill->SetActive(false);
+    }
+
+    void MenuManager::UpdateBossHealthBar(float currentHp, float maxHp)
+    {
+        if (!m_uiBossBarFill || !m_uiBossBarEmpty) return;
+
+        if (currentHp <= 0) {
+            m_uiBossBarEmpty->SetActive(false);
+            m_uiBossBarFill->SetActive(false);
+            return;
+        }
+
+        m_uiBossBarEmpty->SetActive(true);
+        m_uiBossBarFill->SetActive(true);
+
+        float healthRatio = currentHp / maxHp;
+        if (healthRatio < 0.f) healthRatio = 0.f;
+        if (healthRatio > 1.f) healthRatio = 1.f;
+
+        gce::Vector2f32 originalSize = { 1772.f, 188.f };
+        gce::Vector2f32 newSize = { originalSize.x * healthRatio, originalSize.y };
+        gce::Vector2f32 posUi = { (1920.f * 0.5f) - (originalSize.x * 0.5f), 50.f };
+
+        m_uiBossBarFill->InitializeImage(posUi, newSize, 1.f);
+
+        float scaleX = (800.f * healthRatio) / 800.f;
+        m_uiBossBarFill->btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, 1.f, 1.f }, 0.f);
+    }
+
     void MenuManager::PauseGame()
     {
         m_currentState = GameState::Paused;
@@ -847,16 +936,26 @@ public:
         HideAllMenus();
     }
 
-    void MenuManager::RecreateScene()
-    {
-    }
 
     void MenuManager::RestartGame()
-    { 
+    {
+        m_currentState = GameState::Playing;
+        StartGame();
+        HideAllMenus();
     }
 
     void MenuManager::ReturnToMainMenu() 
-    { 
+    {
+        m_currentState = GameState::MainMenu;
+        ShowMainMenu();
+        if (m_floorObject) m_floorObject->SetActive(false);
+        if (m_crosshairObject) m_crosshairObject->SetActive(false);
+        Player* player = RessourcesManager::GetPlayer();
+        if (player && player->GetGameObject()) 
+        {
+            player->GetGameObject()->SetActive(false);
+        }
+        if (m_cameraObject) m_cameraObject->SetActive(false);
     }
 
     void MenuManager::QuitGame() 

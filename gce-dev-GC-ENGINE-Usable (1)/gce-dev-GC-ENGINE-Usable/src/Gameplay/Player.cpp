@@ -12,7 +12,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-    m_life = 14.f;  // CORRIGÉ : était 14.f
+    m_life = 14.f;
     obj->transform.SetLocalScale({ 2.0f, 2.0f, 2.0f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
