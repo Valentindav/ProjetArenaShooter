@@ -134,8 +134,8 @@ using namespace gce;
 JsonParser::JsonParser() {}
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Opens a file using the specified m_path and access mode.
-/// @param m_path Path to the file to open.
+/// @brief Opens a file using the specified path and access mode.
+/// @param path Path to the file to open.
 /// @param type File access mode (READ_ONLY, OVER_WRITE, etc.).
 /// @return Pointer to the opened File, or nullptr if the file could not be opened.
 /// @note Automatically deletes the File object on failure to avoid memory leaks.
@@ -153,7 +153,7 @@ File* JsonParser::RunFile(String path, File::Type type)
 
 ////////////////////////////////////////////////////////////////////
 /// @brief Closes the Json File and delete
-/// @param m_path The m_path to the Json File
+/// @param path The path to the Json File
 ////////////////////////////////////////////////////////////////////
 void JsonParser::StopReading(File* file)
 {
@@ -577,7 +577,7 @@ JsonPair* JsonParser::ParsePair(File* file, JsonValue* caller = nullptr)
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Converts Json content into memory using JsonObjects.h instances.
-/// @param m_path The m_path to the Json file.
+/// @param path The path to the Json file.
 /// @return A pointer to the root JsonObject.
 ///////////////////////////////////////////////////////////////////////////////
 Vector<JsonObject*>* JsonParser::Deserialize(String path)
@@ -761,7 +761,7 @@ String JsonParser::SerializeValue(JsonValue* pValue, uint32 indentLevel)
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Serializes a root JsonObject and writes its content to a JSON file.
 /// @param pRootObject Pointer to the root JsonObject to serialize.
-/// @param m_path Destination m_path for the output .json file.
+/// @param path Destination path for the output .json file.
 /// @return Pointer to the written File, or nullptr if the file could not be opened.
 /// @note Internally uses RunFile() to handle file opening and SerializeValue() to generate JSON.
 ///////////////////////////////////////////////////////////////////////////////

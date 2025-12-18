@@ -23,7 +23,7 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
 
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
-    obj->SetName("Robot");
+    obj->SetName("robot");
 	obj->AddChild(*boxColliderObj);
     obj->transform.SetWorldRotation({ 90.0f, 0.0f, 0.0f });
 

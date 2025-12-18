@@ -12,26 +12,26 @@ struct Queue
 	/// <summary>
 	/// Copy the content of the other queue but isn't link to it.
 	/// </summary>
-	/// <param m_name="other">queue that is copied.</param>
+	/// <param name="other">queue that is copied.</param>
 	Queue(Queue<T> const& other);
 	/// <summary>
 	/// Create a queue with the content in argument.
 	/// </summary>
-	/// <typeparam m_name="sizeList">Automatically detect the size of the list.</typeparam>
-	/// <param m_name="table">table under the form {{}} or ({}).</param>
+	/// <typeparam name="sizeList">Automatically detect the size of the list.</typeparam>
+	/// <param name="table">table under the form {{}} or ({}).</param>
 	template <int sizeList>
 	Queue(T const(&table)[sizeList]);
 
 	/// <summary>
 	/// Adds an element at the end of the queue.
 	/// </summary>
-	/// <param m_name="value">value to add.</param>
+	/// <param name="value">value to add.</param>
 	void Push(T value);
 	/// <summary>
 	/// Adds a range of element at the end of the queue.
 	/// </summary>
-	/// <typeparam m_name="sizeList">Automatically detect the size of the list.</typeparam>
-	/// <param m_name="table">table under the form {{}} or ({}).</param>
+	/// <typeparam name="sizeList">Automatically detect the size of the list.</typeparam>
+	/// <param name="table">table under the form {{}} or ({}).</param>
 	template <int sizeList>
 	void PushRange(T const(&table)[sizeList]);
 	/// <summary>
@@ -58,7 +58,7 @@ struct Queue
 	/// <summary>
 	/// Exchange the content and the node of two different queue.
 	/// </summary>
-	/// <param m_name="other"> queue to exchange content with.</param>
+	/// <param name="other"> queue to exchange content with.</param>
 	void Swap(Queue<T>& other);
 
 	Queue<T>& operator=(Queue<T>& other);

@@ -3,8 +3,6 @@
 #include "GameObject.h"
 #include "Geometry.h"
 #include "nlohmann.hpp"
-#include "Player.h"
-#include "Heal.h"
 #include <fstream>
 #include <vector>
 #include <string>
@@ -110,7 +108,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
 
         gce::GameObject* go = &gce::GameObject::Create(activeScene);
 
-        // Utilisation de .c_str() possible car obj.m_name est maintenant une std::string
+        // Utilisation de .c_str() possible car obj.name est maintenant une std::string
         go->SetName(obj.name.c_str());
 
         // Transform
@@ -166,16 +164,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
 
                 result.allColliders.push_back(col);
             }
-			// cas 3 : C'est un objet de soin (Commence par "Cookies")
-            else if (obj.name.find("Cookies") == 0)
-            {
-                Scene* scene = const_cast<Scene*>(RessourcesManager::GetPlayer()->GetGameObject()->GetScene());
-                GameObject& healObj = GameObject::Create(*scene);
-                Heal* heal = new Heal(&healObj, 150.0f);
-                gce::Vector3f32 go = { obj.position[0], obj.position[1], obj.position[2] };
-                heal->GetGameObject()->transform.SetWorldPosition(go);
-            }
-            // Cas 4 (Correction) : C'est un mesh décoratif ou standard
+            // Cas 3 (Correction) : C'est un mesh décoratif ou standard
             else
             {
                 gce::MeshRenderer* mr = go->AddComponent<gce::MeshRenderer>();

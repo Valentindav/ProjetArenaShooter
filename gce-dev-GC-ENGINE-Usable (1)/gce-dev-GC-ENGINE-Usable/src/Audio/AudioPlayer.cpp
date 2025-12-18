@@ -5,8 +5,8 @@ namespace gce
     AudioPlayer* AudioPlayer::instancePtr = nullptr;
 
     /////////////////////////////////////
-    //@brief Gets the singleton m_instance of AudioPlayer
-    //@return Pointer to AudioPlayer m_instance
+    //@brief Gets the singleton instance of AudioPlayer
+    //@return Pointer to AudioPlayer instance
     /////////////////////////////////////
     AudioPlayer* AudioPlayer::GetInstance()
     {
@@ -19,7 +19,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Destroys the singleton m_instance
+    //@brief Destroys the singleton instance
     /////////////////////////////////////
     void AudioPlayer::DestroyInstance()
     {
@@ -225,8 +225,8 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Plays a Sound by m_name
-    //@param m_name Identifier of the Sound to play
+    //@brief Plays a Sound by name
+    //@param name Identifier of the Sound to play
     /////////////////////////////////////
     void AudioPlayer::PlaySoundOf(std::string const name , Vector3f32 listenerPosition)
     {
@@ -292,8 +292,8 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Pauses a specific Sound by m_name
-    //@param m_name Identifier of the Sound to pause
+    //@brief Pauses a specific Sound by name
+    //@param name Identifier of the Sound to pause
     /////////////////////////////////////
     void AudioPlayer::PauseSoundOf(std::string const name)
     {
@@ -313,8 +313,8 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Resumes a specific paused Sound by m_name
-    //@param m_name Identifier of the Sound to resume
+    //@brief Resumes a specific paused Sound by name
+    //@param name Identifier of the Sound to resume
     /////////////////////////////////////
     void AudioPlayer::ResumeSoundOf(std::string const name)
     {
@@ -348,7 +348,7 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Stops and removes sound
-    //@param m_name of the song to stop
+    //@param name of the song to stop
     /////////////////////////////////////
     void AudioPlayer::StopSoundOf(std::string const name)
     {
@@ -366,7 +366,7 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Sets volume for all instances of a specific Sound
-    //@param m_name Identifier of the Sound
+    //@param name Identifier of the Sound
     //@param volume New volume level (0-100)
     /////////////////////////////////////
     void AudioPlayer::SetVolumeOf(std::string const name, int32 volume)
@@ -389,7 +389,7 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Sets volume for all instances of a specific Category
-    //@param m_category 
+    //@param category 
     //@param volume New volume level (0-100)
     /////////////////////////////////////
     void AudioPlayer::SetVolumeOfCategory(Category category, int32 volume)
@@ -418,7 +418,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Gets the audio manager m_instance
+    //@brief Gets the audio manager instance
     //@return Pointer to AudioManager
     /////////////////////////////////////
     AudioManager* AudioPlayer::GetAudioManager() const
@@ -437,7 +437,7 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Marks a Sound as background/looping
-    //@param m_name Identifier of the Sound
+    //@param name Identifier of the Sound
     /////////////////////////////////////
     void AudioPlayer::MakeThisSongBackground(std::string const name)
     {

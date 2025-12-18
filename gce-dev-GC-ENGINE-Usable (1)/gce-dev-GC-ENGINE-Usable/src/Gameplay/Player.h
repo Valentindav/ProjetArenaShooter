@@ -34,11 +34,7 @@ public:
 
 	float m_damage = 1;
 
-	int m_bazooShoot = 1;
-
-	int m_jumpCount = 0;
-
-	Player(GameObject* obj, float spd = 7);
+	Player(GameObject* obj, float spd = 5);
 	void UpdateWeapon();
 	void AddMove();
 	void TakeDamage(int damage) override;
@@ -51,6 +47,4 @@ public:
 	void UpdateWeaponAnimation(float deltaTime);
 	void TriggerShootAnimation();
 	void TriggerReloadAnimation();
-
-	void Heal(float amount) { m_life += amount; if (m_life > 13.f) m_life = 13.f; }
 };

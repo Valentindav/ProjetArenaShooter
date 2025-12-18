@@ -45,8 +45,8 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Registers a new Sound from file
-    //@param m_name Identifier for the Sound
-    //@param m_path File m_path to audio resource
+    //@param name Identifier for the Sound
+    //@param path File path to audio resource
     //@param numberofpreSound Number of pre-allocated instances
     //@return HRESULT indicating success or failure
     /////////////////////////////////////
@@ -68,8 +68,8 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Gets a Sound buffer by m_name
-    //@param m_name Identifier for the Sound
+    //@brief Gets a Sound buffer by name
+    //@param name Identifier for the Sound
     //@return Pointer to SoundBuffer or nullptr if not found
     /////////////////////////////////////
     SoundBuffer* AudioManager::GetSoundBuffer(std::string const name)
@@ -110,7 +110,7 @@ namespace gce
 
     /////////////////////////////////////
     //@brief Unregisters a Sound from file
-    //@param m_name Identifier for the Sound
+    //@param name Identifier for the Sound
     //@return bool indicating success or failure
     /////////////////////////////////////
     bool AudioManager::UnregisterSound(std::string const& name)

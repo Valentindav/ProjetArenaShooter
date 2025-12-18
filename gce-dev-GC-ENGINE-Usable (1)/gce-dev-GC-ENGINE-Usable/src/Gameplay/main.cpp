@@ -19,7 +19,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	LevelManager::Create();
     gce::Scene& scene = gce::Scene::Create();
 
-    TileMap tileMap(500, 500, .5f, scene, { 0.f, 0.f, 0.f });
+    TileMap tileMap(100, 100, .5f, scene, { 0.f, 0.f, 0.f });
 
 	RessourcesManager::SetTileMap(&tileMap);
 

@@ -14,7 +14,7 @@ DECLARE_SCRIPT(TestAudio, ScriptFlag::Start | ScriptFlag::Update)
 void Start()
 {
 	// load et unload des sons
-	// il faut utiliser des WString pour l'Audio et ajouter WRES_PATH pour que les m_path soit valides
+	// il faut utiliser des WString pour l'Audio et ajouter WRES_PATH pour que les path soit valides
 	std::wstring soundPath = WRES_PATH L"res/Exemple/DROSHEKALIMO.mp3";
 	std::wstring musicPath = WRES_PATH L"res/Exemple/Music.mp3";
 	AudioUse::LoadSound("Son1", soundPath.c_str());

@@ -4,24 +4,19 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include <Engine.h>
-#include "MenuManager.h"
 
 using namespace gce;
 
 static void OnStartEmptyBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
     if (!self) return;
+
+	std::cout << "Boss State Started: " << sm->actualAction << std::endl;
 }
 
 static void OnEndEmptyBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -62,10 +57,6 @@ static void OnEndEmptyBoss(GameObject* me) {
 }
 
 static void OnUpdateShootBoss(GameObject* me) {
-  //  AudioUse::Play("Shoot");
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -101,9 +92,6 @@ static void OnUpdateShootBoss(GameObject* me) {
 }
 
 static void OnUpdateIdleBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -127,10 +115,6 @@ static void OnUpdateIdleBoss(GameObject* me) {
 }
 
 static void OnUpdateHeavyMeleeBoss(GameObject* me) {
-   // AudioUse::Play("HeavyMelee");
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -152,10 +136,6 @@ static void OnUpdateHeavyMeleeBoss(GameObject* me) {
 }
 
 static void OnUpdateGroundSlamBoss(GameObject* me) {
-    // AudioUse::Play("GroundSlam");
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -178,6 +158,7 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
         self->m_slamRadius = 1.0f;
         self->m_hasHitPlayer = false;
         self->Use("GroundSlam");
+        std::cout << "Ground Slam Started!" << std::endl;
 
         Scene* scene = const_cast<Scene*>(me->GetScene());
 
@@ -267,17 +248,10 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
 }
 
 static void OnUpdateTeleportBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
 	me->transform.SetWorldPosition({ float(rand() % 100 + 1),-9.3f, float(rand() % 100 + 1) });
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
-    // AudioUse::Play("Laser");
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -411,9 +385,6 @@ static void OnUpdateLaserBoss(GameObject* me) {
 
 
 static void OnStartShieldBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;
@@ -422,9 +393,7 @@ static void OnStartShieldBoss(GameObject* me) {
 }
 
 static void OnUpdateShieldBoss(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
+
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     if (!self) return;

@@ -4,7 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
-#include "MenuManager.h"
+
 using namespace gce;
 
 static void OnStartShootElf(GameObject* me) {
@@ -12,10 +12,6 @@ static void OnStartShootElf(GameObject* me) {
 }
 
 static void OnUpdateShootElf(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
-
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Elf* self = dynamic_cast<Elf*>(ent);
     if (!self) return;
@@ -56,9 +52,6 @@ static void OnStartIdleElf(GameObject* me) {
 }
 
 static void OnUpdateIdleElf(GameObject* me) {
-    MenuManager* mm = MenuManager::GetInstance();
-    if (mm && mm->GetGameState() != GameState::Playing)
-        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Elf* self = dynamic_cast<Elf*>(ent);
     if (!self) return;

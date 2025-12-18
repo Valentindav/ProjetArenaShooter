@@ -13,7 +13,6 @@ private:
 
 public:
 	Elf(GameObject* obj, TileMap* tileMap, float spd = 150);
-	virtual ~Elf();
 	void Die() override;
 	void Attack()override;
 	void AddScript();

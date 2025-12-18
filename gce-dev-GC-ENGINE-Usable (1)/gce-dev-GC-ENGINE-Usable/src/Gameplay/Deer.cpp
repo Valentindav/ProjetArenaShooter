@@ -23,6 +23,8 @@ Deer::Deer(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Deer");
+    //MeshRenderer* pBoxolliderRenderer = obj->AddComponent<MeshRenderer>();
+   // pBoxolliderRenderer->SetGeometry(SHAPES.CUBE);
     obj->AddChild(*boxColliderObj);
     obj->transform.SetLocalScale({ 0.9f, 1.4f, 0.9f });
     m_life = 15.f;

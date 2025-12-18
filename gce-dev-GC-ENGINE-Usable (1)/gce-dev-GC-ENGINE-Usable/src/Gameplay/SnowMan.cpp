@@ -63,6 +63,7 @@ SnowMan::SnowMan(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd
             }
         );
         sm->AddTransition(conds, idle);
+
     }
 }
 

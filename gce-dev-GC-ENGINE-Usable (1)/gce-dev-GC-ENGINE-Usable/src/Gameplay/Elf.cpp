@@ -69,11 +69,6 @@ Elf::Elf(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_til
     }
 }
 
-Elf::~Elf()
-{
-    RessourcesManager::GetPlayer()->m_bazooShoot += 1;
-}
-
 void Elf::Die()
 {
 

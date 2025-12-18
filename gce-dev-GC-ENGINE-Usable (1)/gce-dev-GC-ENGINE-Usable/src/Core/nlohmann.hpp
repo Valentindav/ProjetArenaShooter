@@ -2999,7 +2999,7 @@ value with the default value for a given type
 enum class value_t : std::uint8_t
 {
     null,             ///< null value
-    object,           ///< object (unordered set of m_name/value pairs)
+    object,           ///< object (unordered set of name/value pairs)
     array,            ///< array (ordered collection of values)
     string,           ///< string value
     boolean,          ///< boolean value
@@ -3973,7 +3973,7 @@ struct is_compatible_array_type_impl <
     enable_if_t <
     is_detected<iterator_t, CompatibleArrayType>::value&&
     is_iterator_traits<iterator_traits<detected_t<iterator_t, CompatibleArrayType>>>::value&&
-// special case for types like std::filesystem::m_path whose iterator's value_type are themselves
+// special case for types like std::filesystem::path whose iterator's value_type are themselves
 // c.f. https://github.com/nlohmann/json/pull/3073
     !std::is_same<CompatibleArrayType, detected_t<range_value_t, CompatibleArrayType>>::value >>
 {
@@ -4008,7 +4008,7 @@ struct is_constructible_array_type_impl <
 is_detected<iterator_t, ConstructibleArrayType>::value&&
 is_iterator_traits<iterator_traits<detected_t<iterator_t, ConstructibleArrayType>>>::value&&
 is_detected<range_value_t, ConstructibleArrayType>::value&&
-// special case for types like std::filesystem::m_path whose iterator's value_type are themselves
+// special case for types like std::filesystem::path whose iterator's value_type are themselves
 // c.f. https://github.com/nlohmann/json/pull/3073
 !std::is_same<ConstructibleArrayType, detected_t<range_value_t, ConstructibleArrayType>>::value&&
 is_complete_type <
@@ -7072,14 +7072,14 @@ class lexer_base
         begin_object,     ///< the character for object begin `{`
         end_array,        ///< the character for array end `]`
         end_object,       ///< the character for object end `}`
-        name_separator,   ///< the m_name separator `:`
+        name_separator,   ///< the name separator `:`
         value_separator,  ///< the value separator `,`
         parse_error,      ///< indicating a parse error
         end_of_input,     ///< indicating the end of the input buffer
         literal_or_value  ///< a literal or the begin of a value (only for diagnostics)
     };
 
-    /// return m_name of values of type token_type (only used for errors)
+    /// return name of values of type token_type (only used for errors)
     JSON_HEDLEY_RETURNS_NON_NULL
     JSON_HEDLEY_CONST
     static const char* token_type_name(const token_type t) noexcept
@@ -13650,7 +13650,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     iter_impl& operator=(iter_impl&&) noexcept = default;
 
     /*!
-    @brief constructor for a given JSON m_instance
+    @brief constructor for a given JSON instance
     @param[in] object  pointer to a JSON object for this iterator
     @pre object != nullptr
     @post The iterator is initialized; i.e. `m_object != nullptr`.
@@ -14308,9 +14308,9 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     }
 
   JSON_PRIVATE_UNLESS_TESTED:
-    /// associated JSON m_instance
+    /// associated JSON instance
     pointer m_object = nullptr;
-    /// the actual iterator of the associated m_instance
+    /// the actual iterator of the associated instance
     internal_iterator<typename std::remove_const<BasicJsonType>::type> m_it {};
 };
 
@@ -14839,7 +14839,7 @@ class json_pointer
     @brief return a reference to the pointed to value
 
     @note This version does not throw if a value is not present, but tries to
-          create nested values instead. For m_instance, calling this function
+          create nested values instead. For instance, calling this function
           with pointer `"/this/that"` on a null value is equivalent to calling
           `operator[]("this").operator[]("that")` on that value, effectively
           changing the null value to an object.
@@ -16705,7 +16705,7 @@ class binary_writer
 
     /*!
     @return The size of a BSON document entry header, including the id marker
-            and the entry m_name size (and its null-terminator).
+            and the entry name size (and its null-terminator).
     */
     static std::size_t calc_bson_entry_header_size(const string_t& name, const BasicJsonType& j)
     {
@@ -16720,7 +16720,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes the given @a element_type and @a m_name to the output adapter
+    @brief Writes the given @a element_type and @a name to the output adapter
     */
     void write_bson_entry_header(const string_t& name,
                                  const std::uint8_t element_type)
@@ -16732,7 +16732,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and boolean value @a value
+    @brief Writes a BSON element with key @a name and boolean value @a value
     */
     void write_bson_boolean(const string_t& name,
                             const bool value)
@@ -16742,7 +16742,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and double value @a value
+    @brief Writes a BSON element with key @a name and double value @a value
     */
     void write_bson_double(const string_t& name,
                            const double value)
@@ -16760,7 +16760,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and string value @a value
+    @brief Writes a BSON element with key @a name and string value @a value
     */
     void write_bson_string(const string_t& name,
                            const string_t& value)
@@ -16774,7 +16774,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and null value
+    @brief Writes a BSON element with key @a name and null value
     */
     void write_bson_null(const string_t& name)
     {
@@ -16792,7 +16792,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and integer @a value
+    @brief Writes a BSON element with key @a name and integer @a value
     */
     void write_bson_integer(const string_t& name,
                             const std::int64_t value)
@@ -16820,7 +16820,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and unsigned @a value
+    @brief Writes a BSON element with key @a name and unsigned @a value
     */
     void write_bson_unsigned(const string_t& name,
                              const BasicJsonType& j)
@@ -16843,7 +16843,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and object @a value
+    @brief Writes a BSON element with key @a name and object @a value
     */
     void write_bson_object_entry(const string_t& name,
                                  const typename BasicJsonType::object_t& value)
@@ -16876,7 +16876,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and array @a value
+    @brief Writes a BSON element with key @a name and array @a value
     */
     void write_bson_array(const string_t& name,
                           const typename BasicJsonType::array_t& value)
@@ -16895,7 +16895,7 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a m_name and binary value @a value
+    @brief Writes a BSON element with key @a name and binary value @a value
     */
     void write_bson_binary(const string_t& name,
                            const binary_t& value)
@@ -16909,8 +16909,8 @@ class binary_writer
     }
 
     /*!
-    @brief Calculates the size necessary to serialize the JSON value @a j with its @a m_name
-    @return The calculated size for the BSON document entry for @a j with the given @a m_name.
+    @brief Calculates the size necessary to serialize the JSON value @a j with its @a name
+    @return The calculated size for the BSON document entry for @a j with the given @a name.
     */
     static std::size_t calc_bson_element_size(const string_t& name,
             const BasicJsonType& j)
@@ -16956,8 +16956,8 @@ class binary_writer
 
     /*!
     @brief Serializes the JSON value @a j to BSON and associates it with the
-           key @a m_name.
-    @param m_name The m_name to associate with the JSON entity @a j within the
+           key @a name.
+    @param name The name to associate with the JSON entity @a j within the
                 current BSON document
     */
     void write_bson_element(const string_t& name,
@@ -20198,7 +20198,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // exceptions //
     ////////////////
 
-    /// @m_name exceptions
+    /// @name exceptions
     /// Classes to implement user-defined exceptions.
     /// @{
 
@@ -20215,7 +20215,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // container types //
     /////////////////////
 
-    /// @m_name container types
+    /// @name container types
     /// The canonic container types to use @ref basic_json like any other STL
     /// container.
     /// @{
@@ -20328,7 +20328,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // JSON value data types //
     ///////////////////////////
 
-    /// @m_name JSON value data types
+    /// @name JSON value data types
     /// The data types to store a JSON value. These types are derived from
     /// the template arguments passed to class @ref basic_json.
     /// @{
@@ -20822,7 +20822,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // constructors //
     //////////////////
 
-    /// @m_name constructors and destructors
+    /// @name constructors and destructors
     /// Constructors of class @ref basic_json, copy/move constructor, copy
     /// assignment, static functions creating objects, and the destructor.
     /// @{
@@ -21304,7 +21304,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // object inspection //
     ///////////////////////
 
-    /// @m_name object inspection
+    /// @name object inspection
     /// Functions to inspect the type of a JSON value.
     /// @{
 
@@ -21575,7 +21575,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     }
 
   public:
-    /// @m_name value access
+    /// @name value access
     /// Direct access to the stored value of a JSON value.
     /// @{
 
@@ -21896,7 +21896,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     The call is realized by calling @ref get() const.
 
     @tparam ValueType non-pointer type compatible to the JSON value, for
-    m_instance `int` for JSON integer numbers, `bool` for JSON booleans, or
+    instance `int` for JSON integer numbers, `bool` for JSON booleans, or
     `std::vector` types for JSON arrays. The character type of @ref string_t
     as well as an initializer list of this type is excluded to avoid
     ambiguities as these types implicitly convert to `std::string`.
@@ -21970,7 +21970,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // element access //
     ////////////////////
 
-    /// @m_name element access
+    /// @name element access
     /// Access to the JSON value.
     /// @{
 
@@ -22684,7 +22684,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // lookup //
     ////////////
 
-    /// @m_name lookup
+    /// @name lookup
     /// @{
 
     /// @brief find an element in a JSON object
@@ -22801,7 +22801,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // iterators //
     ///////////////
 
-    /// @m_name iterators
+    /// @name iterators
     /// @{
 
     /// @brief returns an iterator to the first element
@@ -22939,7 +22939,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // capacity //
     //////////////
 
-    /// @m_name capacity
+    /// @name capacity
     /// @{
 
     /// @brief checks whether the container is empty.
@@ -23060,7 +23060,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // modifiers //
     ///////////////
 
-    /// @m_name modifiers
+    /// @name modifiers
     /// @{
 
     /// @brief clears the contents
@@ -23614,7 +23614,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // lexicographical comparison operators //
     //////////////////////////////////////////
 
-    /// @m_name lexicographical comparison operators
+    /// @name lexicographical comparison operators
     /// @{
 
     // note parentheses around operands are necessary; see
@@ -24009,7 +24009,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // serialization //
     ///////////////////
 
-    /// @m_name serialization
+    /// @name serialization
     /// @{
 #ifndef JSON_NO_IO
     /// @brief serialize to stream
@@ -24047,7 +24047,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // deserialization //
     /////////////////////
 
-    /// @m_name deserialization
+    /// @name deserialization
     /// @{
 
     /// @brief deserialize from a compatible input
@@ -24287,7 +24287,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // binary serialization/deserialization //
     //////////////////////////////////////////
 
-    /// @m_name binary serialization/deserialization support
+    /// @name binary serialization/deserialization support
     /// @{
 
   public:
@@ -24672,7 +24672,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // JSON Pointer support //
     //////////////////////////
 
-    /// @m_name JSON Pointer functions
+    /// @name JSON Pointer functions
     /// @{
 
     /// @brief access specified element via JSON Pointer
@@ -24753,7 +24753,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // JSON Patch functions //
     //////////////////////////
 
-    /// @m_name JSON Patch functions
+    /// @name JSON Patch functions
     /// @{
 
     /// @brief applies a JSON patch in-place without copying the object
@@ -24956,7 +24956,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
                 case patch_operations::replace:
                 {
-                    // the "m_path" location must exist - use at()
+                    // the "path" location must exist - use at()
                     result.at(ptr) = get_value("replace", "value", false);
                     break;
                 }
@@ -24998,8 +24998,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                     bool success = false;
                     JSON_TRY
                     {
-                        // check if "value" matches the one at "m_path"
-                        // the "m_path" location must exist - use at()
+                        // check if "value" matches the one at "path"
+                        // the "path" location must exist - use at()
                         success = (result.at(ptr) == get_value("test", "value", false));
                     }
                     JSON_INTERNAL_CATCH (out_of_range&)
@@ -25112,7 +25112,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 // first pass: traverse this object's elements
                 for (auto it = source.cbegin(); it != source.cend(); ++it)
                 {
-                    // escape the key m_name to be used in a JSON patch
+                    // escape the key name to be used in a JSON patch
                     const auto path_key = detail::concat<string_t>(path, '/', detail::escape(it.key()));
 
                     if (target.find(it.key()) != target.end())
@@ -25176,7 +25176,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     // JSON Merge Patch functions //
     ////////////////////////////////
 
-    /// @m_name JSON Merge Patch functions
+    /// @name JSON Merge Patch functions
     /// @{
 
     /// @brief applies a JSON Merge Patch
@@ -25294,7 +25294,7 @@ struct less< ::nlohmann::detail::value_t> // do not remove the space after '<', 
 /// @brief exchanges the values of two JSON objects
 /// @sa https://json.nlohmann.me/api/basic_json/std_swap/
 NLOHMANN_BASIC_JSON_TPL_DECLARATION
-inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC_JSON_TPL& j2) noexcept(  // NOLINT(readability-inconsistent-declaration-parameter-m_name, cert-dcl58-cpp)
+inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC_JSON_TPL& j2) noexcept(  // NOLINT(readability-inconsistent-declaration-parameter-name, cert-dcl58-cpp)
     is_nothrow_move_constructible<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value&&                          // NOLINT(misc-redundant-expression,cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
     is_nothrow_move_assignable<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value)
 {

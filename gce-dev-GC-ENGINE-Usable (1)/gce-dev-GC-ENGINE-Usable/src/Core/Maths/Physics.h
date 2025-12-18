@@ -82,28 +82,28 @@ public :
 	/// <summary>
 	/// Calculate in 2D dimension the normed vector of the direction after collision with an object
 	/// </summary>
-	/// <param m_name="movDirection"> -- Director vect of the previous direction</param>
-	/// <param m_name="collisionDirection"> -- Director vect of the collision </param>
+	/// <param name="movDirection"> -- Director vect of the previous direction</param>
+	/// <param name="collisionDirection"> -- Director vect of the collision </param>
 	/// <returns></returns>
 	static Vector2f32 CalculateStaticCollisionVect2D(Vector2f32 const& movDirection, Vector2f32 const& collisionDirection);
 	
 	/// <summary>
 	/// Calculate in 3D dimension the normed vector of the direction after collision with an object
 	/// </summary>
-	/// <param m_name="movDirection"> -- Director vector of the previous direction</param>
-	/// <param m_name="collisionDirection"> -- Director vector of the collision </param>
+	/// <param name="movDirection"> -- Director vector of the previous direction</param>
+	/// <param name="collisionDirection"> -- Director vector of the collision </param>
 	/// <returns></returns>
 	static Vector3f32 CalculateStaticCollisionVect(Vector3f32 const& movDirection, Vector3f32 const& collisionDirection);
 
 	/// <summary>
 	/// Calculate the reslutant velocity of the collision with another object
 	/// </summary>
-	/// <param m_name="massA"> -- Mass of the main object</param>
-	/// <param m_name="massB"> -- Mass of the collided object</param>
-	/// <param m_name="velocityA"> -- Velocity of the main object</param>
-	/// <param m_name="velocityB"> -- Velocity of the collided object</param>
-	/// <param m_name="collisionNormal"> -- Normal vector of the collision between the two objects</param>
-	/// <param m_name="restitution"> -- Proportional value of the bounciness between the two objects</param>
+	/// <param name="massA"> -- Mass of the main object</param>
+	/// <param name="massB"> -- Mass of the collided object</param>
+	/// <param name="velocityA"> -- Velocity of the main object</param>
+	/// <param name="velocityB"> -- Velocity of the collided object</param>
+	/// <param name="collisionNormal"> -- Normal vector of the collision between the two objects</param>
+	/// <param name="restitution"> -- Proportional value of the bounciness between the two objects</param>
 	/// <returns></returns>
 	static Vector3f32 CalculateCollisionVelocity(float32 massA, float32 massB, Vector3f32 const& velocityA, Vector3f32 const& velocityB, Vector3f32 const& collisionNormal, float32 restitution);
 
@@ -112,14 +112,14 @@ public :
 	/// <summary>
 	/// Use the second newton law for forces
 	/// </summary>
-	/// <param m_name="position"> -- Updated position of the object</param>
-	/// <param m_name="velocity"> -- Updated velocity of the object</param>
-	/// <param m_name="velocity"> -- Angular velocity of the object</param>
-	/// <param m_name="forceSom"> -- Som of all the forces applied to the object</param>
-	/// <param m_name="mass"> -- Mass of the object</param>
-	/// <param m_name="gravityScale"> -- Gravity scale applied to the object</param>
-	/// <param m_name="dragCoefficient"> -- Drag coefficient applied to the object</param>
-	/// <param m_name="deltaTime"> -- Elapsed time between two frames</param>
+	/// <param name="position"> -- Updated position of the object</param>
+	/// <param name="velocity"> -- Updated velocity of the object</param>
+	/// <param name="velocity"> -- Angular velocity of the object</param>
+	/// <param name="forceSom"> -- Som of all the forces applied to the object</param>
+	/// <param name="mass"> -- Mass of the object</param>
+	/// <param name="gravityScale"> -- Gravity scale applied to the object</param>
+	/// <param name="dragCoefficient"> -- Drag coefficient applied to the object</param>
+	/// <param name="deltaTime"> -- Elapsed time between two frames</param>
 	static void NewtonForceLaw(Vector3f32& position, Vector3f32& velocity, Vector3f32& angularVelocity, Vector3f32& forceSom, float32 mass, float32 gravityScale, float32 dragCoefficient, Vector3f32 staticForce, float32 deltaTime);
 
 	static Vector3f32 CalculateTorque(Force const& myForce, Vector3f32 const& centerOfMass);

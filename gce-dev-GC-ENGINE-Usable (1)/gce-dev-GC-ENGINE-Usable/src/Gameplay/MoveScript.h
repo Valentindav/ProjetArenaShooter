@@ -16,17 +16,17 @@ public:
 
     void Update()
     {
-        GameObject* obj = m_pOwner;
-        Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
-        Player* player = dynamic_cast<Player*>(entityPlayer);
         MenuManager* mm = MenuManager::GetInstance();
         if (mm && mm->GetGameState() != GameState::Playing)
             return;
 
         gce::LockMouseCursor();
+        GameObject* obj = m_pOwner;
         float32 gravity = obj->GetComponent<PhysicComponent>()->GetGravityScale();
         obj->GetComponent<PhysicComponent>()->SetBounciness(-1.0f);
 
+        Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(obj);
+        Player* player = dynamic_cast<Player*>(entityPlayer);
         if (player)
         {
             if (player->GetCameraFeedback())
@@ -64,14 +64,12 @@ public:
         {
             // On récupère le nom de l'objet touché
             String name = other->GetName();
-            Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(m_pOwner);
-            Player* player = dynamic_cast<Player*>(entityPlayer);
+
             // On considère qu'on est au sol SEULEMENT si ce n'est PAS un ennemi ou une balle
             // Note: "robot" a une minuscule dans votre Robot.cpp, "Bullet" a une majuscule dans AddShoot()
-            if (name != "SnowMan" && name != "Robot" && name != "Bullet" && name != "bullet" && name != "Elf" && name != "Boss" && name != "Deer" && name == "Floor")
+            if (name != "SnowMan" && name != "robot" && name != "Bullet" && name != "bullet" && name != "Elf" && name != "Boss" && name != "Deer")
             {
                 onGround = true;
-                player->m_jumpCount = 0;
             }
         }
     }

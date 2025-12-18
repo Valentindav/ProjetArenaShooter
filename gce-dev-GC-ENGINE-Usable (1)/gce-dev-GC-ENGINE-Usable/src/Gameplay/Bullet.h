@@ -6,11 +6,9 @@ class Bullet :public Entity
 	GameObject* m_owner = nullptr;
 	int m_damage = 1;
 	float m_lifeTime = 0.0f;
-	bool m_notCollide = false;
 public:
-	Bullet(GameObject* obj, float spd = 10000);
+	Bullet(GameObject* obj, float spd = 500);
 	void AddShoot();
-	void Addfollow();
 	void DeleteShoot();
 	void SetTexture(std::string_view path);
 	void SetShape(gce::Geometry* geo);
@@ -18,8 +16,6 @@ public:
 	int GetDamage() const { return m_damage; }
 	void SetLifeTime(float time) { m_lifeTime = time; }
 	float GetLifeTime() const { return m_lifeTime; }
-	bool GetNotCollide() const { return m_notCollide; }
-	void SetNotCollide(bool val) { m_notCollide = val; }
 	void SetOwner(GameObject* owner) 
 	{
 		m_owner = owner;

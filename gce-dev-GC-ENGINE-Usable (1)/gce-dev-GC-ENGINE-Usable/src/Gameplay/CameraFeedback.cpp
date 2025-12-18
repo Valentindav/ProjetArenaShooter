@@ -17,17 +17,17 @@ void CameraFeedback::TriggerShake(const ShakeParams& params)
 
     m_isShaking = true;
     m_shakeTimer = 0.0f;
-    m_shakeDuration = params.m_duration;
-    m_shakeIntensity = params.m_intensity;
-    m_shakeFrequency = params.m_frequency;
+    m_shakeDuration = params.duration;
+    m_shakeIntensity = params.intensity;
+    m_shakeFrequency = params.frequency;
 }
 
 void CameraFeedback::TriggerDamageShake()
 {
     ShakeParams params;
-    params.m_intensity = 0.3f;
-    params.m_duration = 0.4f;
-    params.m_frequency = 25.0f;
+    params.intensity = 0.3f;
+    params.duration = 0.4f;
+    params.frequency = 25.0f;
     TriggerShake(params);
 }
 
@@ -49,9 +49,9 @@ void CameraFeedback::TriggerShootRecoil()
 void CameraFeedback::TriggerJumpBounce()
 {
     ShakeParams params;
-    params.m_intensity = 0.08f;
-    params.m_duration = 0.2f;
-    params.m_frequency = 15.0f;
+    params.intensity = 0.08f;
+    params.duration = 0.2f;
+    params.frequency = 15.0f;
     TriggerShake(params);
 }
 
@@ -60,9 +60,9 @@ void CameraFeedback::TriggerLandingImpact(float fallVelocity)
     float impact = gce::Clamp(abs(fallVelocity) / 20.0f, 0.0f, 1.0f);
 
     ShakeParams params;
-    params.m_intensity = 0.15f * impact;
-    params.m_duration = 0.25f;
-    params.m_frequency = 20.0f;
+    params.intensity = 0.15f * impact;
+    params.duration = 0.25f;
+    params.frequency = 20.0f;
     TriggerShake(params);
 }
 

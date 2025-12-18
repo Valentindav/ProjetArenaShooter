@@ -50,7 +50,7 @@ public:
                 menuManager->ShowGameOverMenu();
             }
 
-            gce::Vector<Entity*> entities = RessourcesManager::GetEntities();
+            gce::Vector<Entity*> entities = RessourcesManager::getEntities();
             int enemyCount = 0;
             for (Entity* entity : entities)
             {
@@ -75,7 +75,7 @@ public:
     END_SCRIPT
 
     MenuManager::MenuManager() : m_currentState(GameState::MainMenu), m_scene(nullptr),
-        m_cameraObject(nullptr), pCamera(nullptr),
+        m_CameraObject(nullptr), pCamera(nullptr),
         m_mainMenuPanel(nullptr), m_playButton(nullptr), m_quitButton(nullptr),
         m_pauseMenuPanel(nullptr), m_resumeButton(nullptr), m_restartButtonPause(nullptr), m_mainMenuButtonPause(nullptr),
         m_gameOverPanel(nullptr), m_gameOverBackground(nullptr), m_gameOverText(nullptr), m_restartButtonGameOver(nullptr), m_mainMenuButtonGameOver(nullptr),
@@ -83,60 +83,60 @@ public:
     {
     }
 
-    void MenuManager::Create(Scene* scene) // create the menu m_instance
+    void MenuManager::Create(Scene* scene) // create the menu instance
     {
-        if (m_instance != nullptr) return;
-        m_instance = new MenuManager();
-        m_instance->m_scene = scene;
+        if (m_Instance != nullptr) return;
+        m_Instance = new MenuManager();
+        m_Instance->m_scene = scene;
 
-        m_instance->m_cameraObject = &GameObject::Create(*scene);
-        m_instance->m_cameraObject->SetName("Camera");
-        m_instance->m_cameraObject->transform.LocalTranslate({ 0, 0, -10 });
+        m_Instance->m_CameraObject = &GameObject::Create(*scene);
+        m_Instance->m_CameraObject->SetName("Camera");
+        m_Instance->m_CameraObject->transform.LocalTranslate({ 0, 0, -10 });
 
-        m_instance->pCamera = m_instance->m_cameraObject->AddComponent<Camera>();
-        m_instance->pCamera->SetMainCamera();
-        m_instance->pCamera->SetType(PERSPECTIVE);
-        m_instance->pCamera->perspective.fov = XM_PIDIV4;
-        m_instance->pCamera->perspective.nearPlane = 0.001f;
-        m_instance->pCamera->perspective.farPlane = 500.0f;
-        m_instance->pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
-        m_instance->pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
+        m_Instance->pCamera = m_Instance->m_CameraObject->AddComponent<Camera>();
+        m_Instance->pCamera->SetMainCamera();
+        m_Instance->pCamera->SetType(PERSPECTIVE);
+        m_Instance->pCamera->perspective.fov = XM_PIDIV4;
+        m_Instance->pCamera->perspective.nearPlane = 0.001f;
+        m_Instance->pCamera->perspective.farPlane = 500.0f;
+        m_Instance->pCamera->perspective.aspectRatio = 1000.0f / 800.0f;
+        m_Instance->pCamera->perspective.up = { 0.0f, 1.0f, 0.0f };
 
-        m_instance->CreateMainMenu();
-        m_instance->CreatePauseMenu();
-        m_instance->CreateGameOverMenu();
-        m_instance->CreateVictoryMenu();
+        m_Instance->CreateMainMenu();
+        m_Instance->CreatePauseMenu();
+        m_Instance->CreateGameOverMenu();
+        m_Instance->CreateVictoryMenu();
 
         GameObject* stateChecker = &GameObject::Create(*scene);
         stateChecker->SetName("GameStateChecker");
         stateChecker->AddScript<GameStateChecker>();
 
-        m_instance->ShowMainMenu();
+        m_Instance->ShowMainMenu();
     }
 
     void MenuManager::OnPlayButtonClick() // start button behavior
     {
-        if (m_instance) m_instance->StartGame();
+        if (m_Instance) m_Instance->StartGame();
     }
 
     void MenuManager::OnQuitButtonClick() // quit button behavior
     {
-        if (m_instance) m_instance->QuitGame();
+        if (m_Instance) m_Instance->QuitGame();
     }
 
     void MenuManager::OnResumeButtonClick() // resume button behavior
     {
-        if (m_instance) m_instance->ResumeGame();
+        if (m_Instance) m_Instance->ResumeGame();
     }
 
     void MenuManager::OnRestartButtonClick() // restart button behavior
     { 
-        if (m_instance) m_instance->RestartGame();
+        if (m_Instance) m_Instance->RestartGame();
     }
 
     void MenuManager::OnMainMenuButtonClick() // menu button behavior
     {
-        if (m_instance) m_instance->ReturnToMainMenu();
+        if (m_Instance) m_Instance->ReturnToMainMenu();
     }
 
     // --- création boutons ---
@@ -423,9 +423,9 @@ public:
         if (m_currentState == GameState::Playing) return;
         m_currentState = GameState::Playing;
         HideAllMenus();
-        if (m_cameraObject)
+        if (m_CameraObject)
         {
-            m_cameraObject->SetActive(true);
+            m_CameraObject->SetActive(true);
         }
 
 
@@ -452,11 +452,11 @@ public:
         GameObject& Weapon = GameObject::Create(*m_scene);
         Weapon.transform.SetWorldPosition({ .0f,.0f,.0f });
         MeshRenderer* pWeaponRenderer = Weapon.AddComponent<MeshRenderer>();
-        pWeaponRenderer->SetGeometry(RessourcesManager::GetGift());
+        pWeaponRenderer->SetGeometry(GeometryFactory::LoadGeometry("res/Exemple/bottle.obj"));
 		Weapon.SetName("Weapon");
         Weapon.transform.LocalScale({ 0.03,0.03,0.03 });
 
-        m_cameraObject->transform.LocalTranslate({ 0,0,0 });
+        m_CameraObject->transform.LocalTranslate({ 0,0,0 });
 
 		GameObject& RayCastObj = GameObject::Create(*m_scene);
 
@@ -494,7 +494,7 @@ public:
         Light* pSceneLight = SceneLight.AddComponent<Light>();
         gce::LightManager::AddLight(*pSceneLight);
         pSceneLight->DefaultPointLight();
-        pSceneLight->m_intensity = 1.0f;
+        pSceneLight->intensity = 1.0f;
         pSceneLight->range = 20.0f;
         pSceneLight->UpdateLight();*/
 
@@ -539,7 +539,7 @@ public:
   //      // 5. Personnaliser les propriétés (optionnel mais recommandé)
   //      // Accès direct aux champs de LightData car Light hérite de LightData
   //      pLight->color = { .8f, 0.8f, 0.8f, 1.0f }; // Couleur un peu chaude
-  //      pLight->m_intensity = 0.2f;                   // Intensité
+  //      pLight->intensity = 0.2f;                   // Intensité
   //      pLight->range = 20.0f;                      // Rayon d'action
   //      pLight->position = lightPos;                // IMPORTANT : Mettre à jour la position dans la structure de données
 
@@ -570,10 +570,7 @@ public:
         SnowManObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         SnowMan* Snowman = new SnowMan(&SnowManObject, RessourcesManager::GetTileMap());
 
-		Heal* heal = new Heal(&GameObject::Create(*m_scene), 150.0f);
-		heal->GetGameObject()->transform.SetWorldPosition({ 2.0f,0.0f,2.0f });
-
-        /*GameObject& SnowManObject2 = GameObject::Create(*m_scene);
+        GameObject& SnowManObject2 = GameObject::Create(*m_scene);
         SnowManObject2.transform.SetWorldPosition({ -3.0f, 0.0f, 3.0f });
         SnowMan* Snowman2 = new SnowMan(&SnowManObject2, RessourcesManager::GetTileMap());
 
@@ -583,25 +580,25 @@ public:
 
         GameObject& DeerObject = GameObject::Create(*m_scene);
         DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
-        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());*/
+        Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());
 
         GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
         Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
 
-       /* GameObject& BossObject = GameObject::Create(*m_scene);
+        GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());*/
+        Boss* boss = new Boss(&BossObject, RessourcesManager::GetTileMap());
 
-		RayCast* raycast = new RayCast(&RayCastObj, m_cameraObject->transform.GetLocalPosition().z);
+		RayCast* raycast = new RayCast(&RayCastObj, m_CameraObject->transform.GetLocalPosition().z);
 
         Player* player = new Player(&PlayerObject,2);
-        player->GetGameObject()->AddChild(*m_cameraObject);
+        player->GetGameObject()->AddChild(*m_CameraObject);
         player->GetGameObject()->AddChild(Weapon);
-		m_cameraObject->AddChild(RayCastObj);
+		m_CameraObject->AddChild(RayCastObj);
         player->m_weaponOriginalPos = Weapon.transform.GetLocalPosition();
         RessourcesManager::SetPlayer(player);
-        player->SetCamera(m_cameraObject);
+        player->SetCamera(m_CameraObject);
 
         // Ajout du crosshair
         gce::GameObject& crosshair = gce::GameObject::Create(*m_scene);

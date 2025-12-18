@@ -6,8 +6,8 @@
 namespace gce
 {
 //////////////////////////////////////////////////////////////
-/// @brief Opens a file with the specified m_path and type.
-/// @param m_path Path to the file to open.
+/// @brief Opens a file with the specified path and type.
+/// @param path Path to the file to open.
 /// @param type Opening mode of the file.
 //////////////////////////////////////////////////////////////
 File::File()
@@ -389,7 +389,7 @@ void File::Write(void* data, size_t byteCount)
 }
 
 ////////////////////////////////////////////////////
-/// @brief Deletes a file at the specified m_path.
+/// @brief Deletes a file at the specified path.
 ////////////////////////////////////////////////////
 bool File::DeleteFile(char8 const* path)
 {

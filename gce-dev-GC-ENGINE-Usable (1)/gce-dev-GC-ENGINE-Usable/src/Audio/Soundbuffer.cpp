@@ -45,7 +45,7 @@ namespace gce
     /////////////////////////////////////
     //@brief Initializes the Sound buffer from file
     //@param strFileName Path to audio file
-    //@param m_name Identifier for this Sound
+    //@param name Identifier for this Sound
     //@param numberOfPresound Number of pre-allocated instances
     //@return HRESULT indicating success or failure
     /////////////////////////////////////
@@ -279,7 +279,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Creates a playable Sound m_instance from this buffer
+    //@brief Creates a playable Sound instance from this buffer
     //@return Pointer to new Sound object
     //@note Caller is responsible for memory management
     /////////////////////////////////////
@@ -320,7 +320,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Gets the Sound's m_name/identifier
+    //@brief Gets the Sound's name/identifier
     //@return Name character
     /////////////////////////////////////
     std::string SoundBuffer::GetName() const
@@ -391,7 +391,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    //@brief Checks if a file m_path has an MP3 extension
+    //@brief Checks if a file path has an MP3 extension
     //@param filePath Path to check
     //@return True if extension is .mp3 (case insensitive)
     /////////////////////////////////////
