@@ -10,6 +10,7 @@ struct MaterialData {
     gce::Texture* displacement = nullptr;
 };
 
+class Heal;
 class Entity;
 class Player;
 class Ennemy;
@@ -20,7 +21,7 @@ public:
     static void Create();
     static void AddEntities(Entity* entity);
     static void RemoveEntities(Entity* entity);
-    static gce::Vector<Entity*> getEntities();
+    static gce::Vector<Entity*> GetEntities();
     static Player* GetPlayer();
     static void SetPlayer(Player* player);
 	static void SetEnemySelected(Entity* enemy);
@@ -31,6 +32,8 @@ public:
     static gce::Geometry* GetThomson();
     static gce::Geometry* GetsurgarCane();
     static gce::Geometry* GetNerf();
+    static gce::Geometry* GetBrokenSugarCane();
+    static gce::Geometry* GetGift();
 
     static gce::Geometry* GetElf();
     static gce::Geometry* GetSnowMan();
@@ -41,6 +44,12 @@ public:
     static gce::Texture* GetTexture();
     static Entity* GetSelectedEnemy();
     static Entity* GetEntityFromGameObject(gce::GameObject* go);	
+
+	static Entity* GetChoosedEnemy();
+	static void SetChoosedEnemy(Entity* enemy);
+
+	static void AddCookie(Heal* cookie);
+	static gce::Vector<Heal*> GetCookies();
 
     static TileMap* GetTileMap();
 	static void SetTileMap(TileMap* tileMap);
@@ -60,6 +69,8 @@ private:
     gce::Geometry* m_thomsonGeo = gce::GeometryFactory::LoadGeometry("res/Obj/thomson.obj");
     gce::Geometry* m_nerfGeo = gce::GeometryFactory::LoadGeometry("res/Obj/nerf.obj");
     gce::Geometry* m_surgarCaneGeo = gce::GeometryFactory::LoadGeometry("res/Obj/canne a sucre.obj");
+    gce::Geometry* m_explodingGeo = gce::GeometryFactory::LoadGeometry("res/Obj/cadeau explosif.obj");
+    gce::Geometry* m_brokenSurgarCaneGeo = gce::GeometryFactory::LoadGeometry("res/Obj/sucre d'orge cassé.obj");
     //-----------Ennemies---------
     gce::Geometry* m_elfGeo = gce::GeometryFactory::LoadGeometry("res/Obj/lutin.obj");
     gce::Geometry* m_snowManGeo = gce::GeometryFactory::LoadGeometry("res/Obj/bonhomme de neige.obj");
@@ -68,12 +79,14 @@ private:
     gce::Geometry* m_SantaGeo = gce::GeometryFactory::LoadGeometry("res/Obj/pere noel.obj");
 
     gce::Vector<Entity*> m_entities;
+    gce::Vector<Heal*> m_cookiesVector;
     gce::Geometry* bulletGeo = gce::GeometryFactory::LoadGeometry("res/Exemple/bottle.obj");
     gce::Texture* m_bottleTexture = new gce::Texture("res/Exemple/TexturesTest.jpg");
     inline static RessourcesManager* m_instance = nullptr;
     Player* m_player = nullptr;
     TileMap* m_tileMap = nullptr;
 	Entity* m_enemySelected = nullptr;
+	Entity* m_choosedEnemy = nullptr;
 	ImportedLevelData* m_importedLevelData = nullptr;
 	gce::Vector<Ennemy*> m_ennemies;
     std::vector<MaterialData> m_materials;

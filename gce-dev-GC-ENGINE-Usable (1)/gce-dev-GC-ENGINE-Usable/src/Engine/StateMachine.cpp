@@ -11,7 +11,7 @@ namespace gce
 
 	///////////////////////////////////////////////////////////////////////////////
 	// @brief Adds a given action to the state machine. (Single Action version)
-	// @param name The name of the action. 
+	// @param m_name The m_name of the action. 
 	// @param action The action to be added.
 	///////////////////////////////////////////////////////////////////////////////
 	void StateMachine::AddAction(String & name, Action action)
@@ -27,7 +27,7 @@ namespace gce
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// @brief Adds a given action to the state machine. (Begin + Update + End  version)
-	// @param name The name of the action. 
+	// @param m_name The m_name of the action. 
 	// @param pOnBegin Pointer to the function to be called when the action begins.
 	// @param pOnUpdate Pointer to the function to be called when the action is updated.
 	// @param pOnEnd Pointer to the function to be called when the action ends.
@@ -44,7 +44,7 @@ namespace gce
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// @brief Sets the OnBegin action for a given action in the state machine.
-	// @param name The name of the action. 
+	// @param m_name The m_name of the action. 
 	// @param pOnBegin Pointer to the function to be called when the action begins.
 	///////////////////////////////////////////////////////////////////////////////////
 	void StateMachine::SetOnBeginAction(String & name, OnBegin pOnBegin)
@@ -54,7 +54,7 @@ namespace gce
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	// @brief Sets the OnUpdate action for a given action in the state machine.
-	// @param name The name of the action.
+	// @param m_name The m_name of the action.
 	// @param pOnUpdate Pointer to the function to be called when the action is updated.
 	////////////////////////////////////////////////////////////////////////////////////////
 	void StateMachine::SetOnUpdateAction(String & name, OnUpdate pOnUpdate)
@@ -64,7 +64,7 @@ namespace gce
 
 	///////////////////////////////////////////////////////////////////////////////
 	// @brief Sets the OnEnd action for a given action in the state machine.
-	// @param name The name of the action.
+	// @param m_name The m_name of the action.
 	// @param pOnEnd Pointer to the function to be called when the action ends.
 	///////////////////////////////////////////////////////////////////////////////
 	void StateMachine::SetOnEndAction(String & name, OnEnd pOnEnd)
@@ -120,7 +120,7 @@ namespace gce
 
 	///////////////////////////////////////////////////////////////////////
 	// @brief Transits the state machine to a target action.
-	// @param target The name of the targeted action to transition to.
+	// @param target The m_name of the targeted action to transition to.
 	//////////////////////////////////////////////////////////////////////
 	void StateMachine::Transit(String const& target)
 	{

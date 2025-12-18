@@ -1,1 +1,0 @@
-set velociter {0,0,0} quand touche le sol et pas de touche utiliser

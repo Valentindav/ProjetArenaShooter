@@ -6,9 +6,9 @@
 namespace gce
 {
     /////////////////////////////////////
-    /// @brief Initializes an audio category (Music, Effects, Dialogue, etc.)
-    /// @param xaudio Pointer to the XAudio2 engine instance.
-    /// @param type The category type (enum Category).
+    /// @brief Initializes an audio m_category (Music, Effects, Dialogue, etc.)
+    /// @param xaudio Pointer to the XAudio2 engine m_instance.
+    /// @param type The m_category type (enum Category).
     /// @param isMono Indicates whether the output is mono (1 channel) or stereo (2 channels).
     /////////////////////////////////////
     void AudioCategory::Init(IXAudio2* xaudio, Category type, bool isMono)
@@ -19,7 +19,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    /// @brief Sets the volume of the audio category.
+    /// @brief Sets the volume of the audio m_category.
     /// @param volume User volume value (typically between 0 and 100).
     /////////////////////////////////////
     void AudioCategory::SetVolume(int32 volume)
@@ -32,7 +32,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    /// @brief Mutes or unmutes this audio category.
+    /// @brief Mutes or unmutes this audio m_category.
     /// @param isMuted true to mute, false to unmute.
     /////////////////////////////////////
     void AudioCategory::Mute(bool isMuted)
@@ -54,7 +54,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    /// @brief Checks if the category is currently muted.
+    /// @brief Checks if the m_category is currently muted.
     /// @return true if muted, false otherwise.
     /////////////////////////////////////
     bool AudioCategory::IsMuted() const
@@ -63,7 +63,7 @@ namespace gce
     }
 
     /////////////////////////////////////
-    /// @brief Returns the submix voice associated with this category.
+    /// @brief Returns the submix voice associated with this m_category.
     /// @return Pointer to IXAudio2SubmixVoice.
     /////////////////////////////////////
     IXAudio2SubmixVoice* AudioCategory::GetSubmixVoice() const

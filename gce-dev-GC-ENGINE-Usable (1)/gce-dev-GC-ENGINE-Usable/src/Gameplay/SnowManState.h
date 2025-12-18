@@ -4,7 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
-#include "MenuManager.h" // ajouté
+#include "MenuManager.h"
 
 using namespace gce;
 
@@ -47,12 +47,13 @@ static void OnUpdateShootSnowman(GameObject* me) {
 
         Vector3f32 spawnPosition = position + forward * spawnOffset;
 
-        BulletObject.transform.SetWorldPosition(spawnPosition);
+        BulletObject.transform.SetWorldPosition({ spawnPosition.x,spawnPosition.y + 1.f,spawnPosition.z });
         BulletObject.transform.SetWorldRotation(obj->transform.GetWorldRotation());
-        BulletObject.transform.WorldScale({ 0.25,0.25,0.25 });
 
-        Bullet* bullet = new Bullet(&BulletObject);
+        Bullet* bullet = new Bullet(&BulletObject,500);
+		BulletObject.transform.LocalScale({ 5.f,5.f,5.f });
         bullet->SetOwner(me);
+        bullet->SetLifeTime(10);
         self->m_ShootCooldown = 2.0f;
     }
     self->m_ShootCooldown -= GameManager::DeltaTime();
@@ -68,6 +69,9 @@ static void OnStartIdleSnowman(GameObject* me) {
 }
 
 static void OnUpdateIdleSnowman(GameObject* me) {
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     SnowMan* self = dynamic_cast<SnowMan*>(ent);
     if (!self) return;

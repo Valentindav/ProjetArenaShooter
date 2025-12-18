@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Entity.h"
 #include "BossState.h"
+#include <Audio.h>
 
 using namespace gce;
 
@@ -46,6 +47,11 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
     m_cooldown["Teleport"] = 6.f;
     m_cooldown["Laser"] = 7.f;
     m_cooldown["Shield"] = 9999.f;
+
+    AudioUse::LoadSound("GroundSlam", m_groundSlam.c_str());
+    AudioUse::LoadSound("Laser", m_laser.c_str());
+    AudioUse::LoadSound("Shoot", m_shoot.c_str());
+    AudioUse::LoadSound("HeavyMelee", m_heavyMelee.c_str());
 
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(obj);
     String idle = "Idle";

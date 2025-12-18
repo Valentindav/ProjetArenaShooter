@@ -21,6 +21,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     obj->SetName("Player");
     m_weaponLevel = 1;
     m_baseSpeed = spd;
+    m_bazooShoot = 1;
     AddMove();
 
     m_weaponOriginalPos = Vector3f32(0.0f, 0.0f, 0.0f);
@@ -58,13 +59,13 @@ void Player::UpdateWeapon()
         pChildRenderer->SetGeometry(RessourcesManager::GetsurgarCane());
         break;
     case BROKEN_CANDY_CANE:
-        pChildRenderer->SetGeometry(SHAPES.HALF_SPHERE);
+        pChildRenderer->SetGeometry(RessourcesManager::GetBrokenSugarCane());
         break;
     case TESSON:
-        pChildRenderer->SetGeometry(SHAPES.SPHERE);
+        pChildRenderer->SetGeometry(RessourcesManager::GetBottle());
         break;
     case BAZZOKA_WEAPON:
-        pChildRenderer->SetGeometry(RessourcesManager::GetBottle());
+        pChildRenderer->SetGeometry(RessourcesManager::GetElf());
     }
 }
 

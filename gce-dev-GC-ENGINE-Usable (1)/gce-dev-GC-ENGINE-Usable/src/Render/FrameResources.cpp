@@ -75,7 +75,7 @@ namespace gce
         FrameResource* currentFrameResource = GetCurrentFrameResource();
 
         // Debug logging
-        //OutputDebugStringA(("BeginFrame - FrameIndex: " + std::to_string(instance.m_currentFrameIndex) +
+        //OutputDebugStringA(("BeginFrame - FrameIndex: " + std::to_string(m_instance.m_currentFrameIndex) +
         //          ", BeginFrame - Current Fence: " + std::to_string(m_currentFenceValue) +
         //          ", GPU Fence: " + std::to_string(m_fence->GetCompletedValue()) +
         //          ", CPU / Frame Fence: " + std::to_string(currentFrameResource->m_fenceValue) + "\n").c_str());

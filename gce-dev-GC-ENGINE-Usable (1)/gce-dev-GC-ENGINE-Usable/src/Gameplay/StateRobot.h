@@ -4,6 +4,7 @@
 #include "Engine/StateMachine.h"
 #include "Player.h"
 #include "Engine.h"
+#include "MenuManager.h"
 
 using namespace gce;
 
@@ -12,6 +13,10 @@ static void OnStartShootRobot(GameObject* me) {
 }
 
 static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting state with 3 state attack patern
+    MenuManager* mm = MenuManager::GetInstance();
+    if (mm && mm->GetGameState() != GameState::Playing)
+        return;
+
     Robot* self = dynamic_cast<Robot*>(RessourcesManager::GetEntityFromGameObject(me));
     if (!self) return;
 
@@ -26,20 +31,19 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
     float pitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
     Vector3f32 targetEuler = Vector3f32(pitch, yaw, 0.0f);
 
-    if (self->laserPhase == 0) {
+    if (self->m_laserPhase == 0) {
     
         me->transform.SetWorldRotation(targetEuler);
         Vector3f32 d = playerPos - robotPos;
-            self->lockedRotation = targetEuler;
-            self->laserPhase = 1;
-            self->laserTimer = 5.0f; 
+            self->m_lockedRotation = targetEuler;
+            self->m_laserPhase = 1;
+            self->m_laserTimer = 2.0f; 
         return;
     }
 
-    if (self->laserPhase == 1) {
-        me->transform.SetWorldRotation(self->lockedRotation);
-
-        if (!self->laser) {
+    if (self->m_laserPhase == 1) {
+        me->transform.SetWorldRotation(self->m_lockedRotation);
+        if (!self->m_laser) {
             Scene* scene = (Scene*)me->GetScene();
             GameObject& objLaser = GameObject::Create(*scene);
 
@@ -48,36 +52,37 @@ static void OnUpdateShootRobot(GameObject* me) { // update for robot shooting st
 
             objLaser.transform.WorldScale({ 1,1,100 });
             objLaser.transform.SetWorldPosition(spawnPos);
-            objLaser.transform.SetWorldRotation(self->lockedRotation);
+            objLaser.transform.SetWorldRotation(self->m_lockedRotation);
 
-            self->laser = new Bullet(&objLaser);
-            self->laser->SetOwner(me);
-            self->laser->m_speed = 0.0f;
-           // self->laser->SetDamage(0);
-            //self->laser->SetLifeTime(5.f);
+            self->m_laser = new Bullet(&objLaser);
+            self->m_laser->SetOwner(me);
+            self->m_laser->m_speed = 0.0f;
+            self->m_laser->SetDamage(0);
+            self->m_laser->SetLifeTime(1000.f);
         }
 
-        self->laserTimer -= GameManager::DeltaTime();
-        if (self->laserTimer <= 0.0f) {
-            self->laserPhase = 2;
-            self->laserTimer = 1.5f;
+        self->m_laserTimer -= GameManager::DeltaTime();
+        if (self->m_laserTimer <= 0.0f) {
+            self->m_laserPhase = 2;
+            self->m_laserTimer = 1.5f;
         }
         return;
-    }
-    if (self->laserPhase == 2) {
-        me->transform.SetWorldRotation(self->lockedRotation);
 
-        if (self->laser) {
-           // self->laser->SetDamage(5);
+    }
+    if (self->m_laserPhase == 2) {
+        me->transform.SetWorldRotation(self->m_lockedRotation);
+        if (self->m_laser) {
+            self->m_laser->SetDamage(5);
+            self->m_laser->SetNotCollide(true);
         }
 
-        self->laserTimer -= GameManager::DeltaTime();
-        if (self->laserTimer <= 0.0f) {
-            if (self->laser) {
-                delete self->laser;
-                self->laser = nullptr;
+        self->m_laserTimer -= GameManager::DeltaTime();
+        if (self->m_laserTimer <= 0.0f) {
+            if (self->m_laser) {
+                delete self->m_laser;
+                self->m_laser = nullptr;
             }
-            self->laserPhase = 0; 
+            self->m_laserPhase = 0; 
         }
         return;
     }

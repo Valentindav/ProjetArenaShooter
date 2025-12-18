@@ -21,7 +21,7 @@ DECLARE_SCRIPT(SelectEnemy, ScriptFlag::CollisionStay | ScriptFlag::CollisionExi
     {
         if (m_pOwner && m_pOwner->IsActive())
         {         
-			if (!(other->GetName() == "SnowMan" || other->GetName() == "robot")) return;
+			if (!(other->GetName() == "SnowMan" || other->GetName() == "robot" || other->GetName() == "Boss" || other->GetName() == "Elf") || other->GetName() == "deer") return;
             Entity* selectedEnemy = RessourcesManager::GetSelectedEnemy();
             if (!selectedEnemy || selectedEnemy == nullptr)
             {
