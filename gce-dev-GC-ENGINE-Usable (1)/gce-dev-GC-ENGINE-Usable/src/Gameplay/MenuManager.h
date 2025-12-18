@@ -23,6 +23,9 @@ private:
 
     GameObject* m_cameraObject;
     Camera* pCamera;
+    bool m_isGameInitialized = false;
+    GameObject* m_floorObject = nullptr;
+    GameObject* m_crosshairObject = nullptr;
 
     GameObject* m_mainMenuPanel;
     GameObject* m_mainText;
@@ -50,7 +53,6 @@ private:
 
     MenuManager();
 
-    void RecreateScene();
 
 public:
 
