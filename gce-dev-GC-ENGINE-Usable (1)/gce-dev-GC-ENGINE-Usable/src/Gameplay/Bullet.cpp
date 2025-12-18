@@ -288,7 +288,7 @@ public:
 		obj->SetName("bullet");
 		MeshRenderer* pWeaponRenderer = obj->AddComponent<MeshRenderer>();
 		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-		obj->transform.LocalScale({ 0.05,0.05,0.05 });
+		obj->transform.LocalScale({ 0.5,0.5,0.5 });
 		obj->AddComponent<BoxCollider>()->SetActive(true);
 		obj->AddComponent<PhysicComponent>();
 		obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);

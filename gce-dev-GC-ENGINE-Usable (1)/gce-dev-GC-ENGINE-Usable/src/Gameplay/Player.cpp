@@ -42,8 +42,22 @@ void Player::SetCamera(GameObject* camera)
     m_cameraFeedback = new CameraFeedback(camera);
 }
 
-void Player::UpdateWeapon()
+void Player::UpdateWeapon(bool charge)
 {
+    if (charge) {
+        if (m_weaponLevel == 1) {
+            m_currentState = Player::GIFT_WEAPON;
+            m_damage = 1.0f;
+        }
+        else if (m_weaponLevel == 2) {
+            m_currentState = Player::NERF_WEAPON;
+            m_damage = 2.0f;
+        }
+        else if (m_weaponLevel == 3) {
+            m_currentState = Player::THOMPSON_WEAPON;
+            m_damage = 3.0f;
+        }
+    }
     GameObject* obj = nullptr;
     for (auto child : GetGameObject()->GetChildren()) {
         if (child->GetName() == "Weapon_1") {

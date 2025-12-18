@@ -388,7 +388,7 @@ static void OnUpdateLaserBoss(GameObject* me) {
 
             if (distFromLaser < laserRadius)
             {
-                if (self->m_laserDamageTimer >= 0.2f)
+                if (self->m_laserDamageTimer >= 1.f)
                 {
                     player->TakeDamage(1);
                     self->m_laserDamageTimer = 0.f;

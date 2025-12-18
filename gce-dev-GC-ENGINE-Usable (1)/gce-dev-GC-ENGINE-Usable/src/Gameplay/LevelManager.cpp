@@ -56,7 +56,7 @@ namespace gce {
     {
         RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });  
         RessourcesManager::GetPlayer()->m_weaponLevel = 1;
-        RessourcesManager::GetPlayer()->UpdateWeapon();
+        RessourcesManager::GetPlayer()->UpdateWeapon(true);
 		if (m_instance->m_levels.Empty()) { return; }
 		int creditLeft = m_instance->m_levels[0].ennemyCredit;
 		
@@ -103,7 +103,7 @@ namespace gce {
     {
         RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });
         RessourcesManager::GetPlayer()->m_weaponLevel = 3;
-        RessourcesManager::GetPlayer()->UpdateWeapon();
+        RessourcesManager::GetPlayer()->UpdateWeapon(true);
         if (m_instance->m_levels.Empty()) { return; }
         int creditLeft = m_instance->m_levels[2].ennemyCredit;
 

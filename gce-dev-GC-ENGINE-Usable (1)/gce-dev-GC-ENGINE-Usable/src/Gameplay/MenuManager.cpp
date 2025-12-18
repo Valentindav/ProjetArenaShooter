@@ -64,6 +64,10 @@ public:
 
             for (Entity* entity : entities)
             {
+                if (!entity->GetGameObject()->GetName()) return;
+                if (entity->GetGameObject()->GetName() == "Bullet") return;
+                if (entity == nullptr) return;
+                if (entity == player) return;
                 if (entity == nullptr || entity == player) continue;
 
                 GameObject* obj = entity->GetGameObject();
