@@ -1189,7 +1189,7 @@ namespace gce {
 		// Si la force de pénétration est minime sur les axes horizontaux (X et Z),
 		// on l'annule pour éviter les glissements parasites et le jitter.
 		// Cela stabilise le joueur sur le sol et contre les murs.
-		float threshold = 0.1f; // Seuil de tolérance (10cm)
+		float threshold = 0.01f; // Seuil de tolérance (1mm)
 		if (Abs(overlapVect.x) < threshold) overlapVect.x = 0.0f;
 		if (Abs(overlapVect.z) < threshold) overlapVect.z = 0.0f;
 		// ---------------------------
