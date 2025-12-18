@@ -18,7 +18,7 @@ namespace gce {
         static void LoadLevel1();
 		static void LoadLevel3();
 
-        int GetCurrentLevelIndex() { return m_currentIndex; }
+        static int GetCurrentLevelIndex() { return m_instance ? m_instance->m_currentIndex : -1; }
 		static int GetMaxEnemy() { return m_maxEnemy; }
 
     private:

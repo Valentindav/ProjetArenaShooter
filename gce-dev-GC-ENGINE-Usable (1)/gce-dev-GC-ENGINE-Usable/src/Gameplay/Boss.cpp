@@ -38,7 +38,7 @@ Boss::Boss(GameObject* obj, TileMap* tileMap, float spd) : Ennemy(obj, spd), m_t
     obj->AddChild(*boxColliderObj);
     obj->transform.SetLocalScale({ 1.0f, 1.5f, 1.0f });
 
-	m_life = 10;
+	m_life = 100;
     m_baseLife = m_life;
 
     m_cooldown["HeavyMelee"] = 3.f;

@@ -6,6 +6,7 @@
 #include "Elf.h"
 #include "Deer.h"
 #include "Robot.h"
+#include "Boss.h"
 
 namespace gce {
 
@@ -54,6 +55,8 @@ namespace gce {
     void LevelManager::LoadLevel1()
     {
         RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });  
+        RessourcesManager::GetPlayer()->m_weaponLevel = 1;
+        RessourcesManager::GetPlayer()->UpdateWeapon();
 		if (m_instance->m_levels.Empty()) { return; }
 		int creditLeft = m_instance->m_levels[0].ennemyCredit;
 		
@@ -96,65 +99,78 @@ namespace gce {
 			creditLeft -= enemyCost;
 		}
 	}
-	void LevelManager::LoadLevel3()
-	{
-		RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });
-		if (m_instance->m_levels.Empty()) { return; }
-		int creditLeft = m_instance->m_levels[2].ennemyCredit;
+    void LevelManager::LoadLevel3()
+    {
+        RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });
+        RessourcesManager::GetPlayer()->m_weaponLevel = 3;
+        RessourcesManager::GetPlayer()->UpdateWeapon();
+        if (m_instance->m_levels.Empty()) { return; }
+        int creditLeft = m_instance->m_levels[2].ennemyCredit;
 
-		// 0: SnowMan (1), 1: Elf (1), 2: Deer (3), 3: Robot (3)
-		int enemyCosts[] = { 1, 1, 3, 3 };
+        Scene& scene = const_cast<Scene&>(*RessourcesManager::GetPlayer()->GetGameObject()->GetScene());
 
-		while (creditLeft > 0)
-		{
-			gce::Vector<int> affordableEnemies;
-			if (creditLeft >= enemyCosts[0]) affordableEnemies.PushBack(0); // SnowMan
-			if (creditLeft >= enemyCosts[1]) affordableEnemies.PushBack(1); // Elf
-			if (creditLeft >= enemyCosts[2]) affordableEnemies.PushBack(2); // Deer
-			if (creditLeft >= enemyCosts[3]) affordableEnemies.PushBack(3); // Robot
+            GameObject& bossObject = GameObject::Create(scene);
+            bossObject.SetActive(false);
 
-			if (affordableEnemies.Empty())
-			{
-				break;
-			}
+            Boss* boss = new Boss(&bossObject, RessourcesManager::GetTileMap());
 
-			int randomIndex = rand() % affordableEnemies.Size();
-			int randomEnemyType = affordableEnemies[randomIndex];
+            
+            RessourcesManager::AddEnnemy(boss);
+            RessourcesManager::SpawnEnnemies(10.0f);
 
-			GameObject& enemyObject = GameObject::Create(const_cast<Scene&>(*RessourcesManager::GetPlayer()->GetGameObject()->GetScene()));
-			enemyObject.SetActive(false);
+        // 0: SnowMan (1), 1: Elf (1), 2: Deer (3), 3: Robot (3)
+        int enemyCosts[] = { 1, 1, 3, 3 };
 
-			int enemyCost = enemyCosts[randomEnemyType];
+        while (creditLeft > 0)
+        {
+            gce::Vector<int> affordableEnemies;
+            if (creditLeft >= enemyCosts[0]) affordableEnemies.PushBack(0); // SnowMan
+            if (creditLeft >= enemyCosts[1]) affordableEnemies.PushBack(1); // Elf
+            if (creditLeft >= enemyCosts[2]) affordableEnemies.PushBack(2); // Deer
+            if (creditLeft >= enemyCosts[3]) affordableEnemies.PushBack(3); // Robot
 
-			switch (randomEnemyType)
-			{
-			case 0:
-			{
-				SnowMan* snowman = new SnowMan(&enemyObject, RessourcesManager::GetTileMap());
-				RessourcesManager::AddEnnemy(snowman);
-				break;
-			}
-			case 1:
-			{
-				Elf* elf = new Elf(&enemyObject, RessourcesManager::GetTileMap());
-				RessourcesManager::AddEnnemy(elf);
-				break;
-			}
-			case 2:
-			{
-				Deer* deer = new Deer(&enemyObject, RessourcesManager::GetTileMap());
-				RessourcesManager::AddEnnemy(deer);
-				break;
-			}
-			case 3:
-			{
-				Robot* robot = new Robot(&enemyObject);
-				RessourcesManager::AddEnnemy(robot);
-				break;
-			}
-			}
+            if (affordableEnemies.Empty())
+            {
+                break;
+            }
 
-			creditLeft -= enemyCost;
-		}
-	}
+            int randomIndex = rand() % affordableEnemies.Size();
+            int randomEnemyType = affordableEnemies[randomIndex];
+
+            GameObject& enemyObject = GameObject::Create(const_cast<Scene&>(*RessourcesManager::GetPlayer()->GetGameObject()->GetScene()));
+            enemyObject.SetActive(false);
+
+            int enemyCost = enemyCosts[randomEnemyType];
+
+            switch (randomEnemyType)
+            {
+            case 0:
+            {
+                SnowMan* snowman = new SnowMan(&enemyObject, RessourcesManager::GetTileMap());
+                RessourcesManager::AddEnnemy(snowman);
+                break;
+            }
+            case 1:
+            {
+                Elf* elf = new Elf(&enemyObject, RessourcesManager::GetTileMap());
+                RessourcesManager::AddEnnemy(elf);
+                break;
+            }
+            case 2:
+            {
+                Deer* deer = new Deer(&enemyObject, RessourcesManager::GetTileMap());
+                RessourcesManager::AddEnnemy(deer);
+                break;
+            }
+            case 3:
+            {
+                Robot* robot = new Robot(&enemyObject);
+                RessourcesManager::AddEnnemy(robot);
+                break;
+            }
+            }
+
+            creditLeft -= enemyCost;
+        }
+    }
 }

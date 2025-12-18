@@ -22,12 +22,44 @@ void RessourcesManager::AddEntities(Entity* entity) // add entities to entity ve
 void RessourcesManager::RemoveEntities(Entity* entity) // supprime l'entity du vecteur sans la delete
 {
     if (entity == nullptr || m_instance == nullptr) return;
+
+    // Retirer de la liste générale d'entités
     for (auto it = m_instance->m_entities.begin(); it != m_instance->m_entities.end(); ++it)
     {
         if (*it == entity)
         {
             m_instance->m_entities.Erase(it);
-            return;
+            break; // continuer le reste des nettoyages ci-dessous
+        }
+    }
+
+    // Si c'est un Ennemy, le retirer des listes ennemies (actives / en attente)
+    Ennemy* asEnnemy = dynamic_cast<Ennemy*>(entity);
+    if (asEnnemy)
+    {
+        // retirer de m_activeEnnemies si présent
+        for (auto it = m_instance->m_activeEnnemies.begin(); it != m_instance->m_activeEnnemies.end(); ++it)
+        {
+            if (*it == asEnnemy)
+            {
+                m_instance->m_activeEnnemies.Erase(it);
+                break;
+            }
+        }
+        // retirer de m_ennemies (file d'attente) si présent
+        for (auto it = m_instance->m_ennemies.begin(); it != m_instance->m_ennemies.end(); ++it)
+        {
+            if (*it == asEnnemy)
+            {
+                m_instance->m_ennemies.Erase(it);
+                break;
+            }
+        }
+
+        if (m_instance->m_activeEnnemies.Empty() && m_instance->m_ennemies.Empty())
+        {
+           
+                LevelManager::LoadNextLevel();
         }
     }
 }
@@ -117,6 +149,16 @@ gce::Geometry* RessourcesManager::GetSanta() {
     if (m_instance == nullptr) return nullptr;
     return m_instance->m_SantaGeo;
 }
+
+gce::Geometry* RessourcesManager::GetCookiesObj() {
+    if (m_instance == nullptr) return nullptr;
+    return m_instance->m_cookies;
+}
+
+//gce::Texture* RessourcesManager::GetCookiesText() {
+//    if (m_instance == nullptr) return nullptr;
+//    return m_instance->m_cookiesTexture;
+//}
 
 gce::Texture* RessourcesManager::GetTexture() // get wall texture -> need rename & thing
 {

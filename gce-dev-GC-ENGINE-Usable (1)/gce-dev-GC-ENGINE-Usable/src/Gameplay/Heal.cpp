@@ -35,7 +35,8 @@ END_SCRIPT
 Heal::Heal(GameObject* obj,float spd) : Entity(obj,spd) {
     GameObject* boxColliderObj = &GameObject::Create(*const_cast<Scene*>(GetGameObject()->GetScene()));
     MeshRenderer* pBoxColliderRenderer = boxColliderObj->AddComponent<MeshRenderer>();
-    pBoxColliderRenderer->SetGeometry(SHAPES.CUBE);
+    pBoxColliderRenderer->SetGeometry(RessourcesManager::GetCookiesObj());
+    
     boxColliderObj->transform.SetWorldPosition({ obj->transform.GetWorldPosition().x,obj->transform.GetWorldPosition().y - 0.5f,obj->transform.GetWorldPosition().z });
 
     obj->transform.SetLocalScale({ 1.f, 2.f, 1.f });
