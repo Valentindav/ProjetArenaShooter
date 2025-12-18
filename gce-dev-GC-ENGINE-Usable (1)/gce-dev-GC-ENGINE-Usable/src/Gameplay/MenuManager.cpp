@@ -25,7 +25,7 @@ public:
     {
         if (RessourcesManager::GetSpawnTimer() >= 1.0f)
         {
-            RessourcesManager::SpawnEnnemies(0.0f);
+            RessourcesManager::SpawnEnnemies(20.0f);
         }
 		RessourcesManager::UpdateSpawnTimer();
         MenuManager* menuManager = MenuManager::GetInstance();
