@@ -27,7 +27,7 @@ public:
 	CameraFeedback* GetCameraFeedback() { return m_cameraFeedback; }
 
 	float m_ammo = 15;
-	float m_energy = 100.0f;
+	float m_energy = 11.0f;
 	float m_meleeCD = 1.0f;
 	float m_baseSpeed;
 	bool m_realoading = false;

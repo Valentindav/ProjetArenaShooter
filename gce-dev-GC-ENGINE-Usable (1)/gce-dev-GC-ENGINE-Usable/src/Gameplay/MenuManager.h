@@ -3,6 +3,8 @@
 
 using namespace gce;
 
+class Player;
+
 enum class GameState
 {
     MainMenu,
@@ -23,10 +25,12 @@ private:
     Camera* pCamera;
 
     GameObject* m_mainMenuPanel;
+    GameObject* m_mainText;
     GameObject* m_playButton;
     GameObject* m_quitButton;
 
     GameObject* m_pauseMenuPanel;
+    GameObject* m_pauseText;
     GameObject* m_resumeButton;
     GameObject* m_restartButtonPause;
     GameObject* m_mainMenuButtonPause;
@@ -43,11 +47,15 @@ private:
     GameObject* m_restartButtonVictory;
     GameObject* m_mainMenuButtonVictory;
 
+
     MenuManager();
 
     void RecreateScene();
 
 public:
+
+
+
     static void Create(Scene* scene);
     static MenuManager* GetInstance() 
     {
@@ -80,6 +88,10 @@ public:
     static void OnMainMenuButtonClick();
 
     void StartGame();
+    UiImage* m_uiStaminaBar[11] = { nullptr };
+    void ShowUIStaminaBar();
+    UiImage* m_uiLifeBars[13] = { nullptr };
+    void ShowUIHealthBar();
     void PauseGame();
     void ResumeGame();
     void RestartGame();
