@@ -45,6 +45,10 @@ namespace gce {
 		{
 			LoadLevel1();
 		}
+		if (index == 1)
+		{
+			LoadLevel2();
+		}
 		if (index == 2)
 		{
 			LoadLevel3();
@@ -96,6 +100,53 @@ namespace gce {
 			creditLeft -= enemyCost;
 		}
 	}
+
+	void LevelManager::LoadLevel2()
+	{
+		RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });
+		if (m_instance->m_levels.Empty()) { return; }
+		int creditLeft = m_instance->m_levels[0].ennemyCredit;
+
+		int enemyCosts[] = { 1, 3 }; // Elf, Robot
+
+		while (creditLeft > 0)
+		{
+			gce::Vector<int> affordableEnemies;
+			if (creditLeft >= enemyCosts[0]) affordableEnemies.PushBack(0); // Elf
+			if (creditLeft >= enemyCosts[1]) affordableEnemies.PushBack(1); // Robot
+
+			if (affordableEnemies.Empty())
+			{
+				break;
+			}
+
+			int randomIndex = rand() % affordableEnemies.Size();
+			int randomEnemyType = affordableEnemies[randomIndex];
+
+			GameObject& enemyObject = GameObject::Create(const_cast<Scene&>(*RessourcesManager::GetPlayer()->GetGameObject()->GetScene()));
+			enemyObject.SetActive(false);
+
+			int enemyCost = enemyCosts[randomEnemyType];
+
+			switch (randomEnemyType)
+			{
+			case 0:
+			{
+				Elf* elf = new Elf(&enemyObject, RessourcesManager::GetTileMap());
+				RessourcesManager::AddEnnemy(elf);
+				break;
+			}
+			case 1:
+			{
+				Robot* robot = new Robot(&enemyObject);
+				RessourcesManager::AddEnnemy(robot);
+				break;
+			}
+			}
+			creditLeft -= enemyCost;
+		}
+	}
+
 	void LevelManager::LoadLevel3()
 	{
 		RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });

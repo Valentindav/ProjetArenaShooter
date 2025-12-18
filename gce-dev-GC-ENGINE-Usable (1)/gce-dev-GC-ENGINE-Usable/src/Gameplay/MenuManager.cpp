@@ -512,7 +512,7 @@ public:
 
 		/*auto testObj = importSceneFromJsonText("res/Scene/Test_I_Shaped.json");*/
 
-        RessourcesManager::CreateMaterials(
+        /*RessourcesManager::CreateMaterials(
             "res/Textures/WhiteColor.png",
 			"", "", "", ""
         );
@@ -523,7 +523,7 @@ public:
             "res/Textures/Reactor_Metallic.png",
             "res/Textures/Reactor_Roughness.png",
             "res/Textures/Reactor_Displacement.png"
-		);
+		);*/
 
   //      auto levelData = importSceneFromJsonText("res/Scene/Test2.json");
 
@@ -557,7 +557,40 @@ public:
         LightManager::AddLight(*pLight);
 
 		//RessourcesManager::SetupLevelData(levelData);
+        //--------------------------------Material--------------------------------
+        
+        RessourcesManager::CreateMaterials(
+			"res/Textures/Cookies/openPBR_shader1_BaseColor.png",
+			"res/Textures/Cookies/openPBR_shader1_Normal.png",
+			"res/Textures/Cookies/openPBR_shader1_Metallic.png",
+			"res/Textures/Cookies/openPBR_shader1_Roughness.png",
+			"res/Textures/Cookies/openPBR_shader1_Displacement.png"
+		);
 
+        RessourcesManager::CreateMaterials(
+            "res/Textures/Fonderie/Reactor_BaseColor.png",
+			"res/Textures/Fonderie/Reactor_Normal.png",
+            "res/Textures/Fonderie/Reactor_Metallic.png",
+            "res/Textures/Fonderie/Reactor_Roughness.png",
+			"res/Textures/Fonderie/Reactor_Displacement.png"
+		);
+
+        RessourcesManager::CreateMaterials(
+			"res/Textures/L_Shaped/standardSurface1_BaseColor.png",
+			"res/Textures/L_Shaped/standardSurface1_Normal.png",
+			"res/Textures/L_Shaped/standardSurface1_Metallic.png",
+			"res/Textures/L_Shaped/standardSurface1_Roughness.png",
+			"res/Textures/L_Shaped/standardSurface1_Displacement.png"
+		);
+
+		RessourcesManager::CreateMaterials(
+			"res/Textures/I_Shaped/openPBR_shader2_BaseColor.png",
+			"res/Textures/I_Shaped/openPBR_shader2_Normal.png",
+			"res/Textures/I_Shaped/openPBR_shader2_Metallic.png",
+			"res/Textures/I_Shaped/openPBR_shader2_Roughness.png",
+			"res/Textures/I_Shaped/openPBR_shader2_Displacement.png"
+		);
+        
         //----------------------------------Run----------------------------------
         PlayerObject.transform.SetWorldPosition({ 0.0f,0.f,-10.0f });
         Weapon.transform.SetWorldPosition({ 1.0f,-0.3f,-8.f });

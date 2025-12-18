@@ -150,7 +150,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
             if (obj.mesh.uvs.Size() == vertCount * 2) {
                 uvs.Reserve(vertCount);
                 for (size_t i = 0; i < vertCount; ++i)
-                    uvs.PushBack({ obj.mesh.uvs[i * 2], obj.mesh.uvs[i * 2 + 1] });
+                    uvs.PushBack({ obj.mesh.uvs[i * 2], 1.0f - obj.mesh.uvs[i * 2 + 1] });
             }
             else {
                 for (size_t i = 0; i < vertCount; ++i) uvs.PushBack({ 0.f, 0.f });
@@ -182,7 +182,7 @@ inline ImportedLevelData importSceneFromJsonText(const std::string& _jsonFileTex
                 result.allColliders.push_back(col);
             }
 			// cas 3 : C'est un objet de soin (Commence par "Cookies")
-            else if (obj.name.find("Cookies") == 0)
+            else if (obj.name.find("-0-Cookies") == 0)
             {
                 Scene* scene = const_cast<Scene*>(RessourcesManager::GetPlayer()->GetGameObject()->GetScene());
                 GameObject& healObj = GameObject::Create(*scene);
