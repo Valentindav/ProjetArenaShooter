@@ -47,7 +47,7 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Attack") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.SquareNorm() < 900.0f;
+                    return d.SquareNorm() < 30.f;
                 }
             }
         );
@@ -64,7 +64,7 @@ Robot::Robot(GameObject* obj, float spd) : Ennemy(obj, spd)
                     StateMachine* smLocal = GameManager::GetStatesSystem().CreateStateMachine(me);
                     if (smLocal && smLocal->actualAction == "Idle") return false;
                     Vector3f32 d = p->GetGameObject()->transform.GetWorldPosition() - me->transform.GetWorldPosition();
-                    return d.SquareNorm() < 900.0f;
+                    return d.SquareNorm() > 30.0f;
                 }
             }
         );

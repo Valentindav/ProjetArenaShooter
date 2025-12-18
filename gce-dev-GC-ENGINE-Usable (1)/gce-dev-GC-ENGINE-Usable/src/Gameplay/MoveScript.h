@@ -5,7 +5,7 @@
 #include "MenuManager.h"
 #include "RessourcesManager.h"
 
-DECLARE_SCRIPT(Move, ScriptFlag::Update | ScriptFlag::CollisionStay)
+DECLARE_SCRIPT(Move, ScriptFlag::Start | ScriptFlag::Update | ScriptFlag::CollisionStay)
 public:
     Bullet* lastBullet = nullptr;
     float m_shootTimer = SHOOT_TIMER_WAIT;
@@ -13,6 +13,13 @@ public:
     float sensitivity = 0.0005f;
     float jumpForce = 50.0f;
     Controller* inputManager;
+
+    inline static Controller s_inputManagerInstance;
+
+    void Start()
+    {
+        inputManager = &s_inputManagerInstance;
+    }
 
     void Update()
     {
@@ -34,8 +41,9 @@ public:
             player->UpdateWeaponAnimation(GameManager::DeltaTime());
         }
 
+        if (inputManager) // garde de sécurité
+            inputManager->HandleInput(obj);
 
-        inputManager->HandleInput(obj);
         gce::WindowParam windowParam = GameManager::GetWindowParam();
         gce::Vector2i32 const center = { windowParam.width / 2, windowParam.height / 2 };
         gce::Vector2i32 const currentPos = GetMousePosition();
@@ -63,16 +71,36 @@ public:
         if (m_pOwner && m_pOwner->IsActive())
         {
             // On récupère le nom de l'objet touché
-			if (!other->GetName()) return;
+            if (!other->GetName()) return;
             String name = other->GetName();
             Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(m_pOwner);
             Player* player = dynamic_cast<Player*>(entityPlayer);
-            // On considère qu'on est au sol SEULEMENT si ce n'est PAS un ennemi ou une balle
-            // Note: "robot" a une minuscule dans votre Robot.cpp, "Bullet" a une majuscule dans AddShoot()
-            if (name != "SnowMan" && name != "Robot" && name != "Bullet" && name != "bullet" && name != "Elf" && name != "Boss" && name != "Deer" && name == "Floor")
+
+            // Exclure explicitement les entités ennemies / balles (ne doivent pas être considérées sol)
+            bool isEnemyOrProjectile =
+                (name == "SnowMan" || name == "Robot" || name == "Bullet" || name == "bullet" ||
+                    name == "Elf" || name == "Boss" || name == "Deer");
+
+            // Si ce n'est pas une entité ennemie/projetile, considérer les objets solides (BoxCollider non trigger) comme sol
+            if (!isEnemyOrProjectile)
             {
-                onGround = true;
-                player->m_jumpCount = 0;
+                if (other->HasComponent<BoxCollider>())
+                {
+                    BoxCollider* bc = other->GetComponent<BoxCollider>();
+                    if (bc && !bc->isTrigger)
+                    {
+                        onGround = true;
+                        if (player) player->m_jumpCount = 0;
+                        return;
+                    }
+                }
+                // fallback : accepter aussi les objets nommés "Floor" (compatibilité)
+                if (name == "Floor")
+                {
+                    onGround = true;
+                    if (player) player->m_jumpCount = 0;
+                    return;
+                }
             }
         }
     }

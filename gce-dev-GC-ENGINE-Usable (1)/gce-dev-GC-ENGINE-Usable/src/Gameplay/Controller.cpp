@@ -27,7 +27,7 @@ using namespace gce;
             moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
-                player->m_energy -= 20 * GameManager::DeltaTime();
+                player->m_energy -= 0.5 * GameManager::DeltaTime();
             }
             else {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * player->GetSpeed() * GameManager::DeltaTime());
@@ -38,7 +38,7 @@ using namespace gce;
             moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
-                player->m_energy -= 20 * GameManager::DeltaTime();
+                player->m_energy -= 0.5 * GameManager::DeltaTime();
             }
             else {
                 obj->transform.WorldTranslate(obj->transform.GetLocalForward() * (-player->GetSpeed()) * GameManager::DeltaTime());
@@ -49,7 +49,7 @@ using namespace gce;
             moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-(player->GetSpeed() * 5)) * GameManager::DeltaTime());
-                player->m_energy -= 20 * GameManager::DeltaTime();
+                player->m_energy -= 0.5 * GameManager::DeltaTime();
             }
             else {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (-player->GetSpeed()) * GameManager::DeltaTime());
@@ -60,7 +60,7 @@ using namespace gce;
             moving = true;
             if (GetKey(Keyboard::LSHIFT) && player->m_energy > 0.0f) {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * (player->GetSpeed() * 5) * GameManager::DeltaTime());
-                player->m_energy -= 20 * GameManager::DeltaTime();
+                player->m_energy -= 0.5 * GameManager::DeltaTime();
             }
             else {
                 obj->transform.WorldTranslate(obj->transform.GetLocalRight() * player->GetSpeed() * GameManager::DeltaTime());

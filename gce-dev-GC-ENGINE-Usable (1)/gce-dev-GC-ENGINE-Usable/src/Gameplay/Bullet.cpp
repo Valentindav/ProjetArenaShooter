@@ -69,7 +69,7 @@ public:
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
-		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies") return;
+		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies" || other->GetName() == "Player") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
 		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
@@ -228,7 +228,7 @@ public:
 
 	void CollisionEnter(GameObject* other) //handle collision with entity
 	{
-		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies") return;
+		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies" || other->GetName() == "Player") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
 		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
