@@ -13,9 +13,9 @@ namespace gce {
     {
 		if (m_instance != nullptr) return;
 		m_instance = new LevelManager();
-        m_instance->m_levels.PushBack({ "res/Scene/Level1.json", "Niveau 1", 50 });
-        m_instance->m_levels.PushBack({ "res/Scene/Level2.json", "Niveau 2", 50 });
-        m_instance->m_levels.PushBack({ "res/Scene/Level3.json", "Niveau 3", 50 });
+        m_instance->m_levels.PushBack({ "res/Scene/Level1.json", "Niveau 1", 5 });
+        m_instance->m_levels.PushBack({ "res/Scene/Level2.json", "Niveau 2", 5 });
+        m_instance->m_levels.PushBack({ "res/Scene/Level3.json", "Niveau 3", 5 });
     }
 
     void LevelManager::LoadNextLevel()
@@ -52,34 +52,33 @@ namespace gce {
         RessourcesManager::GetPlayer()->GetGameObject()->transform.SetWorldPosition({ 0.f, 30.f, 0.f });  
 		if (m_instance->m_levels.Empty()) { return; }
 		int creditLeft = m_instance->m_levels[0].ennemyCredit;
-		int randomEnemy;
-		int enemyCost = 0;         
-        while (creditLeft > 0)
-        {
-			randomEnemy = rand() % 2;
+		
+        int enemyCosts[] = {1, 3}; // Snowman, Deer
+
+		while (creditLeft > 0)
+		{
+			gce::Vector<int> affordableEnemies;
+			if (creditLeft >= enemyCosts[0]) affordableEnemies.PushBack(0); // Snowman
+			if (creditLeft >= enemyCosts[1]) affordableEnemies.PushBack(1); // Deer
+
+			if (affordableEnemies.Empty())
+			{
+				break;
+			}
+
+			int randomIndex = rand() % affordableEnemies.Size();
+			int randomEnemyType = affordableEnemies[randomIndex];
+
 			GameObject& enemyObject = GameObject::Create(const_cast<Scene&>(*RessourcesManager::GetPlayer()->GetGameObject()->GetScene()));
 			enemyObject.SetActive(false);
-			switch (randomEnemy)
-			{
-			case 0:
-				enemyCost = 1;
-				break;
-			case 1:
-				enemyCost = 3;
-				break;
-			default:
-				enemyCost = 0;
-				break;
-			}
-            if (enemyCost > creditLeft)
-            {
-                continue;
-			}
-			switch (randomEnemy)
+
+			int enemyCost = enemyCosts[randomEnemyType];
+
+			switch (randomEnemyType)
 			{
 			case 0:
 			{
-				SnowMan * snowman = new SnowMan(&enemyObject, RessourcesManager::GetTileMap());
+				SnowMan* snowman = new SnowMan(&enemyObject, RessourcesManager::GetTileMap());
 				RessourcesManager::AddEnnemy(snowman);
 				break;
 			}
@@ -89,11 +88,8 @@ namespace gce {
 				RessourcesManager::AddEnnemy(deer);
 				break;
 			}
-			default:
-				break;
 			}
-				creditLeft -= enemyCost;
-				enemyCost = 0;
+			creditLeft -= enemyCost;
 		}
 	}
 }
