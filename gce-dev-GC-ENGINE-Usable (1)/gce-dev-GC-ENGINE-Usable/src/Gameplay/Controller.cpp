@@ -19,8 +19,6 @@ using namespace gce;
         bool moving = false;
 
         static std::unordered_map<gce::GameObject*, bool> s_prevMoving;
-		Player* player = RessourcesManager::GetPlayer();
-		Entity* entityPlayer = player;
 
         if (player == nullptr || player->GetGameObject() != obj) return;
 

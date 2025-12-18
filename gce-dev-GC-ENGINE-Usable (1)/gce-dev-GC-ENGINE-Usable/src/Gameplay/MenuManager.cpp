@@ -604,11 +604,6 @@ public:
 
 		RayCast* raycast = new RayCast(&RayCastObj, m_cameraObject->transform.GetLocalPosition().z);
 
-		RessourcesManager::AddEnnemy(Snowman);
-		RessourcesManager::AddEnnemy(Snowman2);
-		RessourcesManager::AddEnnemy(Snowman3);
-		RessourcesManager::AddEnnemy(deer);
-		RessourcesManager::AddEnnemy(elf);*/
 
         Player* player = new Player(&PlayerObject,2);
         player->GetGameObject()->AddChild(*m_cameraObject);
