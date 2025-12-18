@@ -145,13 +145,38 @@ public:
         m_mainMenuPanel->SetName("MainMenuPanel");
         m_mainMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
 
+        //{
+        //    gce::GameObject& BackGround = gce::GameObject::Create(*m_scene);
+        //    gce::UiImage& uiBackGround = *BackGround.AddComponent<gce::UiImage>();
+
+        //    gce::Vector2f32 center = { (float)params.width, (float)params.height };
+        //    gce::Vector2f32 size = { 155, 148 };
+        //    gce::Vector2f32 posUi = center - size * 0.5f;
+
+        //    uiBackGround.InitializeImage(posUi, size, 1.f);
+        //    uiBackGround.btmBrush = new gce::BitMapBrush("res/Textures/Title/Fond_Vert.jpg");
+
+        //    float scaleX = 1920.f / 155;
+        //    float scaleY = 1080.f / 148;
+        //    uiBackGround.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+        //}
 
         {
             m_mainText = &GameObject::Create(*m_scene);
-            m_mainText->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f - 300, 1.0f });
-            m_mainText->transform.LocalScale({ 300.0f, 100.0f, 1.0f });
-            UiImage& text = *m_mainText->AddComponent<UiImage>();
-            text.btmBrush = new gce::BitMapBrush("res/Textures/UI/hp_1.png");
+            UiImage& uiMainText = *m_mainText->AddComponent<UiImage>();
+            Vector2f32 center = { (float)params.width + 100, (float)params.height * 0.7f - 150 };
+            Vector2f32 size = { 1508.f, 208.f };
+            Vector2f32 posUi = center - size * 0.5f;
+            uiMainText.InitializeImage(posUi, size, 1.f);
+            uiMainText.btmBrush = new BitMapBrush("res/Textures/Title/Jingle_Hell.png");
+            float scaleX = 600.f / 1508.f;
+            float scaleY = 150.f / 208.f;
+            uiMainText.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+            if (m_mainMenuPanel)
+            {
+                m_mainMenuPanel->AddChild(*m_mainText);
+            }
+
         }
 
         {
@@ -184,6 +209,24 @@ public:
         m_pauseMenuPanel = &GameObject::Create(*m_scene);
         m_pauseMenuPanel->SetName("PauseMenuPanel");
         m_pauseMenuPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+
+        {
+            m_pauseText = &GameObject::Create(*m_scene);
+            UiImage& uiPauseText = *m_pauseText->AddComponent<UiImage>();
+            Vector2f32 center = { (float)params.width * 0.75f, (float)params.height * 0.7f - 150 };
+            Vector2f32 size = { 792.f, 253.f };
+            Vector2f32 posUi = center - size * 0.5f;
+            uiPauseText.InitializeImage(posUi, size, 1.f);
+            uiPauseText.btmBrush = new BitMapBrush("res/Textures/Title/Pause.png");
+            float scaleX = 600.f / 792.f;
+            float scaleY = 150.f / 253.f;
+            uiPauseText.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+            if (m_pauseMenuPanel)
+            {
+                m_pauseMenuPanel->AddChild(*m_pauseText);
+            }
+        }
 
         {
             m_resumeButton = &GameObject::Create(*m_scene);
@@ -228,6 +271,25 @@ public:
         m_gameOverPanel = &GameObject::Create(*m_scene);
         m_gameOverPanel->SetName("GameOverPanel");
         m_gameOverPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+
+        {
+            m_gameOverText = &GameObject::Create(*m_scene);
+            UiImage& uiGameOverText = *m_gameOverText->AddComponent<UiImage>();
+            Vector2f32 center = { (float)params.width * 0.75f, (float)params.height * 0.7f - 150 };
+            Vector2f32 size = { 964.f, 223.f };
+            Vector2f32 posUi = center - size * 0.5f;
+            uiGameOverText.InitializeImage(posUi, size, 1.f);
+            uiGameOverText.btmBrush = new BitMapBrush("res/Textures/Title/Pause.png");
+            float scaleX = 600.f / 964.f;
+            float scaleY = 150.f / 223.f;
+            uiGameOverText.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+            if (m_gameOverPanel)
+            {
+                m_gameOverPanel->AddChild(*m_gameOverText);
+            }
+        }
+
     {
         m_restartButtonGameOver = &GameObject::Create(*m_scene);
         m_restartButtonGameOver->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
@@ -259,6 +321,24 @@ public:
         m_victoryPanel = &GameObject::Create(*m_scene);
         m_victoryPanel->SetName("VictoryPanel");
         m_victoryPanel->transform.SetWorldPosition({ 0.0f, 0.0f, -8.0f });
+
+        {
+            m_victoryText = &GameObject::Create(*m_scene);
+            UiImage& uiVictoryText = *m_victoryText->AddComponent<UiImage>();
+            Vector2f32 center = { (float)params.width * 0.75f, (float)params.height * 0.7f - 150 };
+            Vector2f32 size = { 1066.f, 225.f };
+            Vector2f32 posUi = center - size * 0.5f;
+            uiVictoryText.InitializeImage(posUi, size, 1.f);
+            uiVictoryText.btmBrush = new BitMapBrush("res/Textures/Title/Pause.png");
+            float scaleX = 600.f / 1066.f;
+            float scaleY = 150.f / 225.f;
+            uiVictoryText.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
+            if (m_victoryPanel)
+            {
+                m_victoryPanel->AddChild(*m_victoryText);
+            }
+        }
+
         {
             m_restartButtonVictory = &GameObject::Create(*m_scene);
             m_restartButtonVictory->transform.LocalTranslate({ (float)params.width * 0.75f, (float)params.height * 0.7f, 1.0f });
