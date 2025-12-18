@@ -13,7 +13,7 @@ namespace gce {
     {
 		if (m_instance != nullptr) return;
 		m_instance = new LevelManager();
-        m_instance->m_levels.PushBack({ "res/Scene/Level1.json", "Niveau 1", 5 });
+        m_instance->m_levels.PushBack({ "res/Scene/Level1.json", "Niveau 1", 50 });
         m_instance->m_levels.PushBack({ "res/Scene/Level2.json", "Niveau 2", 5 });
         m_instance->m_levels.PushBack({ "res/Scene/Level3.json", "Niveau 3", 5 });
     }

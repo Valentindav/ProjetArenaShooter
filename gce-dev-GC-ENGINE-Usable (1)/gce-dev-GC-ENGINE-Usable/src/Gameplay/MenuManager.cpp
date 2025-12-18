@@ -594,9 +594,9 @@ public:
         DeerObject.transform.SetWorldPosition({ 1.0f,10.0f,1.0f });
         Deer* deer = new Deer(&DeerObject, RessourcesManager::GetTileMap());*/
 
-        GameObject& EldObject = GameObject::Create(*m_scene);
+        /*GameObject& EldObject = GameObject::Create(*m_scene);
         EldObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });
-        Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());
+        Elf* elf = new Elf(&EldObject, RessourcesManager::GetTileMap());*/
 
        /* GameObject& BossObject = GameObject::Create(*m_scene);
         BossObject.transform.SetWorldPosition({ 1.0f,0.0f,1.0f });

@@ -16,12 +16,15 @@ namespace gce {
         static void LoadLevel(int index);
         static void LoadNextLevel();
         static void LoadLevel1();
+		/*static void LoadLevel2();*/
 
         int GetCurrentLevelIndex() { return m_currentIndex; }
+		static int GetMaxEnemy() { return m_maxEnemy; }
 
     private:
 		inline static LevelManager* m_instance = nullptr;
         Vector<LevelData> m_levels;
         int m_currentIndex = -1;
+		inline static int m_maxEnemy = 10;
     };
 }
