@@ -107,9 +107,6 @@ namespace gce
             return hr;
         }
 
-        std::cout << "Submitting buffer: " << buffer->AudioBytes << " bytes, "
-            << "First sample: " << *reinterpret_cast<const float*>(buffer->pAudioData) << std::endl;
-
         return S_OK;
     }
 

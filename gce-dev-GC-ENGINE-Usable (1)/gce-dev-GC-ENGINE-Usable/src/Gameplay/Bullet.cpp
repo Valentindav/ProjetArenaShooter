@@ -71,7 +71,6 @@ public:
 	{
 		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies" || other->GetName() == "Player") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
-		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 
@@ -230,7 +229,6 @@ public:
 	{
 		if (other->GetName() == "RayCast" || other->GetName() == "Floor" || other->GetName() == "Cookies" || other->GetName() == "Player") return;
 		gce::Vector<Entity*> entity = RessourcesManager::GetEntities();
-		std::cout << "Collision with " << other->GetName() << std::endl;
 		Entity* ownerEntity = nullptr;
 		ownerEntity = RessourcesManager::GetEntityFromGameObject(m_pOwner);
 
@@ -290,7 +288,7 @@ public:
 		obj->SetName("bullet");
 		MeshRenderer* pWeaponRenderer = obj->AddComponent<MeshRenderer>();
 		pWeaponRenderer->SetGeometry(SHAPES.CUBE);
-		obj->transform.LocalScale({ 0.05,0.05,0.05 });
+		obj->transform.LocalScale({ 0.5,0.5,0.5 });
 		obj->AddComponent<BoxCollider>()->SetActive(true);
 		obj->AddComponent<PhysicComponent>();
 		obj->GetComponent<PhysicComponent>()->SetGravityScale(0.0f);

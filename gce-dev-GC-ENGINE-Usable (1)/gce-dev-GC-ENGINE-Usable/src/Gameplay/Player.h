@@ -39,7 +39,7 @@ public:
 	int m_jumpCount = 0;
 
 	Player(GameObject* obj, float spd = 7);
-	void UpdateWeapon();
+	void UpdateWeapon(bool charge);
 	void AddMove();
 	void TakeDamage(int damage) override;
 

@@ -12,7 +12,7 @@ Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-    m_life = 14.f;  // CORRIGÉ : était 14.f
+    m_life = 14.f;
     obj->transform.SetLocalScale({ 2.0f, 2.0f, 2.0f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
     obj->GetComponent<BoxCollider>()->isTrigger = false;
@@ -42,8 +42,22 @@ void Player::SetCamera(GameObject* camera)
     m_cameraFeedback = new CameraFeedback(camera);
 }
 
-void Player::UpdateWeapon()
+void Player::UpdateWeapon(bool charge)
 {
+    if (charge) {
+        if (m_weaponLevel == 1) {
+            m_currentState = Player::GIFT_WEAPON;
+            m_damage = 1.0f;
+        }
+        else if (m_weaponLevel == 2) {
+            m_currentState = Player::NERF_WEAPON;
+            m_damage = 2.0f;
+        }
+        else if (m_weaponLevel == 3) {
+            m_currentState = Player::THOMPSON_WEAPON;
+            m_damage = 3.0f;
+        }
+    }
     GameObject* obj = nullptr;
     for (auto child : GetGameObject()->GetChildren()) {
         if (child->GetName() == "Weapon_1") {

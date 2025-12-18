@@ -44,6 +44,9 @@ public:
     static gce::Geometry* GetDeer();
     static gce::Geometry* GetSanta();
 
+    static gce::Geometry* GetCookiesObj();
+   // static gce::Texture* GetCookiesText();
+
     static gce::Texture* GetTexture();
     static Entity* GetSelectedEnemy();
     static Entity* GetEntityFromGameObject(gce::GameObject* go);	
@@ -83,6 +86,9 @@ private:
     gce::Geometry* m_robotGeo = gce::GeometryFactory::LoadGeometry("res/Obj/robot.obj");
     gce::Geometry* m_deerGeo = gce::GeometryFactory::LoadGeometry("res/Obj/renne.obj");
     gce::Geometry* m_SantaGeo = gce::GeometryFactory::LoadGeometry("res/Obj/pere noel.obj");
+
+    gce::Geometry* m_cookies = gce::GeometryFactory::LoadGeometry("res/Obj/Cookie.obj");
+    //gce::Texture* m_cookiesTexture = new gce::Texture("res/Exemple/texture cookie.spp");
 
     gce::Vector<Entity*> m_entities;
     gce::Vector<Heal*> m_cookiesVector;

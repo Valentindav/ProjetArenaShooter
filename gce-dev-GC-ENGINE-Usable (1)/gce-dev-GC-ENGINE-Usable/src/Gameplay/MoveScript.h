@@ -66,22 +66,19 @@ public:
         m_shootTimer -= GameManager::DeltaTime();
     }
 
-    void CollisionStay(GameObject* other) // stay on the ground
+    void CollisionStay(GameObject* other)
     {
         if (m_pOwner && m_pOwner->IsActive())
         {
-            // On récupère le nom de l'objet touché
             if (!other->GetName()) return;
             String name = other->GetName();
             Entity* entityPlayer = RessourcesManager::GetEntityFromGameObject(m_pOwner);
             Player* player = dynamic_cast<Player*>(entityPlayer);
 
-            // Exclure explicitement les entités ennemies / balles (ne doivent pas être considérées sol)
             bool isEnemyOrProjectile =
                 (name == "SnowMan" || name == "Robot" || name == "Bullet" || name == "bullet" ||
                     name == "Elf" || name == "Boss" || name == "Deer");
 
-            // Si ce n'est pas une entité ennemie/projetile, considérer les objets solides (BoxCollider non trigger) comme sol
             if (!isEnemyOrProjectile)
             {
                 if (other->HasComponent<BoxCollider>())
@@ -94,7 +91,6 @@ public:
                         return;
                     }
                 }
-                // fallback : accepter aussi les objets nommés "Floor" (compatibilité)
                 if (name == "Floor")
                 {
                     onGround = true;

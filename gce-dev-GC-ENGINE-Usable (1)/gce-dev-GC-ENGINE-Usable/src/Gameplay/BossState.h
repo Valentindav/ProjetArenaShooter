@@ -15,6 +15,7 @@ static void OnStartEmptyBoss(GameObject* me) {
     Entity* ent = RessourcesManager::GetEntityFromGameObject(me);
     Boss* self = dynamic_cast<Boss*>(ent);
     StateMachine* sm = GameManager::GetStatesSystem().CreateStateMachine(me);
+	std::cout << "state : " << sm->actualAction.c_str() << std::endl;
     if (!self) return;
 }
 
@@ -185,7 +186,7 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
         self->m_slamWave->SetName("ShockwaveRing");
         self->m_slamWave->transform.SetWorldPosition({
             me->transform.GetWorldPosition().x,
-            -9.3f,
+            me->transform.GetWorldPosition().y,
             me->transform.GetWorldPosition().z
             });
 
@@ -200,7 +201,7 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
             float x = me->transform.GetWorldPosition().x + cosf(angle) * self->m_slamRadius;
             float z = me->transform.GetWorldPosition().z + sinf(angle) * self->m_slamRadius;
 
-            segment->transform.SetWorldPosition({ x, -9.3f, z });
+            segment->transform.SetWorldPosition({ x, me->transform.GetWorldPosition().y, z });
             segment->transform.WorldScale({ 0.5f, 0.5f, 0.5f });
 
             MeshRenderer* mr = segment->AddComponent<MeshRenderer>();
@@ -228,7 +229,7 @@ static void OnUpdateGroundSlamBoss(GameObject* me) {
         float x = me->transform.GetWorldPosition().x + cosf(angle) * self->m_slamRadius;
         float z = me->transform.GetWorldPosition().z + sinf(angle) * self->m_slamRadius;
 
-        self->m_slamWaveSegments[i]->transform.SetWorldPosition({ x, -9.3f, z });
+        self->m_slamWaveSegments[i]->transform.SetWorldPosition({ x, me->transform.GetWorldPosition().y, z });
     }
 
     if (!self->m_hasHitPlayer)
@@ -270,7 +271,7 @@ static void OnUpdateTeleportBoss(GameObject* me) {
     MenuManager* mm = MenuManager::GetInstance();
     if (mm && mm->GetGameState() != GameState::Playing)
         return;
-	me->transform.SetWorldPosition({ float(rand() % 100 + 1),-9.3f, float(rand() % 100 + 1) });
+	me->transform.SetWorldPosition({ float(rand() % 20 + 1),me->transform.GetWorldPosition().y, float(rand() %20 + 1) });
 }
 
 static void OnUpdateLaserBoss(GameObject* me) {
@@ -387,7 +388,7 @@ static void OnUpdateLaserBoss(GameObject* me) {
 
             if (distFromLaser < laserRadius)
             {
-                if (self->m_laserDamageTimer >= 0.2f)
+                if (self->m_laserDamageTimer >= 1.f)
                 {
                     player->TakeDamage(1);
                     self->m_laserDamageTimer = 0.f;
@@ -419,6 +420,7 @@ static void OnStartShieldBoss(GameObject* me) {
     if (!self) return;
     self->m_hasAlreadyShielded = true;
     self->m_isShielded = true;
+    std::cout << "used shield";
 }
 
 static void OnUpdateShieldBoss(GameObject* me) {
@@ -432,10 +434,11 @@ static void OnUpdateShieldBoss(GameObject* me) {
         self->m_isShielded = false;
     }
 
-	self->m_maxShieldDuration -= GameManager::DeltaTime();
+    self->m_maxShieldDuration -= GameManager::DeltaTime();
 
-    //teleport to a safe zone above
-	//Ennemies Spawn Logic Here 
-	// when all enemies are dead desactvate shield
+    if (RessourcesManager::GetSpawnTimer() >= 1.0f)
+    {
+        RessourcesManager::SpawnEnnemies(0.0f);
+    }
 }
 
