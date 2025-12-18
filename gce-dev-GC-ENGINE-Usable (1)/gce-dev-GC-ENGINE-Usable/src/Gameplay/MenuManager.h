@@ -4,6 +4,7 @@
 using namespace gce;
 
 class Player;
+
 enum class GameState
 {
     MainMenu,
@@ -46,15 +47,15 @@ private:
     GameObject* m_restartButtonVictory;
     GameObject* m_mainMenuButtonVictory;
 
-    // UI life bar images: index 0 = full (13 HP), index 12 = empty (0 HP)
-
 
     MenuManager();
 
     void RecreateScene();
 
 public:
-    UiImage* m_uiLifeBars[13] = { nullptr };
+
+
+
     static void Create(Scene* scene);
     static MenuManager* GetInstance() 
     {
@@ -87,6 +88,9 @@ public:
     static void OnMainMenuButtonClick();
 
     void StartGame();
+    UiImage* m_uiStaminaBar[11] = { nullptr };
+    void ShowUIStaminaBar();
+    UiImage* m_uiLifeBars[13] = { nullptr };
     void ShowUIHealthBar();
     void PauseGame();
     void ResumeGame();

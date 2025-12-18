@@ -191,9 +191,9 @@ using namespace gce;
             pWeaponRenderer->SetGeometry(SHAPES.CUBE);
             obj->GetScript<Move>()->lastBullet->DeleteShoot();
         }
-        if (!GetKey(Keyboard::LSHIFT) && player->m_energy < 100.0f) {
+        if (!GetKey(Keyboard::LSHIFT) && player->m_energy < 11.0f) {
            
-            player->m_energy += 10 * GameManager::DeltaTime();
+            player->m_energy += 1 * GameManager::DeltaTime();
         }
         if (GetKeyDown(Keyboard::N))
         {

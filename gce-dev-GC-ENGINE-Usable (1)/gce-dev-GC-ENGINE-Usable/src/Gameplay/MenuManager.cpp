@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <Engine.h>
 #include "Player.h"
+#include "Controller.h"
 #include "SnowMan.h"
 #include "Robot.h"
 #include "RessourcesManager.h"
@@ -11,7 +12,6 @@
 #include "Boss.h"
 #include "RayCast.h"
 #include "TileMap.h"
-
 MenuManager* MenuManager::m_Instance = nullptr;
 
 DECLARE_SCRIPT(GameStateChecker, ScriptFlag::Update)
@@ -38,6 +38,7 @@ public:
         if (menuManager->GetGameState() == GameState::Playing)
         {
             menuManager->ShowUIHealthBar();
+            menuManager->ShowUIStaminaBar();
             Player* player = RessourcesManager::GetPlayer();
 
             if (player == nullptr || player->GetGameObject() == nullptr)
@@ -611,6 +612,103 @@ public:
         float scaleY = 64.f / 221.f;
         uiCrosshair.btmBrush->SetTransformMatrix({ posUi.x, posUi.y, 0.f }, { scaleX, scaleY, 1.f }, 0.f);
 
+
+                //création barre d'endurance
+        gce::Vector2f32 center3 = { 576.f, (float)params.height - 192.f };
+        gce::Vector2f32 size3 = { 1117.f, 301.f };
+        gce::Vector2f32 posUi3 = center3 - size3 * 0.5f;
+        float scaleX2 = 750.f / 1117.f;
+        float scaleY2 = 225.f / 301.f;
+
+
+        gce::GameObject& staminaBar = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar = *staminaBar.AddComponent<gce::UiImage>();
+        staminaBar.SetName("UI_Life");
+        uiStaminaBar.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_empty.png");
+        uiStaminaBar.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[0] = &uiStaminaBar;
+
+        gce::GameObject& staminaBar1 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar1 = *staminaBar1.AddComponent<gce::UiImage>();
+        staminaBar1.SetName("UI_Life");
+        uiStaminaBar1.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar1.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_1.png");
+        uiStaminaBar1.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[1] = &uiStaminaBar1;
+
+        gce::GameObject& staminaBar2 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar2 = *staminaBar2.AddComponent<gce::UiImage>();
+        staminaBar2.SetName("UI_Life");
+        uiStaminaBar2.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar2.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_2.png");
+        uiStaminaBar2.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[2] = &uiStaminaBar2;
+
+        gce::GameObject& staminaBar3 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar3 = *staminaBar3.AddComponent<gce::UiImage>();
+        staminaBar3.SetName("UI_Life");
+        uiStaminaBar3.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar3.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_3.png");
+        uiStaminaBar3.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[3] = &uiStaminaBar3;
+
+        gce::GameObject& staminaBar4 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar4 = *staminaBar4.AddComponent<gce::UiImage>();
+        staminaBar4.SetName("UI_Life");
+        uiStaminaBar4.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar4.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_4.png");
+        uiStaminaBar4.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[4] = &uiStaminaBar4;
+
+        gce::GameObject& staminaBar5 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar5 = *staminaBar.AddComponent<gce::UiImage>();
+        staminaBar5.SetName("UI_Life");
+        uiStaminaBar5.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar5.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_5.png");
+        uiStaminaBar5.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[5] = &uiStaminaBar5;
+
+        gce::GameObject& staminaBar6 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar6 = *staminaBar6.AddComponent<gce::UiImage>();
+        staminaBar6.SetName("UI_Life");
+        uiStaminaBar6.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar6.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_6.png");
+        uiStaminaBar6.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[6] = &uiStaminaBar6;
+
+        gce::GameObject& staminaBar7 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar7 = *staminaBar7.AddComponent<gce::UiImage>();
+        staminaBar7.SetName("UI_Life");
+        uiStaminaBar7.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar7.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_7.png");
+        uiStaminaBar7.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[7] = &uiStaminaBar7;
+
+        gce::GameObject& staminaBar8 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar8 = *staminaBar8.AddComponent<gce::UiImage>();
+        staminaBar8.SetName("UI_Life");
+        uiStaminaBar8.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar8.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_8.png");
+        uiStaminaBar8.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[8] = &uiStaminaBar8;
+
+        gce::GameObject& staminaBar9 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar9 = *staminaBar.AddComponent<gce::UiImage>();
+        staminaBar9.SetName("UI_Life");
+        uiStaminaBar9.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar9.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_9.png");
+        uiStaminaBar9.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[9] = &uiStaminaBar9;
+
+        gce::GameObject& staminaBar10 = gce::GameObject::Create(*m_scene);
+        gce::UiImage& uiStaminaBar10 = *staminaBar10.AddComponent<gce::UiImage>();
+        staminaBar10.SetName("UI_Life");
+        uiStaminaBar10.InitializeImage(posUi3, size3, 1.f);
+        uiStaminaBar10.btmBrush = new gce::BitMapBrush("res/Textures/UI/energy_full.png");
+        uiStaminaBar10.btmBrush->SetTransformMatrix({ posUi3.x, posUi3.y, 0.f }, { scaleX2, scaleY2, 1.f }, 0.f);
+        m_uiStaminaBar[10] = &uiStaminaBar10;
+ 
         //ajout de la barre de vie
         gce::Vector2f32 center2 = { 576.f, (float)params.height - 128.f };
         gce::Vector2f32 size2 = { 1117.f, 301.f };
@@ -744,6 +842,7 @@ public:
         uiLifeBar13.btmBrush->SetTransformMatrix({ posUi2.x, posUi2.y, 0.f }, { scaleX1, scaleY1, 1.f }, 0.f);
         m_uiLifeBars[13] = &uiLifeBar13;
 
+
         uiCrosshair.SetActive(true);
     }
 
@@ -768,6 +867,31 @@ public:
                     m_uiLifeBars[i]->SetActive(true);
                 else
                     m_uiLifeBars[i]->SetActive(false);
+            }
+        }
+    }
+
+    void MenuManager::ShowUIStaminaBar()
+    {
+        MenuManager* menuManager = MenuManager::GetInstance();
+        if (!menuManager) return;
+        if (menuManager->GetGameState() != GameState::Playing) return;
+
+        Player* player = RessourcesManager::GetPlayer();
+        if (!player) return;
+        float nrg = player->m_energy;
+        if (nrg < 0.0f) nrg = 0.0f;
+        if (nrg > 12.0f) nrg = 12.0f;
+        int index = static_cast<int>(nrg);
+
+        for (int i = 0; i < 12; ++i)
+        {
+            if (m_uiStaminaBar[i])
+            {
+                if (i == index)
+                    m_uiStaminaBar[i]->SetActive(true);
+                else
+                    m_uiStaminaBar[i]->SetActive(false);
             }
         }
     }

@@ -6,20 +6,20 @@
 
 using namespace gce;
 
-Player::Player(GameObject* obj, float spd) : Entity(obj, spd) 
+Player::Player(GameObject* obj, float spd) : Entity(obj, spd)
 {
     MeshRenderer* pPlayerRenderer = obj->AddComponent<MeshRenderer>();
     pPlayerRenderer->SetGeometry(SHAPES.CUBE);
     Texture* pPlayerTexture = new Texture("res/Exemple/TexturesTest.jpg");
     pPlayerRenderer->SetAlbedoTexture(pPlayerTexture);
-    m_life = 14.f;
-	obj->transform.SetLocalScale({ 2.0f,2.0f, 2.0f });
+    m_life = 14.f;  // CORRIGÉ : était 14.f
+    obj->transform.SetLocalScale({ 2.0f, 2.0f, 2.0f });
     obj->AddComponent<BoxCollider>()->SetActive(true);
-	obj->GetComponent<BoxCollider>()->isTrigger = false;
+    obj->GetComponent<BoxCollider>()->isTrigger = false;
     obj->AddComponent<PhysicComponent>();
     obj->GetComponent<PhysicComponent>()->SetGravityScale(9.81f);
     obj->SetName("Player");
-	m_weaponLevel = 1;
+    m_weaponLevel = 1;
     m_baseSpeed = spd;
     AddMove();
 
@@ -34,24 +34,24 @@ void Player::SetCamera(GameObject* camera)
     m_cameraFeedback = new CameraFeedback(camera);
 }
 
-void Player::UpdateWeapon() // change the weapno look according to the current state -> TODO
+void Player::UpdateWeapon()
 {
     GameObject* obj = nullptr;
     for (auto child : GetGameObject()->GetChildren()) {
         if (child->GetName() == "Weapon_1") {
-			obj = child;
+            obj = child;
         }
-	}
+    }
     if (obj == nullptr) return;
     MeshRenderer* pChildRenderer = obj->GetComponent<MeshRenderer>();
     switch (m_currentState) {
     case GIFT_WEAPON:
         pChildRenderer->SetGeometry(SHAPES.CUBE);
-		break;
+        break;
     case NERF_WEAPON:
         pChildRenderer->SetGeometry(RessourcesManager::GetNerf());
         break;
-	case THOMPSON_WEAPON:
+    case THOMPSON_WEAPON:
         pChildRenderer->SetGeometry(RessourcesManager::GetThomson());
         break;
     case CANDY_CANE:
@@ -66,10 +66,10 @@ void Player::UpdateWeapon() // change the weapno look according to the current s
     case BAZZOKA_WEAPON:
         pChildRenderer->SetGeometry(RessourcesManager::GetBottle());
     }
-	std::cout << "Weapon updated to state: " << m_currentState << std::endl;
+    std::cout << "Weapon updated to state: " << m_currentState << std::endl;
 }
 
-void Player::AddMove() // add move script to player
+void Player::AddMove()
 {
     GameObject* obj = GetGameObject();
     obj->AddScript<Move>();
@@ -135,7 +135,7 @@ void Player::UpdateWeaponAnimation(float deltaTime)
 
     m_weaponAnimTimer += deltaTime;
 
-    if (m_weaponAnimPhase == 1) 
+    if (m_weaponAnimPhase == 1)
     {
         float shootDuration = 0.3f;
 
@@ -190,7 +190,7 @@ void Player::UpdateWeaponAnimation(float deltaTime)
             newPos.y -= 0.8f;
             newPos.y += sideProgress * 1.2f;
         }
-   
+
         weaponObj->transform.SetLocalPosition(newPos);
     }
 }
